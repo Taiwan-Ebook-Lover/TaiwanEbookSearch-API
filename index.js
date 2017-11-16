@@ -49,8 +49,18 @@ app.get('/search', (req, res, next) => {
     res.json(result);
   }).catch(error => {
     console.log(error);
+
+    res.status(503).json({
+      message: 'Something is wrong...'
+    });
   });
 
+});
+
+app.get('*', function (req, res) {
+  return res.status(405).json({
+    message: 'Method Not Allowed!'
+  });
 });
 
 http.listen(process.env.PORT, () => {
