@@ -27,7 +27,7 @@ function searchBooks(keywords = '') {
         title: $(elem).children('.caption').children('h4').children('a').text(),
         link: $(elem).children('.caption').children('h4').children('a').prop('href'),
         priceCurrency: $(elem).children('.caption').children('.price-info').children('meta[itemprop=priceCurrency]').prop('content'),
-        price: $(elem).children('.caption').children('.price-info').children('.our-price').children('strong').text(),
+        price: parseFloat($(elem).children('.caption').children('.price-info').children('.our-price').children('strong').text()),
         about: $(elem).children('.caption').children('.description').text(),
       };
     });

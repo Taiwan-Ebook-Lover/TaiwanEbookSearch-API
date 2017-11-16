@@ -28,7 +28,7 @@ function searchBooks(keywords = '') {
         title: $(elem).children('h3').children('a').prop('title'),
         link: `http://www.books.com.tw/products/${$(elem).children('.input_buy').children('input').prop('value')}`,
         priceCurrency: 'TWD',
-        price: $(elem).children('.price').children('strong').children('b').text(),
+        price: parseFloat($(elem).children('.price').children('strong').children('b').text()),
         about: $(elem).children('p').text().replace(/......\ more\n\t\t\t\t\t\t\t\t/g, ' ...'),
         publisher: $(elem).children('a[rel=mid_publish]').prop('title'),
         authors

@@ -32,7 +32,7 @@ function searchBooks(keywords = '') {
         // title: info.booktitle,
         link: $(elem).children('.two').children('ul').children('li[class=linkC]').children('a').prop('href'),
         priceCurrency: 'TWD',
-        price: $(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span').eq(1).text(),
+        price: parseFloat($(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span').eq(1).text()),
         // about: info.bookprofile,
         // publisher: info.publisher,
         // publishDate: info.publishdate,

@@ -35,7 +35,7 @@ function searchBooks(keywords = '') {
         title,
         link: $(elem).children('.item-detail').children('.item-info').children('.title').children('a').prop('href'),
         priceCurrency: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('.currency').text(),
-        price: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('span').first().text().replace('NT$', ''),
+        price: parseFloat($(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('span').first().text().replace('NT$', '')),
         about: `${$(elem).children('.item-detail').children('.item-info').children('.synopsis').children('.synopsis-text').text()} ...`,
         // publisher
         authors: $(elem).children('.item-detail').children('.item-info').children('.contributor-list').children('.visible-contributors').children('a').text().split('、'),
