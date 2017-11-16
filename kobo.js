@@ -5,13 +5,10 @@ const url = require('url');
 function searchBooks(keywords = '') {
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `https://www.kobo.com/tw/zh/search`;
+  const base = `https://www.kobo.com/tw/zh/search?Query=${keywords}`;
 
   const options = {
     uri: base,
-    qs: {
-      Query: keywords
-    },
     transform: (body) => {
       return cheerio.load(body);
     }
