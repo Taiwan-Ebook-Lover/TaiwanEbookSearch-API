@@ -1,0 +1,58 @@
+require('dotenv').config();
+const app = require('express')();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const compression = require('compression');
+const rp = require('request-promise-native');
+const cheerio = require('cheerio');
+const http = require('http').Server(app);
+
+const readmoo = require('./readmoo');
+const booksCompany = require('./booksCompany');
+const kobo = require('./kobo');
+const taaze = require('./taaze');
+
+// compress all responses
+app.use(compression());
+
+// for parsing application/json
+app.use(bodyParser.json());
+
+// for parsing application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// for cors
+app.use(cors({
+  methods: ['GET', 'POST', 'PATCH', 'OPTION', 'DELETE'],
+  credentials: true,
+  origin: true
+}));
+
+app.get('/search', (req, res, next) => {
+  const keywords = req.query.q;
+
+  // 一次查四家！
+  Promise.all([
+    booksCompany.searchBooks(keywords),
+    readmoo.searchBooks(keywords),
+    kobo.searchBooks(keywords),
+    taaze.searchBooks(keywords),
+  ]).then(data => {
+
+    const result = {
+      booksCompany: data[0],
+      readmoo: data[1],
+      kobo: data[2],
+      taaze: data[3],
+    };
+
+    res.json(result);
+  }).catch(error => {
+    console.log(error);
+  });
+
+});
+
+http.listen(process.env.PORT, () => {
+  console.log(`listening on http://localhost:${process.env.PORT}`);
+});

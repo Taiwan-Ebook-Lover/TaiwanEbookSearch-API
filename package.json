@@ -1,0 +1,29 @@
+{
+	"name": "ebook-api",
+	"version": "0.0.1",
+	"description": "API",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/passerbyid/ebook-api.git"
+	},
+	"author": "Yuer Lee <passerbyid@gmail.com>",
+	"license": "MIT",
+	"dependencies": {
+		"body-parser": "^1.18.2",
+		"cheerio": "^1.0.0-rc.2",
+		"compression": "^1.7.1",
+		"cors": "^2.8.4",
+		"dotenv": "^4.0.0",
+		"express": "^4.16.2",
+		"request": "^2.83.0",
+		"request-promise-native": "^1.0.5"
+	},
+	"bugs": {
+		"url": "https://github.com/passerbyid/ebook-api/issues"
+	},
+	"homepage": "https://github.com/passerbyid/ebook-api#readme"
+}
