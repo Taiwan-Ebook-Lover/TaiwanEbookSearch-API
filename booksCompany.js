@@ -16,14 +16,16 @@ function searchBooks(keywords = '') {
     let books = [];
 
     $('#searchlist ul li').each((i, elem) => {
-      let authors = [];
 
       // 合併作者成一個陣列
+      let authors = [];
       $(elem).children('a[rel=go_author]').each((i, elem) => {
-        authors[i] = $(elem).prop('title');
+        authors = authors.concat($(elem).prop('title').split('、'));
       });
 
       books[i] = {
+        //
+        id: $(elem).children('.input_buy').children('input').prop('value'),
         thumbnail: $(elem).children('a').children('img').data('original'),
         title: $(elem).children('h3').children('a').prop('title'),
         link: `http://www.books.com.tw/products/${$(elem).children('.input_buy').children('input').prop('value')}`,
