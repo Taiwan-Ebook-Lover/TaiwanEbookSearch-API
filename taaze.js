@@ -7,13 +7,7 @@ function searchBooks(keywords = '') {
   keywords = encodeURIComponent(keywords);
 
   const options = {
-    uri: 'https://www.taaze.tw/search_go.html',
-    qs: {
-      'keyword%5B%5D': keywords,
-      'keyType%5B%5D': 0,
-      prodKind: 4,
-      prodCatId: 141,
-    },
+    uri: `https://www.taaze.tw/search_go.html?keyword%5B%5D=${keywords}&keyType%5B%5D=0&prodKind=4&prodCatId=141`,
     transform: (body) => {
       return cheerio.load(body);
     },
