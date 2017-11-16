@@ -18,25 +18,32 @@ function searchBooks(keywords = '') {
     let books = [];
 
     $('ul[class=result-items] li').each((i, elem) => {
-      const subtitle = $(elem).children('.item-detail').children('.item-info').children('.subtitle').children('a').text();
-      let title = $(elem).children('.item-detail').children('.item-info').children('.title').children('a').text();
+      // 從 script elem 拉 JSON data
+      const info = JSON.parse($(elem).children('.item-detail').children('script').html());
 
       // 若有副標題，併入主標題
-      if (subtitle) {
-        title += ` - ${subtitle}`;
+      let title = info.name;
+      if (info.alternativeHeadline) {
+        title += ` - ${info.alternativeHeadline}`;
+      }
+
+      // 合併作者成一個陣列
+      let authors = [];
+      for (let item of info.author) {
+        authors = authors.concat(item.name.split('、'));
       }
 
       books[i] = {
+        id: info.isbn,
         // 圖片網址為相對位置，需要 resolve
-        thumbnail: url.resolve(base, $(elem).children('.item-detail').children('.image-column').children('.item-image').children('a').children('.image-container').children('img').prop('src')),
+        thumbnail: url.resolve(base, info.thumbnailUrl),
         title,
-        link: $(elem).children('.item-detail').children('.item-info').children('.title').children('a').prop('href'),
+        link: info.url,
         priceCurrency: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('.currency').text(),
         price: parseFloat($(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('span').first().text().replace('NT$', '')),
-        about: `${$(elem).children('.item-detail').children('.item-info').children('.synopsis').children('.synopsis-text').text()} ...`,
+        about: `${info.description} ...`,
         // publisher
-        authors: $(elem).children('.item-detail').children('.item-info').children('.contributor-list').children('.visible-contributors').children('a').text().split('、'),
-        // authors
+        authors,
       };
 
     });
