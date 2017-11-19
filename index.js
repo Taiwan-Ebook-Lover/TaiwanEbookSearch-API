@@ -31,6 +31,13 @@ app.use(cors({
 app.get('/search', (req, res, next) => {
   const keywords = req.query.q;
 
+  // 關鍵字是必須的
+  if (!keywords) {
+    return res.status(400).send({
+      message: 'q is required.'
+    });
+  }
+
   // 一次查四家！
   Promise.all([
     booksCompany.searchBooks(keywords),
