@@ -46,11 +46,11 @@ app.get('/search', (req, res, next) => {
       taaze: data[3],
     };
 
-    res.json(result);
+    return res.send(result);
   }).catch(error => {
     console.log(error);
 
-    res.status(503).json({
+    return res.status(503).send({
       message: 'Something is wrong...'
     });
   });
@@ -58,7 +58,7 @@ app.get('/search', (req, res, next) => {
 });
 
 app.get('*', function (req, res) {
-  return res.status(405).json({
+  return res.status(405).send({
     message: 'Method Not Allowed!'
   });
 });
