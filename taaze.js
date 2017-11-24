@@ -8,42 +8,37 @@ function searchBooks(keywords = '') {
 
   const options = {
     uri: `https://www.taaze.tw/search_go.html?keyword%5B%5D=${keywords}&keyType%5B%5D=0&prodKind=4&prodCatId=141`,
-    transform: (body) => {
-      return cheerio.load(body);
-    },
+    resolveWithFullResponse: true,
+    simple: false,
   };
 
-  return rp(options).then($ => {
-    let books = [];
+  return rp(options).then(response =>{
+    if (!(/^2/.test('' + response.statusCode))) {
+      // console.log('Not found or error in taaze!');
 
-    $('.searchresult_row').each((i, elem) => {
-      // 先取得 id，部分資料需另叫 API 處理
-      const id = $(elem).children('.two').children('ul').prop('rel');
+      return [];
+    }
 
-      books[i] = {
-        id,
-        thumbnail: $(elem).children('.one').css('background').replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, ''),
-        // title: info.booktitle,
-        link: $(elem).children('.two').children('ul').children('li[class=linkC]').children('a').prop('href'),
-        priceCurrency: 'TWD',
-        price: parseFloat($(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span').eq(1).text()),
-        // about: info.bookprofile,
-        // publisher: info.publisher,
-        // publishDate: info.publishdate,
-        // authors: info.author,
-      };
-    });
+    const books = _getBooks(cheerio.load(response.body));
 
-    // 讓 then 之後還能吃到 books
-    this.books = books;
+    // 沒這書就直接傳吧
+    if (books.length === 0) {
+      return books;
+    } else {
+      // 再取得所有書的 info
+      return _getBooksInfo(books);
+    }
+  }).then(books => {
+    return books;
+  });
+}
 
-    // 等每本書都叫到資料再繼續
-    return Promise.all(books.map(book => {
-      return _getBookInfo(book.id);
-    }));
-  }).then(infos => {
-    const books = this.books;
-
+// 取得書籍們的資料
+function _getBooksInfo(books = []) {
+  // 等每本書都叫到資料再繼續
+  return Promise.all(books.map(book => {
+    return _getBookInfo(book.id);
+  })).then(infos => {
     for (let i in books) {
       books[i].title = infos[i].booktitle;
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
@@ -59,6 +54,39 @@ function searchBooks(keywords = '') {
 
     return books;
   });
+}
+
+// parse 找書
+function _getBooks($) {
+  $list = $('.searchresult_row');
+
+  let books = [];
+
+  if ($list.length === 0) {
+    // console.log('Not found in taaze!');
+
+    return books;
+  }
+
+  $list.each((i, elem) => {
+    // 先取得 id，部分資料需另叫 API 處理
+    const id = $(elem).children('.two').children('ul').prop('rel');
+
+    books[i] = {
+      id,
+      thumbnail: $(elem).children('.one').css('background').replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, ''),
+      // title: info.booktitle,
+      link: $(elem).children('.two').children('ul').children('li[class=linkC]').children('a').prop('href'),
+      priceCurrency: 'TWD',
+      price: parseFloat($(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span').eq(1).text()),
+      // about: info.bookprofile,
+      // publisher: info.publisher,
+      // publishDate: info.publishdate,
+      // authors: info.author,
+    };
+  });
+
+  return books;
 }
 
 // 單本書部分資料
