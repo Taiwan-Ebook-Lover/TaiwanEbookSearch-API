@@ -53,6 +53,7 @@ function _getBooksInfo(books = []) {
       // 有翻譯者才放
       if (infos[i].translator) {
         books[i].translator = infos[i].translator;
+        books[i].translators = [infos[i].translator];
       }
     }
 
