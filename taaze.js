@@ -44,7 +44,11 @@ function _getBooksInfo(books = []) {
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
       books[i].publisher = infos[i].publisher;
       books[i].publishDate = infos[i].publishDate;
-      books[i].authors = infos[i].authors;
+
+      // 作者群有資料才放
+      if (infos[i].authors) {
+        books[i].authors;
+      }
 
       // 有翻譯者才放
       if (infos[i].translator) {

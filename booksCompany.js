@@ -53,8 +53,12 @@ function _getBooks($) {
       price: parseFloat($(elem).children('.price').children('strong').last().children('b').text()),
       about: $(elem).children('p').text().replace(/......\ more\n\t\t\t\t\t\t\t\t/g, ' ...'),
       publisher: $(elem).children('a[rel=mid_publish]').prop('title'),
-      authors
     };
+
+    // 作者群有資料才放
+    if (authors.length > 0) {
+      books[i].authors;
+    }
 
   });
 

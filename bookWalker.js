@@ -90,10 +90,20 @@ function _getBooks($, base = null) {
         price: $(elem).children('.bookdata').children('.bw_item').children('.writerinfo').children('h4').children('span').text().replace(/\D/g, ''),
         about: $(elem).children('.bookdata').children('.topic_content').children('.bookinfo').children('h4').text().concat($(elem).children('.bookdata').children('.topic_content').children('.bookinfo').children('h5').children('span').text()),
         // publisher:,
-        authors,
-        translators,
-        painters,
       };
+
+      // 作者群有資料才放
+      if (authors.length > 0) {
+        books[i].authors;
+      }
+
+      if (translators.length > 0) {
+        books[i].translators;
+      }
+
+      if (painters.length > 0) {
+        books[i].painters;
+      }
 
     });
 
