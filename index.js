@@ -31,6 +31,13 @@ app.use(cors({
 
 app.get('/search', (req, res, next) => {
   const keywords = req.query.q;
+  const bombMessage = req.query.bomb;
+
+  if (bombMessage) {
+    return res.status(503).send({
+      message: bombMessage
+    })
+  }
 
   // 關鍵字是必須的
   if (!keywords) {
