@@ -77,13 +77,17 @@ function _getBooks($) {
     // 先取得 id，部分資料需另叫 API 處理
     const id = $(elem).children('.two').children('ul').prop('rel');
 
+    // 價格可能有折扣資訊
+    const $priceBlock = $(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span');
+    const price = parseFloat($($priceBlock).eq($priceBlock.length - 1).text());
+
     books[i] = {
       id,
       thumbnail: $(elem).children('.one').css('background').replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, ''),
       // title: info.booktitle,
       link: $(elem).children('.two').children('ul').children('li[class=linkC]').children('a').prop('href'),
       priceCurrency: 'TWD',
-      price: parseFloat($(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span').eq(1).text()),
+      price,
       // about: info.bookprofile,
       // publisher: info.publisher,
       // publishDate: info.publishdate,
