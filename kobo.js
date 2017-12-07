@@ -60,7 +60,7 @@ function _getBooks($, base = null) {
       title,
       link: info.url,
       priceCurrency: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('.currency').text(),
-      price: parseFloat($(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('span').first().text().replace('NT$', '')),
+      price: parseFloat($(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('span').first().text().replace(/NT\$|,/g, '')),
       about: `${info.description} ...`,
       // publisher
     };
