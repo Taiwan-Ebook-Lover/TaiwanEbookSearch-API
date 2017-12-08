@@ -5,7 +5,7 @@ const url = require('url');
 function searchBooks(keywords = '') {
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `https://play.google.com/store/search?q=${keywords}&c=books&authuser=0`;
+  const base = `https://play.google.com/store/search?q=${keywords}&c=books&authuser=0&gl=tw&hl=zh-tw`;
 
   const options = {
     method: 'POST',
