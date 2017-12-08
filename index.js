@@ -12,6 +12,7 @@ const booksCompany = require('./booksCompany');
 const kobo = require('./kobo');
 const taaze = require('./taaze');
 const bookWalker = require('./bookWalker');
+const playStore = require('./playStore');
 
 // compress all responses
 app.use(compression());
@@ -53,6 +54,7 @@ app.get('/search', (req, res, next) => {
     kobo.searchBooks(keywords),
     taaze.searchBooks(keywords),
     bookWalker.searchBooks(keywords),
+    playStore.searchBooks(keywords),
   ]).then(data => {
 
     const result = {
@@ -61,6 +63,7 @@ app.get('/search', (req, res, next) => {
       kobo: data[2],
       taaze: data[3],
       bookWalker: data[4],
+      playStore: data[5],
     };
 
     return res.send(result);
