@@ -83,3 +83,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Paw API file
+*.paw
