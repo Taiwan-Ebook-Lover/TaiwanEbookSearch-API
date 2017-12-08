@@ -87,7 +87,7 @@ function _getBooks($, base = null) {
         title: title,
         link: url.resolve(base, $(elem).children('.bookdata').children('h2').children('a').prop('href')),
         priceCurrency: 'TWD',
-        price: $(elem).children('.bookdata').children('.bw_item').children('.writerinfo').children('h4').children('span').text().replace(/\D/g, ''),
+        price: parseFloat($(elem).children('.bookdata').children('.bw_item').children('.writerinfo').children('h4').children('span').text().replace(/\D/g, '')),
         about: $(elem).children('.bookdata').children('.topic_content').children('.bookinfo').children('h4').text().concat($(elem).children('.bookdata').children('.topic_content').children('.bookinfo').children('h5').children('span').text()),
         // publisher:,
       };

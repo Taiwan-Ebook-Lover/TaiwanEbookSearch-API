@@ -79,7 +79,7 @@ function _getBooks($) {
 
     // 價格可能有折扣資訊
     const $priceBlock = $(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span');
-    const price = parseFloat($($priceBlock).eq($priceBlock.length - 1).text());
+    const price = parseFloat($($priceBlock).eq($priceBlock.length - 1).text().replace(/\$|,/g, ''));
 
     books[i] = {
       id,
