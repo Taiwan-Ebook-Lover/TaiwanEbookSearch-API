@@ -15,7 +15,7 @@ function searchBooks(keywords = '') {
 
   return rp(options).then(response =>{
     if (!(/^2/.test('' + response.statusCode))) {
-      console.log('Not found or error in bookwalker!');
+      // console.log('Not found or error in bookwalker!');
 
       return [];
     }

@@ -16,7 +16,7 @@ function searchBooks(keywords = '') {
 
   return rp(options).then(response =>{
     if (!(/^2/.test('' + response.statusCode))) {
-      console.log('Not found or error in Play Sotre!');
+      // console.log('Not found or error in Play Sotre!');
 
       return [];
     }
@@ -33,7 +33,7 @@ function _getBooks($, base) {
 
   // 找不到就是沒這書
   if ($list.length === 0) {
-    console.log('Not found in Play Sotre!');
+    // console.log('Not found in Play Sotre!');
 
     return books;
   }
