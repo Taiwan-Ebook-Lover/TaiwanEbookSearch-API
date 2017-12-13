@@ -9,9 +9,10 @@ function searchBooks(keywords = '') {
     uri: `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`,
     resolveWithFullResponse: true,
     simple: false,
+    timeout: 10000,
   };
 
-  return rp(options).then(response =>{
+  return rp(options).then(response => {
     if (!(/^2/.test('' + response.statusCode))) {
       // console.log('Not found or error in books company!');
 
@@ -19,6 +20,10 @@ function searchBooks(keywords = '') {
     }
 
     return _getBooks(cheerio.load(response.body));
+  }).catch(error => {
+    console.log(error.message);
+
+    return [];
   });
 }
 

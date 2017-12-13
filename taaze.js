@@ -10,6 +10,7 @@ function searchBooks(keywords = '') {
     uri: `https://www.taaze.tw/search_go.html?keyword%5B%5D=${keywords}&keyType%5B%5D=0&prodKind=4&prodCatId=141`,
     resolveWithFullResponse: true,
     simple: false,
+    timeout: 10000,
   };
 
   return rp(options).then(response =>{
@@ -30,6 +31,10 @@ function searchBooks(keywords = '') {
     }
   }).then(books => {
     return books;
+  }).catch(error => {
+    console.log(error.message);
+
+    return [];
   });
 }
 

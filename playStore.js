@@ -12,6 +12,7 @@ function searchBooks(keywords = '') {
     uri: base,
     resolveWithFullResponse: true,
     simple: false,
+    timeout: 10000,
   };
 
   return rp(options).then(response =>{
@@ -22,6 +23,10 @@ function searchBooks(keywords = '') {
     }
 
     return _getBooks(cheerio.load(response.body), base);
+  }).catch(error => {
+    console.log(error.message);
+
+    return [];
   });
 }
 
