@@ -12,6 +12,7 @@ function searchBooks(keywords = '') {
     uri: base,
     resolveWithFullResponse: true,
     simple: false,
+    gzip: true,
     timeout: 10000,
   };
 

@@ -10,6 +10,7 @@ function searchBooks(keywords = '') {
     uri: `https://www.taaze.tw/search_go.html?keyword%5B%5D=${keywords}&keyType%5B%5D=0&prodKind=4&prodCatId=141`,
     resolveWithFullResponse: true,
     simple: false,
+    gzip: true,
     timeout: 10000,
   };
 

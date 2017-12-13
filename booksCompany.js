@@ -9,6 +9,7 @@ function searchBooks(keywords = '') {
     uri: `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`,
     resolveWithFullResponse: true,
     simple: false,
+    gzip: true,
     timeout: 10000,
   };
 
