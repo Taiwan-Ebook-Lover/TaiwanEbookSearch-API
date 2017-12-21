@@ -48,7 +48,7 @@ app.get('/search', (req, res, next) => {
     });
   }
 
-  // 一次查四家！
+  // 等全部查詢完成
   Promise.all([
     booksCompany.searchBooks(keywords),
     readmoo.searchBooks(keywords),
@@ -57,16 +57,24 @@ app.get('/search', (req, res, next) => {
     bookWalker.searchBooks(keywords),
     playStore.searchBooks(keywords),
     pubu.searchBooks(keywords),
-  ]).then(data => {
+  ]).then(([
+    booksCompany,
+    readmoo,
+    kobo,
+    tazze,
+    bookWalker,
+    playStore,
+    pubu,
+  ]) => {
 
     const result = {
-      booksCompany: data[0],
-      readmoo: data[1],
-      kobo: data[2],
-      taaze: data[3],
-      bookWalker: data[4],
-      playStore: data[5],
-      pubu: data[6],
+      booksCompany,
+      readmoo,
+      kobo,
+      tazze,
+      bookWalker,
+      playStore,
+      pubu,
     };
 
     return res.send(result);
