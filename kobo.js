@@ -74,8 +74,8 @@ function _getBooks($, base = null) {
       title,
       link: info.url,
       priceCurrency: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('.currency').text(),
-      about: `${info.description} ...`,
       price,
+      about: info.description ? `${info.description} ...` : null,
       // publisher
     };
 
