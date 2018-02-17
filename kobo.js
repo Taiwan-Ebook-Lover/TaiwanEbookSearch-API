@@ -59,6 +59,14 @@ function _getBooks($, base = null) {
       authors = authors.concat(item.name.split('、'));
     }
 
+    // 價格要先檢查是否為免費
+    const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
+
+    let price = 0;
+    if (!$priceField.hasClass('free')) {
+      price = $priceField.children('span').children('span').first().text().replace(/NT\$|,/g, '');
+    }
+
     books[i] = {
       id: info.isbn,
       // 圖片網址為相對位置，需要 resolve
@@ -66,8 +74,8 @@ function _getBooks($, base = null) {
       title,
       link: info.url,
       priceCurrency: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('.currency').text(),
-      price: parseFloat($(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('span').first().text().replace(/NT\$|,/g, '')),
       about: `${info.description} ...`,
+      price,
       // publisher
     };
 
