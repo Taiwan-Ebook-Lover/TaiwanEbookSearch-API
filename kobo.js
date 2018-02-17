@@ -64,7 +64,7 @@ function _getBooks($, base = null) {
 
     let price = 0;
     if (!$priceField.hasClass('free')) {
-      price = $priceField.children('span').children('span').first().text().replace(/NT\$|,/g, '');
+      price = parseFloat($priceField.children('span').children('span').first().text().replace(/NT\$|,|\s/g, ''));
     }
 
     books[i] = {
