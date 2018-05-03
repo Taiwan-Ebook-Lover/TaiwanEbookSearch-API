@@ -3,8 +3,10 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
+const uaParser = require('ua-parser-js');
 const rp = require('request-promise-native');
 const cheerio = require('cheerio');
+const TelegramBot = require('node-telegram-bot-api');
 const http = require('http').Server(app);
 
 const readmoo = require('./readmoo');
@@ -14,6 +16,8 @@ const taaze = require('./taaze');
 const bookWalker = require('./bookWalker');
 const playStore = require('./playStore');
 const pubu = require('./pubu');
+
+const bot = new TelegramBot(process.env.TOKEN, {polling: false});
 
 // compress all responses
 app.use(compression());
@@ -32,8 +36,13 @@ app.use(cors({
 }));
 
 app.get('/search', (req, res, next) => {
+  const startTime = new Date().getTime();
+
   const keywords = req.query.q;
   const bombMessage = req.query.bomb;
+
+  // parse user agent
+  const ua = uaParser(req.headers['user-agent']);
 
   if (bombMessage) {
     return res.status(503).send({
@@ -77,9 +86,25 @@ app.get('/search', (req, res, next) => {
       pubu,
     };
 
+    // calc process time
+    const endTime = new Date().getTime();
+    const processTime = (endTime - startTime) / 1000;
+
+    // send the report
+    const report = {
+      ...ua, 
+      keywords,
+      processTime,
+    }
+
+    bot.sendMessage(process.env.GROUPID, `${JSON.stringify(report, null, '  ')}`);
+
     return res.send(result);
   }).catch(error => {
-    console.log(error);
+    console.time('Error time: ');
+    console.error(error);
+
+    bot.sendMessage(process.env.GROUPID, JSON.stringify(error));
 
     return res.status(503).send({
       message: 'Something is wrong...'
