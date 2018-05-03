@@ -36,7 +36,9 @@ app.use(cors({
 }));
 
 app.get('/search', (req, res, next) => {
-  const startTime = new Date().getTime();
+  const nowDate = new Date();
+  const startTime = nowDate.getTime();
+  const searchDateTime = `${nowDate.getFullYear()}/${nowDate.getMonth()}/${nowDate.getDate()} ${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`;
 
   const keywords = req.query.q;
   const bombMessage = req.query.bomb;
@@ -93,6 +95,7 @@ app.get('/search', (req, res, next) => {
     // send the report
     const report = {
       ...ua, 
+      searchDateTime,
       keywords,
       processTime,
     }
