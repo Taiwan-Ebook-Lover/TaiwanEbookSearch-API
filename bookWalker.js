@@ -5,7 +5,7 @@ const url = require('url');
 function searchBooks(keywords = '') {
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `http://www.bookwalker.com.tw/search?w=${keywords}&m=0&detail=1`;
+  const base = `https://www.bookwalker.com.tw/search?w=${keywords}&m=0&detail=1`;
 
   const options = {
     uri: base,
