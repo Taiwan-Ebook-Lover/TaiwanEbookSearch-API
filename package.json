@@ -13,16 +13,16 @@
 	"author": "Yuer Lee <passerbyid@gmail.com>",
 	"license": "MIT",
 	"dependencies": {
-		"body-parser": "^1.18.2",
+		"body-parser": "^1.18.3",
 		"cheerio": "^1.0.0-rc.2",
-		"compression": "^1.7.1",
+		"compression": "^1.7.3",
 		"cors": "^2.8.4",
-		"dotenv": "^5.0.0",
+		"dotenv": "^6.0.0",
 		"express": "^4.16.2",
 		"node-telegram-bot-api": "^0.30.0",
-		"request": "^2.83.0",
+		"request": "^2.87.0",
 		"request-promise-native": "^1.0.5",
-		"ua-parser-js": "^0.7.17"
+		"ua-parser-js": "^0.7.18"
 	},
 	"bugs": {
 		"url": "https://github.com/passerbyid/ebook-api/issues"
