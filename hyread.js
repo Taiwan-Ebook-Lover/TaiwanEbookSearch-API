@@ -61,7 +61,7 @@ function _getBooks($, base) {
       }
 
       const book = {
-        id: $(elem).children('h3').children('a').prop('href').replace(/bookDetail.jsp?id=/, ''),
+        id: $(elem).children('h3').children('a').prop('href').replace(/bookDetail.jsp\?id=/, ''),
         thumbnail: $linkBlock.children('img').prop('src'),
         title: $(elem).children('h3').children('a').text(),
         link: url.resolve(base, $linkBlock.prop('href')),
