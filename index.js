@@ -16,6 +16,7 @@ const taaze = require('./taaze');
 const bookWalker = require('./bookWalker');
 const playStore = require('./playStore');
 const pubu = require('./pubu');
+const hyread = require('./hyread');
 
 const bot = new TelegramBot(process.env.TOKEN, {polling: false});
 
@@ -68,6 +69,7 @@ app.get('/search', (req, res, next) => {
     bookWalker.searchBooks(keywords),
     playStore.searchBooks(keywords),
     pubu.searchBooks(keywords),
+    hyread.searchBooks(keywords),
   ]).then(([
     booksCompany,
     readmoo,
@@ -76,6 +78,7 @@ app.get('/search', (req, res, next) => {
     bookWalker,
     playStore,
     pubu,
+    hyread,
   ]) => {
 
     const result = {
@@ -86,6 +89,7 @@ app.get('/search', (req, res, next) => {
       bookWalker,
       playStore,
       pubu,
+      hyread,
     };
 
     // calc process time
