@@ -1,4 +1,5 @@
 require('dotenv').config();
+const MongoClient = require('mongodb').MongoClient;
 const app = require('express')();
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -18,7 +19,16 @@ const playStore = require('./playStore');
 const pubu = require('./pubu');
 const hyread = require('./hyread');
 
+// Telegram bot is coming
 const bot = new TelegramBot(process.env.TOKEN, {polling: false});
+
+// Connect DB
+let db;
+MongoClient.connect(process.env.DBURL, { useNewUrlParser: true }).then(client => {
+  db = client.db();
+}).catch(error => {
+  console.log(error.stack);
+});
 
 // compress all responses
 app.use(compression());
@@ -96,15 +106,25 @@ app.get('/search', (req, res, next) => {
     const endTime = new Date().getTime();
     const processTime = (endTime - startTime) / 1000;
 
-    // send the report
-    const report = {
-      ...ua, 
+    // 準備搜尋歷史紀錄內容
+    const record = {
       searchDateTime,
       keywords,
+      sources: Object.keys(result),
       processTime,
+      ...ua,
     }
 
-    bot.sendMessage(process.env.GROUPID, `${JSON.stringify(report, null, '  ')}`);
+    // 寫入歷史紀錄
+    if (db) {
+      // insert search record
+      db.collection('records').insertOne(record).catch(error => {
+        console.log(error.stack);
+      });
+    }
+
+    // 發送報告
+    bot.sendMessage(process.env.GROUPID, `${JSON.stringify(history, null, '  ')}`);
 
     return res.send(result);
   }).catch(error => {
