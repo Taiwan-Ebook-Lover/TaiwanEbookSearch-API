@@ -8,6 +8,8 @@ const uaParser = require('ua-parser-js');
 const rp = require('request-promise-native');
 const cheerio = require('cheerio');
 const TelegramBot = require('node-telegram-bot-api');
+const { format } = require('date-fns');
+const marky = require('marky');
 const http = require('http').Server(app);
 
 const readmoo = require('./readmoo');
@@ -47,10 +49,10 @@ app.use(cors({
 }));
 
 app.get('/search', (req, res, next) => {
-  const nowDate = new Date();
-  const startTime = nowDate.getTime();
-  const searchDateTime = `${nowDate.getFullYear()}/${nowDate.getMonth()}/${nowDate.getDate()} ${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`;
+  // start calc process time
+  marky.mark('search books');
 
+  const searchDateTime = new Date().toISOString();
   const keywords = req.query.q;
   const bombMessage = req.query.bomb;
 
@@ -90,6 +92,8 @@ app.get('/search', (req, res, next) => {
     pubu,
     hyread,
   ]) => {
+    // calc process time
+    const processTime = marky.stop('search books').duration;
 
     const result = {
       booksCompany,
@@ -102,13 +106,9 @@ app.get('/search', (req, res, next) => {
       hyread,
     };
 
-    // calc process time
-    const endTime = new Date().getTime();
-    const processTime = (endTime - startTime) / 1000;
 
     // 準備搜尋歷史紀錄內容
-    const record = {
-      searchDateTime,
+    const recordBase = {
       keywords,
       sources: Object.keys(result),
       processTime,
@@ -116,6 +116,11 @@ app.get('/search', (req, res, next) => {
     }
 
     // 寫入歷史紀錄
+    const record = {
+      searchDateTime,
+      ...recordBase,
+    }
+
     if (db) {
       // insert search record
       db.collection('records').insertOne(record).catch(error => {
@@ -124,7 +129,12 @@ app.get('/search', (req, res, next) => {
     }
 
     // 發送報告
-    bot.sendMessage(process.env.GROUPID, `${JSON.stringify(history, null, '  ')}`);
+    const report = {
+      searchDateTime: format(searchDateTime, `YYYY/MM/DD HH:mm:ss`),
+      ...record,
+    };
+
+    bot.sendMessage(process.env.GROUPID, `${JSON.stringify(report, null, '  ')}`);
 
     return res.send(result);
   }).catch(error => {
