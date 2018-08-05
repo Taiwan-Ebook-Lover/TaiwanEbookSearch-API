@@ -1,7 +1,13 @@
 const rp = require('request-promise-native');
 const cheerio = require('cheerio');
+const marky = require('marky');
+
+const title = 'readmoo';
 
 function searchBooks(keywords = '') {
+  // start calc process time
+  marky.mark('search');
+
   // URL encode
   keywords = encodeURIComponent(keywords);
 
@@ -27,10 +33,30 @@ function searchBooks(keywords = '') {
     }
 
     return _getBooks(cheerio.load(response.body));
+  }).then(books => {
+    // calc process time
+    const processTime = marky.stop('search').duration;
+
+    return {
+      title,
+      isOkay: true,
+      processTime,
+      books,
+    };
+
   }).catch(error => {
+    // calc process time
+    const processTime = marky.stop('search').duration;
+
     console.log(error.message);
 
-    return [];
+    return {
+      title,
+      isOkay: false,
+      processTime,
+      books: [],
+      error,
+    };
   });
 }
 

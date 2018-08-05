@@ -82,35 +82,33 @@ app.get('/search', (req, res, next) => {
     playStore.searchBooks(keywords),
     pubu.searchBooks(keywords),
     hyread.searchBooks(keywords),
-  ]).then(([
-    booksCompany,
-    readmoo,
-    kobo,
-    taaze,
-    bookWalker,
-    playStore,
-    pubu,
-    hyread,
-  ]) => {
+  ]).then((searchResults) => {
+    // 整理結果並紀錄
+    let response = {};
+    let results = [];
+
+    for (let searchResult of searchResults) {
+      // 只回傳書的內容
+      response[searchResult.title] = searchResult.books;
+
+      // 資料庫只記錄數量
+      const quantity = searchResult.books.length;
+
+      delete searchResult.books;
+
+      results.push({
+        ...searchResult,
+        quantity,
+      })
+    }
+
     // calc process time
     const processTime = marky.stop('search books').duration;
-
-    const result = {
-      booksCompany,
-      readmoo,
-      kobo,
-      taaze,
-      bookWalker,
-      playStore,
-      pubu,
-      hyread,
-    };
-
 
     // 準備搜尋歷史紀錄內容
     const recordBase = {
       keywords,
-      sources: Object.keys(result),
+      results,
       processTime,
       ...ua,
     }
@@ -136,7 +134,7 @@ app.get('/search', (req, res, next) => {
 
     bot.sendMessage(process.env.GROUPID, `${JSON.stringify(report, null, '  ')}`);
 
-    return res.send(result);
+    return res.send(response);
   }).catch(error => {
     console.time('Error time: ');
     console.error(error);

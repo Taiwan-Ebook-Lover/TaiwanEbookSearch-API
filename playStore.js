@@ -1,8 +1,14 @@
 const rp = require('request-promise-native');
 const cheerio = require('cheerio');
 const { URL, URLSearchParams } = require('url');
+const marky = require('marky');
+
+const title = 'playStore';
 
 function searchBooks(keywords = '') {
+  // start calc process time
+  marky.mark('search');
+
   // URL encode
   keywords = encodeURIComponent(keywords);
   const base = `https://play.google.com/store/search?q=${keywords}&c=books&authuser=0&gl=tw&hl=zh-tw`;
@@ -24,10 +30,30 @@ function searchBooks(keywords = '') {
     }
 
     return _getBooks(cheerio.load(response.body), base);
+  }).then(books => {
+    // calc process time
+    const processTime = marky.stop('search').duration;
+
+    return {
+      title,
+      isOkay: true,
+      processTime,
+      books,
+    };
+
   }).catch(error => {
+    // calc process time
+    const processTime = marky.stop('search').duration;
+
     console.log(error.message);
 
-    return [];
+    return {
+      title,
+      isOkay: false,
+      processTime,
+      books: [],
+      error,
+    };
   });
 }
 
