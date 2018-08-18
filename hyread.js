@@ -86,13 +86,20 @@ function _getBooks($, base) {
         $linkBlock = $(elem).children('a');
       }
 
+      // 無售價資訊的排除掉
+      const price = parseFloat($(elem).children('span').children('b').text().replace(/\D*/g, ''));
+
+      if (Number.isNaN(price)) {
+        return;
+      }
+
       const book = {
         id: $(elem).children('h3').children('a').prop('href').replace(/bookDetail.jsp\?id=/, ''),
         thumbnail: $linkBlock.children('img').prop('src'),
         title: $(elem).children('h3').children('a').text(),
         link: url.resolve(base, $linkBlock.prop('href')),
         priceCurrency: 'TWD',
-        price: parseFloat($(elem).children('span').children('b').text().replace(/定價：|元,/g, '')),
+        price,
         // about: ,
       };
 
