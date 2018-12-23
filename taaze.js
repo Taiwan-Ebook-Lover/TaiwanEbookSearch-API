@@ -93,7 +93,7 @@ function _getBooksInfo(books = []) {
 
 // parse 找書
 function _getBooks($) {
-  $list = $('.searchresult_row');
+  $list = $('#listView>div');
 
   let books = [];
 
@@ -105,17 +105,16 @@ function _getBooks($) {
 
   $list.each((i, elem) => {
     // 先取得 id，部分資料需另叫 API 處理
-    const id = $(elem).children('.two').children('ul').prop('rel');
+    const id = $(elem).prop('rel');
 
-    // 價格可能有折扣資訊
-    const $priceBlock = $(elem).children('.two').children('ul').children('li').eq(4).children('span').eq(1).children('span');
-    const price = parseFloat($($priceBlock).eq($priceBlock.length - 1).text().replace(/\$|,/g, ''));
+    // 價格為折扣後
+    const price = parseFloat($(elem).children('.info_frame').children('.cartPrice').children('.discPrice').text().replace(/定價：\d*元，優惠價：|\d*折|元/g, ''));
 
     books[i] = {
       id,
-      thumbnail: $(elem).children('.one').css('background').replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, ''),
+      thumbnail: `http://media.taaze.tw/showLargeImage.html?sc=${id}`,
       // title: info.booktitle,
-      link: $(elem).children('.two').children('ul').children('li[class=linkC]').children('a').prop('href'),
+      link: `https://www.taaze.tw/goods/${id}.html`,
       priceCurrency: 'TWD',
       price,
       // about: info.bookprofile,
@@ -131,7 +130,7 @@ function _getBooks($) {
 // 單本書部分資料
 function _getBookInfo(id = '') {
   const options = {
-    uri: 'https://www.taaze.tw/beta/searchbookAgent.jsp',
+    uri: 'https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp',
     qs: {
       prodId: id
     },
