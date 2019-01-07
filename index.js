@@ -12,17 +12,22 @@ const { format } = require('date-fns');
 const marky = require('marky');
 const http = require('http').Server(app);
 
-const readmoo = require('./readmoo');
-const booksCompany = require('./booksCompany');
-const kobo = require('./kobo');
-const taaze = require('./taaze');
-const bookWalker = require('./bookWalker');
-const playStore = require('./playStore');
-const pubu = require('./pubu');
-const hyread = require('./hyread');
+const bookStoreModel = {
+  readmoo: require('./readmoo'),
+  booksCompany: require('./booksCompany'),
+  kobo: require('./kobo'),
+  taaze: require('./taaze'),
+  bookWalker: require('./bookWalker'),
+  playStore: require('./playStore'),
+  pubu: require('./pubu'),
+  hyread: require('./hyread'),
+};
 
 // Telegram bot is coming
 const bot = new TelegramBot(process.env.TOKEN, {polling: false});
+
+// all support bookStore
+const bookStoreList = ['booksCompany', 'readmoo', 'kobo', 'taaze', 'bookWalker', 'playStore', 'pubu', 'hyread'];
 
 // Connect DB
 let db;
@@ -54,6 +59,7 @@ app.get('/search', (req, res, next) => {
 
   const searchDateTime = new Date().toISOString();
   const keywords = req.query.q;
+  const bookStoresRequest = req.query.bookStores || [];
   const bombMessage = req.query.bomb;
 
   // parse user agent
@@ -72,17 +78,20 @@ app.get('/search', (req, res, next) => {
     });
   }
 
+  // 過濾掉不適用的書店
+  let bookStores = bookStoresRequest.filter(bookStore => {
+    return bookStoreList.includes(bookStore);
+  });
+
+  // 預設找所有書店
+  if (bookStores.length === 0) {
+    bookStores = bookStoreList;
+  }
+
   // 等全部查詢完成
-  Promise.all([
-    booksCompany.searchBooks(keywords),
-    readmoo.searchBooks(keywords),
-    kobo.searchBooks(keywords),
-    taaze.searchBooks(keywords),
-    bookWalker.searchBooks(keywords),
-    playStore.searchBooks(keywords),
-    pubu.searchBooks(keywords),
-    hyread.searchBooks(keywords),
-  ]).then((searchResults) => {
+  Promise.all(
+    bookStores.map(bookStore => bookStoreModel[bookStore].searchBooks(keywords))
+  ).then((searchResults) => {
     // 整理結果並紀錄
     let response = {};
     let results = [];
