@@ -46,9 +46,9 @@ app.get('*', function (req, res) {
 /**
  * Build db, Server
  */
-db.connect(process.env.DBURL, (err) => {
-  if (err) {
-    console.log(err);
+db.connect(process.env.DBURL, (error) => {
+  if (error) {
+    console.log(error);
     process.exit(1);
   } else {
     http.listen(process.env.PORT, () => {

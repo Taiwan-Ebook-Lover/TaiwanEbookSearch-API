@@ -95,8 +95,7 @@ searchRouter.get('/', (req, res, next) => {
 
     if (db) {
       // insert search record
-      let collection = db.get().db().collection('records');
-      collection.insertOne(record).catch(error => {
+      db.insertOne('records', record).catch(error => {
         console.log(error.stack);
       });
     }
