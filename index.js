@@ -4,12 +4,12 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
 const http = require('http').Server(app);
-const TelegramBot = require('node-telegram-bot-api');
 const searchRoute = require('./searchRouter.js');
 const db = require('./db');
+const bot = require('./bot');
 
 // Telegram bot is coming
-bot = new TelegramBot(process.env.TOKEN, {polling: false});
+bot.init(process.env.TOKEN, process.env.GROUPID);
 
 // compress all responses
 app.use(compression());

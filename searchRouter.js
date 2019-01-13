@@ -4,6 +4,7 @@ const marky = require('marky');
 const uaParser = require('ua-parser-js');
 const { format } = require('date-fns');
 const db = require('./db');
+const bot = require('./bot');
 
 const bookStoreModel = {
   readmoo: require('./readmoo'),
@@ -106,14 +107,14 @@ searchRouter.get('/', (req, res, next) => {
       ...record,
     };
 
-    bot.sendMessage(process.env.GROUPID, `${JSON.stringify(report, null, '  ')}`);
+    bot.sendMessage(`${JSON.stringify(report, null, '  ')}`);
 
     return res.send(response);
   }).catch(error => {
     console.time('Error time: ');
     console.error(error);
 
-    bot.sendMessage(process.env.GROUPID, JSON.stringify(error));
+    bot.sendMessage(JSON.stringify(error));
 
     return res.status(503).send({
       message: 'Something is wrong...'
