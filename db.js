@@ -4,33 +4,58 @@ const state = {
   db: null,
 };
 
-exports.connect = function(url, done) {
-  if (state.db) {
-    return done();
-  }
-
-  MongoClient.connect(url, { useNewUrlParser: true }, function(error, db) {
-    if (error)
-      return done(error)
+const connect = (url) => {
+  return new Promise((resolve, reject) => {
+    // check db connected status
+    if (state.db) {
+      reject('DB is already connected.');
+    } else {
+      resolve(MongoClient.connect(url, { useNewUrlParser: true }));
+    }
+  }).then(db => {
+    // update db client
     state.db = db;
-    done();
-  })
-}
+  }).catch((error) => {
+    if (error) {
+      console.error(error);
+    }
+  });
+};
 
-exports.get = function() {
-  return state.db
-}
+const get = () => {
+  return state.db;
+};
 
-exports.insertOne = function(collectionName, data) {
-  return state.db.db().collection(collectionName).insertOne(data)
-}
+const insertOne = (collectionName, data) => {
+  return state.db.db().collection(collectionName).insertOne(data).catch(error => {
+    console.error(error.stack);
+  });
+};
 
-exports.close = function(done) {
-  if (state.db) {
-    state.db.close(function(error, result) {
-      state.db = null
-      state.mode = null
-      done(error)
-    })
-  }
+const close = (cb) => {
+  return new Promise((resolve, reject) => {
+    // check db connected status
+    if (!state.db) {
+      reject('DB is not connected.');
+    } else {
+      resolve(state.db.close());
+    }
+  }).then(result => {
+    console.log(result);
+  }).catch((error) => {
+    if (error) {
+      console.error(error);
+    }
+  });
+};
+
+const insertRecord = (record = {}) => {
+  return insertOne('records', record);
+};
+
+module.exports = {
+  connect,
+  get,
+  close,
+  insertRecord,
 }

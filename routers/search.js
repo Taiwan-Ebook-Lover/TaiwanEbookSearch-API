@@ -3,18 +3,18 @@ const searchRouter = express.Router();
 const marky = require('marky');
 const uaParser = require('ua-parser-js');
 const { format } = require('date-fns');
-const db = require('./db');
-const bot = require('./bot');
+const db = require('../db');
+const bot = require('../bot');
 
 const bookStoreModel = {
-  readmoo: require('./readmoo'),
-  booksCompany: require('./booksCompany'),
-  kobo: require('./kobo'),
-  taaze: require('./taaze'),
-  bookWalker: require('./bookWalker'),
-  playStore: require('./playStore'),
-  pubu: require('./pubu'),
-  hyread: require('./hyread'),
+  readmoo: require('../stores/readmoo'),
+  booksCompany: require('../stores/booksCompany'),
+  kobo: require('../stores/kobo'),
+  taaze: require('../stores/taaze'),
+  bookWalker: require('../stores/bookWalker'),
+  playStore: require('../stores/playStore'),
+  pubu: require('../stores/pubu'),
+  hyread: require('../stores/hyread'),
 };
 
 const bookStoreList = ['booksCompany', 'readmoo', 'kobo', 'taaze', 'bookWalker', 'playStore', 'pubu', 'hyread'];
@@ -96,9 +96,7 @@ searchRouter.get('/', (req, res, next) => {
 
     if (db) {
       // insert search record
-      db.insertOne('records', record).catch(error => {
-        console.log(error.stack);
-      });
+      db.insertRecord(record);
     }
 
     // 發送報告
