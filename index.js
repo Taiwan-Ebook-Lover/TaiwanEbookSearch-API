@@ -7,6 +7,7 @@ const http = require('http').Server(app);
 const db = require('./db');
 const bot = require('./bot');
 const searchRoute = require('./routers/search.js');
+const feedbackRoute = require('./routers/feedback.js');
 
 const init = () => {
   // Telegram bot is coming
@@ -44,6 +45,7 @@ app.use(cors({
  */
 
 app.use('/search', searchRoute);
+app.use('/feedback', feedbackRoute);
 
 /**
  * Error Handler

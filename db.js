@@ -53,9 +53,14 @@ const insertRecord = (record = {}) => {
   return insertOne('records', record);
 };
 
+const insertFeedback = (feedback = {}) => {
+  return insertOne('feedback', feedback);
+};
+
 module.exports = {
   connect,
   get,
   close,
   insertRecord,
+  insertFeedback,
 }
