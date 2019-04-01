@@ -15,6 +15,9 @@ function searchBooks(keywords = '') {
 
   const options = {
     uri: base,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.0.2',
+    },
     resolveWithFullResponse: true,
     simple: false,
     gzip: true,
