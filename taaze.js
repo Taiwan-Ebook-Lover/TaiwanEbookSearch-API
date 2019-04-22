@@ -13,7 +13,7 @@ function searchBooks(keywords = '') {
   keywords = encodeURIComponent(keywords);
 
   const options = {
-    uri: `https://www.taaze.tw/search_go.html?keyword%5B%5D=${keywords}&keyType%5B%5D=0&prodKind=4&prodCatId=141`,
+    uri: `https://www.taaze.tw/rwd_searchResult.html?keyType%5B%5D=1&prodKind=4&keyword%5B%5D=${keywords}`,
     resolveWithFullResponse: true,
     simple: false,
     gzip: true,
