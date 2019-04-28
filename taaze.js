@@ -74,6 +74,7 @@ function _getBooksInfo(books = []) {
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
       books[i].publisher = infos[i].publisher;
       books[i].publishDate = infos[i].publishDate;
+      books[i].price = parseFloat(infos[i].saleprice);
 
       // 作者群有資料才放
       if (infos[i].authors) {
@@ -107,16 +108,13 @@ function _getBooks($) {
     // 先取得 id，部分資料需另叫 API 處理
     const id = $(elem).prop('rel');
 
-    // 價格為折扣後
-    const price = parseFloat($(elem).children('.info_frame').children('.cartPrice').children('.discPrice').text().replace(/定價：\d*元，優惠價：|\d*折|元/g, ''));
-
     books[i] = {
       id,
       thumbnail: `http://media.taaze.tw/showLargeImage.html?sc=${id}`,
       // title: info.booktitle,
       link: `https://www.taaze.tw/goods/${id}.html`,
       priceCurrency: 'TWD',
-      price,
+      // price: saleprice ,
       // about: info.bookprofile,
       // publisher: info.publisher,
       // publishDate: info.publishdate,
