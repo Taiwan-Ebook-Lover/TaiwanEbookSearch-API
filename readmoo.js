@@ -80,7 +80,7 @@ function _getBooks($) {
       title: $(elem).children('.caption').children('h4').children('a').text(),
       link: $(elem).children('.caption').children('h4').children('a').prop('href'),
       priceCurrency: $(elem).children('.caption').children('.price-info').children('meta[itemprop=priceCurrency]').prop('content'),
-      price: parseFloat($(elem).children('.caption').children('.price-info').children('.our-price').children('strong').text().replace(/NT\$|,/g, '')),
+      price: parseFloat($(elem).children('.caption').children('.price-info').children('.our-price').children('strong').text().replace(/NT\$|,/g, '')) || -1,
       about: $(elem).children('.caption').children('.description').text(),
     };
   });

@@ -87,7 +87,7 @@ function _getBooks($, base) {
       }
 
       // 無售價資訊的排除掉
-      const price = parseFloat($(elem).children('span').children('b').text().replace(/\D*/g, ''));
+      const price = parseFloat($(elem).children('span').children('b').text().replace(/\D*/g, '')) || -1;
 
       if (Number.isNaN(price)) {
         return;

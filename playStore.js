@@ -87,7 +87,7 @@ function _getBooks($, base) {
       title: $(elem).children('.details').children('a.title').prop('title'),
       link: linkUrl.href,
       priceCurrency: 'TWD',
-      price: parseFloat($(elem).children('.details').children('.subtitle-container').children('.price-container').children('.is-price-tag').children('button.price').children('.display-price').text().replace(/\$|,/g, '').replace(/免費/, '0')),
+      price: parseFloat($(elem).children('.details').children('.subtitle-container').children('.price-container').children('.is-price-tag').children('button.price').children('.display-price').text().replace(/\$|,/g, '').replace(/免費/, '0')) || -1,
       about: $(elem).children('.details').children('.description').text(),
     };
 

@@ -79,7 +79,7 @@ function _getBooks($, base) {
       title: $(elem).children('.searchResultContent').children('h2').children('a').prop('title'),
       link: new URL($(elem).children('.searchResultContent').children('h2').children('a').prop('href'), base),
       priceCurrency: 'TWD',
-      price: parseFloat($priceList.eq(0).children('span').text()),
+      price: parseFloat($priceList.eq(0).children('span').text()) || -1,
       authors: $(elem).children('.searchResultContent').children('p').eq(1).children('a').text().trim().split(/, |,|、|，|／/g).map(author => {
         // 特別分工的作者，改變格式
         const authorSplit = author.split('：');

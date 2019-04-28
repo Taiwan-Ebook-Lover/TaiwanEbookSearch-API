@@ -74,7 +74,7 @@ function _getBooksInfo(books = []) {
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
       books[i].publisher = infos[i].publisher;
       books[i].publishDate = infos[i].publishDate;
-      books[i].price = parseFloat(infos[i].saleprice);
+      books[i].price = parseFloat(infos[i].saleprice) || -1;
 
       // 作者群有資料才放
       if (infos[i].authors) {
