@@ -71,7 +71,7 @@ function _getBooks($, base = null) {
 
   $list.each((i, elem) => {
     // 從 script elem 拉 JSON data
-    const info = JSON.parse($(elem).children('.item-detail').children('script').html());
+    const info = JSON.parse($(elem).children('.item-detail').children('script').html()).data;
 
     // 若有副標題，併入主標題
     let title = info.name;
