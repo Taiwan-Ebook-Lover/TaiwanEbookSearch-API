@@ -25,39 +25,41 @@ function searchBooks(keywords = '') {
     timeout: 10000,
   };
 
-  return rp(options).then(response =>{
-    if (!(/^2/.test('' + response.statusCode))) {
-      // console.log('Not found or error in readmoo!');
+  return rp(options)
+    .then(response => {
+      if (!/^2/.test('' + response.statusCode)) {
+        // console.log('Not found or error in readmoo!');
 
-      return [];
-    }
+        return [];
+      }
 
-    return _getBooks(cheerio.load(response.body));
-  }).then(books => {
-    // calc process time
-    const processTime = marky.stop('search').duration;
+      return _getBooks(cheerio.load(response.body));
+    })
+    .then(books => {
+      // calc process time
+      const processTime = marky.stop('search').duration;
 
-    return {
-      title,
-      isOkay: true,
-      processTime,
-      books,
-    };
+      return {
+        title,
+        isOkay: true,
+        processTime,
+        books,
+      };
+    })
+    .catch(error => {
+      // calc process time
+      const processTime = marky.stop('search').duration;
 
-  }).catch(error => {
-    // calc process time
-    const processTime = marky.stop('search').duration;
+      console.log(error.message);
 
-    console.log(error.message);
-
-    return {
-      title,
-      isOkay: false,
-      processTime,
-      books: [],
-      error,
-    };
-  });
+      return {
+        title,
+        isOkay: false,
+        processTime,
+        books: [],
+        error,
+      };
+    });
 }
 
 // parse 找書
@@ -75,13 +77,46 @@ function _getBooks($) {
 
   $list.each((i, elem) => {
     books[i] = {
-      id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem).children('.thumbnail').children('a').children('img').data('lazy-original') || '',
-      title: $(elem).children('.caption').children('h4').children('a').text(),
-      link: $(elem).children('.caption').children('h4').children('a').prop('href'),
-      priceCurrency: $(elem).children('.caption').children('.price-info').children('meta[itemprop=priceCurrency]').prop('content'),
-      price: parseFloat($(elem).children('.caption').children('.price-info').children('.our-price').children('strong').text().replace(/NT\$|,/g, '')) || -1,
-      about: $(elem).children('.caption').children('.description').text(),
+      id: $(elem)
+        .children('.caption')
+        .children('.price-info')
+        .children('meta[itemprop=identifier]')
+        .prop('content'),
+      thumbnail:
+        $(elem)
+          .children('.thumbnail')
+          .children('a')
+          .children('img')
+          .data('lazy-original') || '',
+      title: $(elem)
+        .children('.caption')
+        .children('h4')
+        .children('a')
+        .text(),
+      link: $(elem)
+        .children('.caption')
+        .children('h4')
+        .children('a')
+        .prop('href'),
+      priceCurrency: $(elem)
+        .children('.caption')
+        .children('.price-info')
+        .children('meta[itemprop=priceCurrency]')
+        .prop('content'),
+      price:
+        parseFloat(
+          $(elem)
+            .children('.caption')
+            .children('.price-info')
+            .children('.our-price')
+            .children('strong')
+            .text()
+            .replace(/NT\$|,/g, '')
+        ) || -1,
+      about: $(elem)
+        .children('.caption')
+        .children('.description')
+        .text(),
     };
   });
 

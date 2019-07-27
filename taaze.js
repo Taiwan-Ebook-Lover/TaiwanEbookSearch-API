@@ -20,55 +20,59 @@ function searchBooks(keywords = '') {
     timeout: 10000,
   };
 
-  return rp(options).then(response =>{
-    if (!(/^2/.test('' + response.statusCode))) {
-      // console.log('Not found or error in taaze!');
+  return rp(options)
+    .then(response => {
+      if (!/^2/.test('' + response.statusCode)) {
+        // console.log('Not found or error in taaze!');
 
-      return [];
-    }
+        return [];
+      }
 
-    const books = _getBooks(cheerio.load(response.body));
+      const books = _getBooks(cheerio.load(response.body));
 
-    // 沒這書就直接傳吧
-    if (books.length === 0) {
-      return books;
-    } else {
-      // 再取得所有書的 info
-      return _getBooksInfo(books);
-    }
-  }).then(books => {
-    // calc process time
-    const processTime = marky.stop('search').duration;
+      // 沒這書就直接傳吧
+      if (books.length === 0) {
+        return books;
+      } else {
+        // 再取得所有書的 info
+        return _getBooksInfo(books);
+      }
+    })
+    .then(books => {
+      // calc process time
+      const processTime = marky.stop('search').duration;
 
-    return {
-      title,
-      isOkay: true,
-      processTime,
-      books,
-    };
+      return {
+        title,
+        isOkay: true,
+        processTime,
+        books,
+      };
+    })
+    .catch(error => {
+      // calc process time
+      const processTime = marky.stop('search').duration;
 
-  }).catch(error => {
-    // calc process time
-    const processTime = marky.stop('search').duration;
+      console.log(error.message);
 
-    console.log(error.message);
-
-    return {
-      title,
-      isOkay: false,
-      processTime,
-      books: [],
-      error,
-    };
-  });
+      return {
+        title,
+        isOkay: false,
+        processTime,
+        books: [],
+        error,
+      };
+    });
 }
 
 // 取得書籍們的資料
 function _getBooksInfo(books = []) {
   // 等每本書都叫到資料再繼續
-  return Promise.all(books.map(book => {
-    return _getBookInfo(book.id);
-  })).then(infos => {
+  return Promise.all(
+    books.map(book => {
+      return _getBookInfo(book.id);
+    })
+  ).then(infos => {
     for (let i in books) {
       books[i].title = infos[i].booktitle;
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
@@ -130,7 +134,7 @@ function _getBookInfo(id = '') {
   const options = {
     uri: 'https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp',
     qs: {
-      prodId: id
+      prodId: id,
     },
     json: true,
   };
