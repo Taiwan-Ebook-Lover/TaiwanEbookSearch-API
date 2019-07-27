@@ -76,7 +76,7 @@ function _getBooks($) {
   $list.each((i, elem) => {
     books[i] = {
       id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem).children('.thumbnail').children('a').children('img').data('original'),
+      thumbnail: $(elem).children('.thumbnail').children('a').children('img').data('lazy-original') || '',
       title: $(elem).children('.caption').children('h4').children('a').text(),
       link: $(elem).children('.caption').children('h4').children('a').prop('href'),
       priceCurrency: $(elem).children('.caption').children('.price-info').children('meta[itemprop=priceCurrency]').prop('content'),
