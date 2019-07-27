@@ -97,17 +97,17 @@ function _getBooks($, base = null) {
 
         // 分割作者群字串
         const authorRegex = /(?:\s)?\S*\s:\s/g; // 取得 ` 作者 : ` 字樣以做分割
-        const authoresOriinalStr = $(elem)
+        const authorsOriginalStr = $(elem)
           .children('.bookdata')
           .children('.bw_item')
           .children('.writerinfo')
           .children('.writer_data')
           .children('li')
           .text();
-        const authorTitle = authoresOriinalStr.match(authorRegex).map(str => {
+        const authorTitle = authorsOriginalStr.match(authorRegex).map(str => {
           return str.replace(/\s|:/g, '');
         });
-        const authorsName = authoresOriinalStr.split(authorRegex).slice(1);
+        const authorsName = authorsOriginalStr.split(authorRegex).slice(1);
 
         // 準備各類作者包
         let authors = [];
