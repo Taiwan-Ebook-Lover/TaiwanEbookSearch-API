@@ -21,39 +21,41 @@ function searchBooks(keywords = '') {
     timeout: 10000,
   };
 
-  return rp(options).then(response =>{
-    if (!(/^2/.test('' + response.statusCode))) {
-      // console.log('Not found or error in kobo!');
+  return rp(options)
+    .then(response => {
+      if (!/^2/.test('' + response.statusCode)) {
+        // console.log('Not found or error in kobo!');
 
-      return [];
-    }
+        return [];
+      }
 
-    return _getBooks(cheerio.load(response.body), base);
-  }).then(books => {
-    // calc process time
-    const processTime = marky.stop('search').duration;
+      return _getBooks(cheerio.load(response.body), base);
+    })
+    .then(books => {
+      // calc process time
+      const processTime = marky.stop('search').duration;
 
-    return {
-      title,
-      isOkay: true,
-      processTime,
-      books,
-    };
+      return {
+        title,
+        isOkay: true,
+        processTime,
+        books,
+      };
+    })
+    .catch(error => {
+      // calc process time
+      const processTime = marky.stop('search').duration;
 
-  }).catch(error => {
-    // calc process time
-    const processTime = marky.stop('search').duration;
+      console.log(error.message);
 
-    console.log(error.message);
-
-    return {
-      title,
-      isOkay: false,
-      processTime,
-      books: [],
-      error,
-    };
-  });
+      return {
+        title,
+        isOkay: false,
+        processTime,
+        books: [],
+        error,
+      };
+    });
 }
 
 // parse 找書
@@ -71,7 +73,12 @@ function _getBooks($, base = null) {
 
   $list.each((i, elem) => {
     // 從 script elem 拉 JSON data
-    const info = JSON.parse($(elem).children('.item-detail').children('script').html());
+    const info = JSON.parse(
+      $(elem)
+        .children('.item-detail')
+        .children('script')
+        .html()
+    ).data;
 
     // 若有副標題，併入主標題
     let title = info.name;
@@ -86,11 +93,22 @@ function _getBooks($, base = null) {
     }
 
     // 價格要先檢查是否為免費
-    const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
+    const $priceField = $(elem)
+      .children('.item-detail')
+      .children('.item-info')
+      .children('.price');
 
     let price = 0;
     if (!$priceField.hasClass('free')) {
-      price = parseFloat($priceField.children('span').children('span').first().text().replace(/NT\$|,|\s/g, ''));
+      price =
+        parseFloat(
+          $priceField
+            .children('span')
+            .children('span')
+            .first()
+            .text()
+            .replace(/NT\$|,|\s/g, '')
+        ) || -1;
     }
 
     books[i] = {
@@ -99,7 +117,13 @@ function _getBooks($, base = null) {
       thumbnail: url.resolve(base, info.thumbnailUrl),
       title,
       link: info.url,
-      priceCurrency: $(elem).children('.item-detail').children('.item-info').children('.price').children('span').children('.currency').text(),
+      priceCurrency: $(elem)
+        .children('.item-detail')
+        .children('.item-info')
+        .children('.price')
+        .children('span')
+        .children('.currency')
+        .text(),
       price,
       about: info.description ? `${info.description} ...` : null,
       // publisher
@@ -109,7 +133,6 @@ function _getBooks($, base = null) {
     if (authors.length > 0) {
       books[i].authors;
     }
-
   });
 
   return books;

@@ -33,11 +33,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // for cors
-app.use(cors({
-  methods: ['GET', 'POST', 'PATCH', 'OPTION', 'DELETE'],
-  credentials: true,
-  origin: true
-}));
+app.use(
+  cors({
+    methods: ['GET', 'POST', 'PATCH', 'OPTION', 'DELETE'],
+    credentials: true,
+    origin: true,
+  })
+);
 
 /**
  * Route
@@ -51,7 +53,7 @@ app.use('/search', searchRoute);
 
 app.get('*', function (req, res) {
   return res.status(405).send({
-    message: 'Method Not Allowed!'
+    message: 'Method Not Allowed!',
   });
 });
 

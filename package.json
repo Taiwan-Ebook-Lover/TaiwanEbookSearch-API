@@ -1,34 +1,37 @@
 {
-	"name": "ebook-api",
-	"version": "0.0.2",
-	"description": "API",
-	"main": "index.js",
-	"scripts": {
-		"start": "node index.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/passerbyid/ebook-api.git"
-	},
-	"author": "Yuer Lee <passerbyid@gmail.com>",
-	"license": "MIT",
-	"dependencies": {
-		"body-parser": "^1.18.3",
-		"cheerio": "^1.0.0-rc.2",
-		"compression": "^1.7.3",
-		"cors": "^2.8.5",
-		"date-fns": "^1.30.1",
-		"dotenv": "^6.2.0",
-		"express": "^4.16.4",
-		"marky": "^1.2.1",
-		"mongodb": "^3.1.10",
-		"node-telegram-bot-api": "^0.30.0",
-		"request": "^2.88.0",
-		"request-promise-native": "^1.0.5",
-		"ua-parser-js": "^0.7.19"
-	},
-	"bugs": {
-		"url": "https://github.com/passerbyid/ebook-api/issues"
-	},
-	"homepage": "https://github.com/passerbyid/ebook-api#readme"
+  "name": "ebook-api",
+  "version": "0.0.2",
+  "description": "API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/passerbyid/ebook-api.git"
+  },
+  "author": "Yuer Lee <passerbyid@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "date-fns": "^1.30.1",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "marky": "^1.2.1",
+    "mongodb": "^3.2.7",
+    "node-telegram-bot-api": "^0.30.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "ua-parser-js": "^0.7.20"
+  },
+  "bugs": {
+    "url": "https://github.com/passerbyid/ebook-api/issues"
+  },
+  "homepage": "https://github.com/passerbyid/ebook-api#readme",
+  "devDependencies": {
+    "prettier": "1.18.2"
+  }
 }
