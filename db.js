@@ -4,7 +4,7 @@ const state = {
   db: null,
 };
 
-const connect = (url) => {
+const connect = url => {
   return new Promise((resolve, reject) => {
     // check db connected status
     if (state.db) {
@@ -12,14 +12,16 @@ const connect = (url) => {
     } else {
       resolve(MongoClient.connect(url, { useNewUrlParser: true }));
     }
-  }).then(db => {
-    // update db client
-    state.db = db;
-  }).catch((error) => {
-    if (error) {
-      console.error(error);
-    }
-  });
+  })
+    .then(db => {
+      // update db client
+      state.db = db;
+    })
+    .catch(error => {
+      if (error) {
+        console.error(error);
+      }
+    });
 };
 
 const get = () => {
@@ -27,12 +29,16 @@ const get = () => {
 };
 
 const insertOne = (collectionName, data) => {
-  return state.db.db().collection(collectionName).insertOne(data).catch(error => {
-    console.error(error.stack);
-  });
+  return state.db
+    .db()
+    .collection(collectionName)
+    .insertOne(data)
+    .catch(error => {
+      console.error(error.stack);
+    });
 };
 
-const close = (cb) => {
+const close = cb => {
   return new Promise((resolve, reject) => {
     // check db connected status
     if (!state.db) {
@@ -40,13 +46,15 @@ const close = (cb) => {
     } else {
       resolve(state.db.close());
     }
-  }).then(result => {
-    console.log(result);
-  }).catch((error) => {
-    if (error) {
-      console.error(error);
-    }
-  });
+  })
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      if (error) {
+        console.error(error);
+      }
+    });
 };
 
 const insertRecord = (record = {}) => {
@@ -58,4 +66,4 @@ module.exports = {
   get,
   close,
   insertRecord,
-}
+};

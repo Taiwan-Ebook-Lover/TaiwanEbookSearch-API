@@ -51,7 +51,7 @@ app.use('/search', searchRoute);
  * Error Handler
  */
 
-app.get('*', function (req, res) {
+app.get('*', function(req, res) {
   return res.status(405).send({
     message: 'Method Not Allowed!',
   });

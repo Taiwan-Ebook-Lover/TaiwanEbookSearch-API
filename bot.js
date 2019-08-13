@@ -10,23 +10,23 @@ const init = (token, groupID) => {
     if (state.bot) {
       return reject('bot is already inited.');
     } else {
-      state.bot = new TelegramBot(token, {polling: false});
+      state.bot = new TelegramBot(token, { polling: false });
       state.groupID = groupID;
 
       resolve();
     }
-  }).catch((error) => {
+  }).catch(error => {
     if (error) {
       console.error(error);
     }
   });
 };
 
-const sendMessage = (message) => {
+const sendMessage = message => {
   return state.bot.sendMessage(state.groupID, message).catch(error => console.error(error));
 };
 
 module.exports = {
   init,
   sendMessage,
-}
+};

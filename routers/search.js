@@ -17,7 +17,16 @@ const bookStoreModel = {
   hyread: require('../stores/hyread'),
 };
 
-const bookStoreList = ['booksCompany', 'readmoo', 'kobo', 'taaze', 'bookWalker', 'playStore', 'pubu', 'hyread'];
+const bookStoreList = [
+  'booksCompany',
+  'readmoo',
+  'kobo',
+  'taaze',
+  'bookWalker',
+  'playStore',
+  'pubu',
+  'hyread',
+];
 
 searchRouter.get('/', (req, res, next) => {
   // start calc process time
@@ -33,14 +42,14 @@ searchRouter.get('/', (req, res, next) => {
 
   if (bombMessage) {
     return res.status(503).send({
-      message: bombMessage
-    })
+      message: bombMessage,
+    });
   }
 
   // 關鍵字是必須的
   if (!keywords) {
     return res.status(400).send({
-      message: 'q is required.'
+      message: 'q is required.',
     });
   }
 
@@ -55,70 +64,69 @@ searchRouter.get('/', (req, res, next) => {
   }
 
   // 等全部查詢完成
-  Promise.all(
-    bookStores.map(bookStore => bookStoreModel[bookStore].searchBooks(keywords))
-  ).then((searchResults) => {
-    // 整理結果並紀錄
-    let response = {};
-    let results = [];
+  Promise.all(bookStores.map(bookStore => bookStoreModel[bookStore].searchBooks(keywords)))
+    .then(searchResults => {
+      // 整理結果並紀錄
+      let response = {};
+      let results = [];
 
-    for (let searchResult of searchResults) {
-      // 只回傳書的內容
-      response[searchResult.title] = searchResult.books;
+      for (let searchResult of searchResults) {
+        // 只回傳書的內容
+        response[searchResult.title] = searchResult.books;
 
-      // 資料庫只記錄數量
-      const quantity = searchResult.books.length;
+        // 資料庫只記錄數量
+        const quantity = searchResult.books.length;
 
-      delete searchResult.books;
+        delete searchResult.books;
 
-      results.push({
-        ...searchResult,
-        quantity,
-      })
-    }
+        results.push({
+          ...searchResult,
+          quantity,
+        });
+      }
 
-    // calc process time
-    const processTime = marky.stop('search books').duration;
+      // calc process time
+      const processTime = marky.stop('search books').duration;
 
-    // 準備搜尋歷史紀錄內容
-    const recordBase = {
-      keywords,
-      results,
-      processTime,
-      ...ua,
-    }
+      // 準備搜尋歷史紀錄內容
+      const recordBase = {
+        keywords,
+        results,
+        processTime,
+        ...ua,
+      };
 
-    // 寫入歷史紀錄
-    const record = {
-      searchDateTime,
-      ...recordBase,
-    }
+      // 寫入歷史紀錄
+      const record = {
+        searchDateTime,
+        ...recordBase,
+      };
 
-    if (db) {
-      // insert search record
-      db.insertRecord(record);
-    }
+      if (db) {
+        // insert search record
+        db.insertRecord(record);
+      }
 
-    // 發送報告
-    const report = {
-      searchDateTime: format(searchDateTime, `YYYY/MM/DD HH:mm:ss`),
-      ...record,
-    };
+      // 發送報告
+      const report = {
+        searchDateTime: format(searchDateTime, `YYYY/MM/DD HH:mm:ss`),
+        ...record,
+      };
 
-    bot.sendMessage(`${JSON.stringify(report, null, '  ')}`);
+      bot.sendMessage(`${JSON.stringify(report, null, '  ')}`);
 
-    return res.send(response);
-  }).catch(error => {
-    console.time('Error time: ');
-    console.error(error);
+      return res.send(response);
+    })
+    .catch(error => {
+      console.time('Error time: ');
+      console.error(error);
 
-    bot.sendMessage(JSON.stringify(error));
+      bot.sendMessage(JSON.stringify(error));
 
-    return res.status(503).send({
-      message: 'Something is wrong...'
+      return res.status(503).send({
+        message: 'Something is wrong...',
+      });
     });
-  });
-
 });
 
 module.exports = searchRouter;
