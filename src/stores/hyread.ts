@@ -71,67 +71,54 @@ export default (keywords = '') => {
 
 // parse 找書
 function _getBooks($: CheerioStatic, base: string) {
-  const $rows = $('table.picview')
-    .children('tbody')
-    .children('tr');
+  const $books = $('.book-wrap');
 
   let books: Book[] = [];
 
   // 找不到就是沒這書
-  if ($rows.length === 0) {
-    console.log('Not found in hyread!');
+  if (!$books.length) {
+    // console.log('Not found in hyread!');
 
     return books;
   }
 
-  // 每列都有數本
-  $rows.each((rowIndex, columns) => {
-    // 每本的內容
-    $(columns)
-      .children('td')
-      .each((i, elem) => {
-        // 有聲書會多一層結構
-        let $linkBlock = $(elem)
-          .children('div.voicebg')
-          .children('a');
+  $books.each((index, elem) => {
+    const book = {
+      id: $(elem)
+        .children('.book-title-01')
+        .children('a')
+        .prop('href')
+        .replace(/bookDetail.jsp\?id=/, ''),
+      thumbnail: $(elem)
+        .children('.book-cover')
+        .children('.book-overlay')
+        .children('.book-link')
+        .children('.coverBox')
+        .children('.bookPic')
+        .prop('src'),
+      title: $(elem)
+        .children('.book-title-01')
+        .children('a')
+        .text(),
+      link: resolveURL(
+        base,
+        $(elem)
+          .children('.book-title-01')
+          .children('a')
+          .prop('href')
+      ),
+      priceCurrency: 'TWD',
+      price:
+        parseFloat(
+          $(elem)
+            .children('.book-money')
+            .children('.book-price')
+            .text()
+        ) || -1,
+      // about: ,
+    };
 
-        if (!$linkBlock.length) {
-          $linkBlock = $(elem).children('a');
-        }
-
-        // 無售價資訊的排除掉
-        const price =
-          parseFloat(
-            $(elem)
-              .children('span')
-              .children('b')
-              .text()
-              .replace(/\D*/g, '')
-          ) || -1;
-
-        if (Number.isNaN(price)) {
-          return;
-        }
-
-        const book = {
-          id: $(elem)
-            .children('h3')
-            .children('a')
-            .prop('href')
-            .replace(/bookDetail.jsp\?id=/, ''),
-          thumbnail: $linkBlock.children('img').prop('src'),
-          title: $(elem)
-            .children('h3')
-            .children('a')
-            .text(),
-          link: resolveURL(base, $linkBlock.prop('href')),
-          priceCurrency: 'TWD',
-          price,
-          // about: ,
-        };
-
-        books.push(book);
-      });
+    books.push(book);
   });
 
   return books;
