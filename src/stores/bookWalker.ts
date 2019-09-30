@@ -1,13 +1,16 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const url = require('url');
-const marky = require('marky');
+import { resolve as resolveURL } from 'url';
 
-const title = 'bookWalker';
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
 
-function searchBooks(keywords = '') {
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
+
+const title = 'bookWalker' as const;
+
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -36,7 +39,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -47,7 +51,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -59,13 +64,13 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // parse 找書
-function _getBooks($, base = null) {
+function _getBooks($: CheerioStatic, base: string) {
   // 分類優先排序設定
   const categoryTitle = ['一般．實用書', '文學．小說', '雜誌', '漫畫', '輕小說', '日文書'];
-  let categories = [[], [], [], [], [], []];
+  let categories: Book[][] = [[], [], [], [], [], []];
 
   const $categories = $('.listbox');
 
@@ -75,7 +80,7 @@ function _getBooks($, base = null) {
       return;
     }
 
-    let books = [];
+    let books: Book[] = [];
 
     $(elem)
       .children('.bookdesc')
@@ -104,7 +109,7 @@ function _getBooks($, base = null) {
           .children('.writer_data')
           .children('li')
           .text();
-        const authorTitle = authorsOriginalStr.match(authorRegex).map(str => {
+        const authorTitle = (authorsOriginalStr.match(authorRegex) || []).map(str => {
           return str.replace(/\s|:/g, '');
         });
         const authorsName = authorsOriginalStr.split(authorRegex).slice(1);
@@ -150,7 +155,7 @@ function _getBooks($, base = null) {
             .children('img')
             .prop('src'),
           title: title,
-          link: url.resolve(
+          link: resolveURL(
             base,
             $(elem)
               .children('.bookdata')
@@ -213,7 +218,7 @@ function _getBooks($, base = null) {
     categories[categoryIndex] = books;
   });
 
-  let books = [];
+  let books: Book[] = [];
 
   // 展開各分類書籍
   for (let category of categories) {
@@ -222,5 +227,3 @@ function _getBooks($, base = null) {
 
   return books;
 }
-
-exports.searchBooks = searchBooks;

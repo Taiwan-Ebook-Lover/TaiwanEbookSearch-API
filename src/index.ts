@@ -1,24 +1,26 @@
-require('dotenv').config();
-const app = require('express')();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const compression = require('compression');
-const http = require('http').Server(app);
-const db = require('./db');
-const bot = require('./bot');
-const searchRoute = require('./routers/search.js');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import compression from 'compression';
+
+import './env';
+import { connect } from './db';
+import { botInit } from './bot';
+import { searchRouter } from './routers/search';
+
+const app: express.Application = express();
 
 const init = () => {
   // Telegram bot is coming
-  bot.init(process.env.TOKEN, process.env.GROUPID);
+  botInit(process.env.TOKEN as string, process.env.GROUPID as string);
   // Database is coming too
-  db.connect(process.env.DBURL);
+  connect(process.env.DBURL as string);
 
   /**
    * Build db, Server
    */
 
-  http.listen(process.env.PORT, () => {
+  app.listen(process.env.PORT, () => {
     console.log(`listening on http://localhost:${process.env.PORT}`);
   });
 };
@@ -45,13 +47,13 @@ app.use(
  * Route
  */
 
-app.use('/search', searchRoute);
+app.use('/search', searchRouter);
 
 /**
  * Error Handler
  */
 
-app.get('*', function(req, res) {
+app.get('*', (req, res) => {
   return res.status(405).send({
     message: 'Method Not Allowed!',
   });

@@ -1,12 +1,14 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const marky = require('marky');
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
 
-const title = 'booksCompany';
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
 
-function searchBooks(keywords = '') {
+const title = 'booksCompany' as const;
+
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -31,7 +33,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -42,7 +45,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -54,13 +58,13 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // parse 找書
-function _getBooks($) {
+function _getBooks($: CheerioStatic) {
   const $list = $('#searchlist ul li');
 
-  let books = [];
+  let books: Book[] = [];
 
   // 找不到就是沒這書
   if ($list.length === 0) {
@@ -71,7 +75,7 @@ function _getBooks($) {
 
   $list.each((i, elem) => {
     // 合併作者成一個陣列
-    let authors = [];
+    let authors: string[] = [];
     $(elem)
       .children('a[rel=go_author]')
       .each((i, elem) => {
@@ -83,7 +87,6 @@ function _getBooks($) {
       });
 
     books[i] = {
-      //
       id: $(elem)
         .children('.input_buy')
         .children('input')
@@ -114,7 +117,7 @@ function _getBooks($) {
       about: $(elem)
         .children('p')
         .text()
-        .replace(/......\ more\n\t\t\t\t\t\t\t\t/g, ' ...'),
+        .replace(/...... more\n\t\t\t\t\t\t\t\t/g, ' ...'),
       publisher: $(elem)
         .children('a[rel=mid_publish]')
         .prop('title'),
@@ -128,5 +131,3 @@ function _getBooks($) {
 
   return books;
 }
-
-exports.searchBooks = searchBooks;

@@ -1,13 +1,16 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const url = require('url');
-const marky = require('marky');
+import { resolve as resolveURL } from 'url';
 
-const title = 'kobo';
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
 
-function searchBooks(keywords = '') {
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
+
+const title = 'kobo' as const;
+
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -33,7 +36,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -44,7 +48,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -56,13 +61,13 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // parse 找書
-function _getBooks($, base = null) {
-  $list = $('ul[class=result-items] li');
+function _getBooks($: CheerioStatic, base: string) {
+  const $list = $('ul[class=result-items] li');
 
-  let books = [];
+  let books: Book[] = [];
 
   // 找不到就是沒這書
   if ($list.length === 0) {
@@ -77,7 +82,7 @@ function _getBooks($, base = null) {
       $(elem)
         .children('.item-detail')
         .children('script')
-        .html()
+        .html() || '{ data: null }'
     ).data;
 
     // 若有副標題，併入主標題
@@ -87,7 +92,7 @@ function _getBooks($, base = null) {
     }
 
     // 合併作者成一個陣列
-    let authors = [];
+    let authors: string[] = [];
     for (let item of info.author) {
       authors = authors.concat(item.name.split('、'));
     }
@@ -114,7 +119,7 @@ function _getBooks($, base = null) {
     books[i] = {
       id: info.isbn,
       // 圖片網址為相對位置，需要 resolve
-      thumbnail: url.resolve(base, info.thumbnailUrl),
+      thumbnail: resolveURL(base, info.thumbnailUrl),
       title,
       link: info.url,
       priceCurrency: $(elem)
@@ -125,7 +130,7 @@ function _getBooks($, base = null) {
         .children('.currency')
         .text(),
       price,
-      about: info.description ? `${info.description} ...` : null,
+      about: info.description ? `${info.description} ...` : undefined,
       // publisher
     };
 
@@ -137,5 +142,3 @@ function _getBooks($, base = null) {
 
   return books;
 }
-
-exports.searchBooks = searchBooks;

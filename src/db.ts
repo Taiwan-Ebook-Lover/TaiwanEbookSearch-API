@@ -1,21 +1,20 @@
-const MongoClient = require('mongodb').MongoClient;
+import { MongoClient } from 'mongodb';
+import { AnyObject } from './interfaces/general';
 
-const state = {
-  db: null,
-};
+export let db: MongoClient;
 
-const connect = url => {
-  return new Promise((resolve, reject) => {
+export const connect = (url: string) => {
+  return new Promise<MongoClient>((resolve, reject) => {
     // check db connected status
-    if (state.db) {
+    if (db) {
       reject('DB is already connected.');
     } else {
-      resolve(MongoClient.connect(url, { useNewUrlParser: true }));
+      resolve(MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true }));
     }
   })
-    .then(db => {
+    .then((mongoClient: MongoClient) => {
       // update db client
-      state.db = db;
+      db = mongoClient;
     })
     .catch(error => {
       if (error) {
@@ -24,12 +23,12 @@ const connect = url => {
     });
 };
 
-const get = () => {
-  return state.db;
+export const get = () => {
+  return db;
 };
 
-const insertOne = (collectionName, data) => {
-  return state.db
+const insertOne = (collectionName: string, data: any) => {
+  return db
     .db()
     .collection(collectionName)
     .insertOne(data)
@@ -38,13 +37,13 @@ const insertOne = (collectionName, data) => {
     });
 };
 
-const close = cb => {
+export const close = () => {
   return new Promise((resolve, reject) => {
     // check db connected status
-    if (!state.db) {
+    if (!db) {
       reject('DB is not connected.');
     } else {
-      resolve(state.db.close());
+      resolve(db.close());
     }
   })
     .then(result => {
@@ -57,13 +56,6 @@ const close = cb => {
     });
 };
 
-const insertRecord = (record = {}) => {
+export const insertRecord = (record: AnyObject<any> = {}) => {
   return insertOne('records', record);
-};
-
-module.exports = {
-  connect,
-  get,
-  close,
-  insertRecord,
 };

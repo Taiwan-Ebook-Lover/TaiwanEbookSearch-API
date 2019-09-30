@@ -1,20 +1,29 @@
-const express = require('express');
-const searchRouter = express.Router();
-const marky = require('marky');
-const uaParser = require('ua-parser-js');
-const { format } = require('date-fns');
-const db = require('../db');
-const bot = require('../bot');
+import { Router } from 'express';
+import { UAParser } from 'ua-parser-js';
+import { format } from 'date-fns';
+
+import { sendMessage } from '../bot';
+import { db, insertRecord } from '../db';
+
+import readmoo from '../stores/readmoo';
+import booksCompany from '../stores/booksCompany';
+import kobo from '../stores/kobo';
+import taaze from '../stores/taaze';
+import bookWalker from '../stores/bookWalker';
+import playStore from '../stores/playStore';
+import pubu from '../stores/pubu';
+import hyread from '../stores/hyread';
+import { AnyObject, getProcessTime } from '../interfaces/general';
 
 const bookStoreModel = {
-  readmoo: require('../stores/readmoo'),
-  booksCompany: require('../stores/booksCompany'),
-  kobo: require('../stores/kobo'),
-  taaze: require('../stores/taaze'),
-  bookWalker: require('../stores/bookWalker'),
-  playStore: require('../stores/playStore'),
-  pubu: require('../stores/pubu'),
-  hyread: require('../stores/hyread'),
+  readmoo,
+  booksCompany,
+  kobo,
+  taaze,
+  bookWalker,
+  playStore,
+  pubu,
+  hyread,
 };
 
 const bookStoreList = [
@@ -28,17 +37,17 @@ const bookStoreList = [
   'hyread',
 ];
 
-searchRouter.get('/', (req, res, next) => {
+export const searchRouter = Router().get('/', (req, res, next) => {
   // start calc process time
-  marky.mark('search books');
+  const hrStart = process.hrtime();
 
   const searchDateTime = new Date().toISOString();
   const keywords = req.query.q;
-  const bookStoresRequest = req.query.bookStores || [];
+  const bookStoresRequest: string[] = req.query.bookStores || [];
   const bombMessage = req.query.bomb;
 
   // parse user agent
-  const ua = uaParser(req.headers['user-agent']);
+  const ua = new UAParser(req.headers['user-agent']);
 
   if (bombMessage) {
     return res.status(503).send({
@@ -54,20 +63,29 @@ searchRouter.get('/', (req, res, next) => {
   }
 
   // 過濾掉不適用的書店
-  let bookStores = bookStoresRequest.filter(bookStore => {
+  let bookStores: string[] = bookStoresRequest.filter(bookStore => {
     return bookStoreList.includes(bookStore);
   });
 
   // 預設找所有書店
-  if (bookStores.length === 0) {
+  if (!bookStores.length) {
     bookStores = bookStoreList;
   }
 
   // 等全部查詢完成
-  Promise.all(bookStores.map(bookStore => bookStoreModel[bookStore].searchBooks(keywords)))
+  Promise.all([
+    booksCompany(keywords),
+    readmoo(keywords),
+    kobo(keywords),
+    taaze(keywords),
+    bookWalker(keywords),
+    playStore(keywords),
+    pubu(keywords),
+    hyread(keywords),
+  ])
     .then(searchResults => {
       // 整理結果並紀錄
-      let response = {};
+      let response: AnyObject<any> = {};
       let results = [];
 
       for (let searchResult of searchResults) {
@@ -86,14 +104,15 @@ searchRouter.get('/', (req, res, next) => {
       }
 
       // calc process time
-      const processTime = marky.stop('search books').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       // 準備搜尋歷史紀錄內容
       const recordBase = {
         keywords,
         results,
         processTime,
-        ...ua,
+        ...ua.getResult(),
       };
 
       // 寫入歷史紀錄
@@ -104,7 +123,7 @@ searchRouter.get('/', (req, res, next) => {
 
       if (db) {
         // insert search record
-        db.insertRecord(record);
+        insertRecord(record);
       }
 
       // 發送報告
@@ -113,7 +132,7 @@ searchRouter.get('/', (req, res, next) => {
         ...record,
       };
 
-      bot.sendMessage(`${JSON.stringify(report, null, '  ')}`);
+      sendMessage(`${JSON.stringify(report, null, '  ')}`);
 
       return res.send(response);
     })
@@ -121,12 +140,10 @@ searchRouter.get('/', (req, res, next) => {
       console.time('Error time: ');
       console.error(error);
 
-      bot.sendMessage(JSON.stringify(error));
+      sendMessage(JSON.stringify(error));
 
       return res.status(503).send({
         message: 'Something is wrong...',
       });
     });
 });
-
-module.exports = searchRouter;

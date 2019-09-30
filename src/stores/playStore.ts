@@ -1,13 +1,14 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const { URL, URLSearchParams } = require('url');
-const marky = require('marky');
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
 
-const title = 'playStore';
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
 
-function searchBooks(keywords = '') {
+const title = 'playStore' as const;
+
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -25,7 +26,7 @@ function searchBooks(keywords = '') {
   return rp(options)
     .then(response => {
       if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in Play Sotre!');
+        // console.log('Not found or error in Play Store!');
 
         return [];
       }
@@ -34,7 +35,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -45,7 +47,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -57,24 +60,24 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // parse 找書
-function _getBooks($, base) {
-  $list = $('.card-content');
+function _getBooks($: CheerioStatic, base: string) {
+  const $list = $('.card-content');
 
-  let books = [];
+  let books: Book[] = [];
 
   // 找不到就是沒這書
   if ($list.length === 0) {
-    // console.log('Not found in Play Sotre!');
+    // console.log('Not found in Play Store!');
 
     return books;
   }
 
   $list.each((i, elem) => {
     // 先抓作者群字串（可能沒有）
-    let authors = $(elem)
+    let authors: string = $(elem)
       .children('.details')
       .children('.subtitle-container')
       .children('a.author')
@@ -92,7 +95,7 @@ function _getBooks($, base) {
     linkUrl.searchParams.set('gl', 'tw');
     linkUrl.searchParams.set('hl', 'zh-tw');
 
-    let book = {
+    let book: Book = {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
       thumbnail: $(elem)
         .children('.cover')
@@ -136,5 +139,3 @@ function _getBooks($, base) {
 
   return books;
 }
-
-exports.searchBooks = searchBooks;

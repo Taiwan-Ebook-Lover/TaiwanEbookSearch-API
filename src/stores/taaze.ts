@@ -1,13 +1,14 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const url = require('url');
-const marky = require('marky');
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
+
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
 
 const title = 'taaze';
 
-function searchBooks(keywords = '') {
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -28,10 +29,10 @@ function searchBooks(keywords = '') {
         return [];
       }
 
-      const books = _getBooks(cheerio.load(response.body));
+      const books: Book[] = _getBooks(cheerio.load(response.body));
 
       // 沒這書就直接傳吧
-      if (books.length === 0) {
+      if (!books.length) {
         return books;
       } else {
         // 再取得所有書的 info
@@ -40,7 +41,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -51,7 +53,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -63,10 +66,10 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // 取得書籍們的資料
-function _getBooksInfo(books = []) {
+function _getBooksInfo(books: Book[] = []) {
   // 等每本書都叫到資料再繼續
   return Promise.all(
     books.map(book => {
@@ -97,10 +100,10 @@ function _getBooksInfo(books = []) {
 }
 
 // parse 找書
-function _getBooks($) {
-  $list = $('#listView').children('.media');
+function _getBooks($: CheerioStatic) {
+  const $list = $('#listView').children('.media');
 
-  let books = [];
+  let books: Book[] = [];
 
   if ($list.length === 0) {
     // console.log('Not found in taaze!');
@@ -115,7 +118,7 @@ function _getBooks($) {
     books[i] = {
       id,
       thumbnail: `http://media.taaze.tw/showLargeImage.html?sc=${id}`,
-      // title: info.booktitle,
+      title: id, //info.booktitle
       link: `https://www.taaze.tw/goods/${id}.html`,
       priceCurrency: 'TWD',
       // price: saleprice ,
@@ -143,5 +146,3 @@ function _getBookInfo(id = '') {
     return info[0];
   });
 }
-
-exports.searchBooks = searchBooks;

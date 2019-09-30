@@ -1,13 +1,16 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const { URL } = require('url');
-const marky = require('marky');
+import { resolve as resolveURL } from 'url';
+
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
+
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
 
 const title = 'pubu';
 
-function searchBooks(keywords = '') {
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -33,7 +36,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -44,7 +48,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -56,16 +61,16 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // parse 找書
-function _getBooks($, base) {
-  $list = $('#search-list-content').children('article');
+function _getBooks($: CheerioStatic, base: string) {
+  const $list = $('#search-list-content').children('article');
 
-  let books = [];
+  let books: Book[] = [];
 
   // 找不到就是沒這書
-  if ($list.length === 0) {
+  if (!$list.length) {
     // console.log('Not found in Pubu!');
 
     return books;
@@ -78,7 +83,7 @@ function _getBooks($, base) {
       .children('ul.price')
       .children('li');
 
-    let book = {
+    let book: Book = {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
       thumbnail: $(elem)
         .children('.cover-div')
@@ -90,7 +95,7 @@ function _getBooks($, base) {
         .children('h2')
         .children('a')
         .prop('title'),
-      link: new URL(
+      link: resolveURL(
         $(elem)
           .children('.searchResultContent')
           .children('h2')
@@ -157,5 +162,3 @@ function _getBooks($, base) {
 
   return books;
 }
-
-exports.searchBooks = searchBooks;

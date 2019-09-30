@@ -1,13 +1,16 @@
-const rp = require('request-promise-native');
-const cheerio = require('cheerio');
-const url = require('url');
-const marky = require('marky');
+import { resolve as resolveURL } from 'url';
 
-const title = 'hyread';
+import rp from 'request-promise-native';
+import cheerio from 'cheerio';
 
-function searchBooks(keywords = '') {
+import { Book } from '../interfaces/stores';
+import { getProcessTime } from '../interfaces/general';
+
+const title = 'hyread' as const;
+
+export default (keywords = '') => {
   // start calc process time
-  marky.mark('search');
+  const hrStart = process.hrtime();
 
   // URL encode
   // keywords = encodeURIComponent(keywords);
@@ -39,7 +42,8 @@ function searchBooks(keywords = '') {
     })
     .then(books => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       return {
         title,
@@ -50,7 +54,8 @@ function searchBooks(keywords = '') {
     })
     .catch(error => {
       // calc process time
-      const processTime = marky.stop('search').duration;
+      const hrEnd = process.hrtime(hrStart);
+      const processTime = getProcessTime(hrEnd);
 
       console.log(error.message);
 
@@ -62,15 +67,15 @@ function searchBooks(keywords = '') {
         error,
       };
     });
-}
+};
 
 // parse 找書
-function _getBooks($, base) {
-  $rows = $('table.picview')
+function _getBooks($: CheerioStatic, base: string) {
+  const $rows = $('table.picview')
     .children('tbody')
     .children('tr');
 
-  let books = [];
+  let books: Book[] = [];
 
   // 找不到就是沒這書
   if ($rows.length === 0) {
@@ -86,11 +91,11 @@ function _getBooks($, base) {
       .children('td')
       .each((i, elem) => {
         // 有聲書會多一層結構
-        $linkBlock = $(elem)
+        let $linkBlock = $(elem)
           .children('div.voicebg')
           .children('a');
 
-        if ($linkBlock.length === 0) {
+        if (!$linkBlock.length) {
           $linkBlock = $(elem).children('a');
         }
 
@@ -119,7 +124,7 @@ function _getBooks($, base) {
             .children('h3')
             .children('a')
             .text(),
-          link: url.resolve(base, $linkBlock.prop('href')),
+          link: resolveURL(base, $linkBlock.prop('href')),
           priceCurrency: 'TWD',
           price,
           // about: ,
@@ -131,5 +136,3 @@ function _getBooks($, base) {
 
   return books;
 }
-
-exports.searchBooks = searchBooks;
