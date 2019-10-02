@@ -12,7 +12,8 @@ export default (keywords = '') => {
 
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `https://play.google.com/store/search?q=${keywords}&c=books&authuser=0&gl=tw&hl=zh-tw`;
+  const rootURL = `https://play.google.com`;
+  const base = `${rootURL}/store/search?q=${keywords}&c=books&authuser=0&gl=tw&hl=zh-tw`;
 
   const options = {
     method: 'POST',
@@ -31,7 +32,7 @@ export default (keywords = '') => {
         return [];
       }
 
-      return _getBooks(cheerio.load(response.body), base);
+      return _getBooks(cheerio.load(response.body), rootURL, base);
     })
     .then(books => {
       // calc process time
@@ -63,75 +64,124 @@ export default (keywords = '') => {
 };
 
 // parse 找書
-function _getBooks($: CheerioStatic, base: string) {
-  const $list = $('.card-content');
+function _getBooks($: CheerioStatic, rootURL: string, base: string) {
+  const $list = $('body > div')
+    .eq(0)
+    .children('div')
+    .eq(3)
+    .children('c-wiz')
+    .children('div')
+    .children('div')
+    .eq(1)
+    .children('div')
+    .children('c-wiz')
+    .children('c-wiz')
+    .children('c-wiz')
+    .children('div')
+    .children('div')
+    .eq(1)
+    .children('div');
 
   let books: Book[] = [];
 
   // 找不到就是沒這書
-  if ($list.length === 0) {
-    // console.log('Not found in Play Store!');
+  if (!$list.length) {
+    console.log('Not found in Play Store!');
 
     return books;
   }
 
   $list.each((i, elem) => {
+    const $bookElem = $(elem)
+      .children('c-wiz')
+      .children('div')
+      .children('div')
+      .children('div')
+      .eq(1)
+      .children('div')
+      .children('div');
+
     // 先抓作者群字串（可能沒有）
-    let authors: string = $(elem)
-      .children('.details')
-      .children('.subtitle-container')
-      .children('a.author')
-      .prop('title');
+    let authors: string = $bookElem
+      .children('div')
+      .eq(0)
+      .children('div')
+      .children('div')
+      .children('div')
+      .eq(1)
+      .children('a')
+      .children('div')
+      .text();
 
     // resolve book's link
     let linkUrl = new URL(
-      $(elem)
+      $bookElem
+        .children('div')
+        .eq(0)
+        .children('div')
+        .children('div')
+        .children('div')
+        .eq(0)
         .children('a')
         .prop('href'),
       base
     );
+
+    const id = linkUrl.searchParams.get('id') as string;
 
     // 設定書籍網址的語言與國家
     linkUrl.searchParams.set('gl', 'tw');
     linkUrl.searchParams.set('hl', 'zh-tw');
 
     let book: Book = {
-      // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem)
-        .children('.cover')
-        .children('.cover-image-container')
-        .children('.cover-outer-align')
-        .children('.cover-inner-align')
-        .children('img')
-        .data('cover-small'),
-      title: $(elem)
-        .children('.details')
-        .children('a.title')
+      id,
+      thumbnail: `${rootURL}/books/content/images/frontcover/${id}?fife=w320-h460`,
+      title: $bookElem
+        .children('div')
+        .eq(0)
+        .children('div')
+        .children('div')
+        .children('div')
+        .eq(0)
+        .children('a')
+        .children('div')
         .prop('title'),
       link: linkUrl.href,
       priceCurrency: 'TWD',
-      price:
-        parseFloat(
-          $(elem)
-            .children('.details')
-            .children('.subtitle-container')
-            .children('.price-container')
-            .children('.is-price-tag')
-            .children('button.price')
-            .children('.display-price')
-            .text()
-            .replace(/\$|,/g, '')
-            .replace(/免費/, '0')
-        ) || -1,
-      about: $(elem)
-        .children('.details')
-        .children('.description')
+      price: parseFloat(
+        $bookElem
+          .children('div')
+          .eq(1)
+          .children('div')
+          .children('div')
+          .children('div')
+          .children('button')
+          .children('div')
+          .children('span')
+          .map((index, priceElem) => {
+            return $(priceElem)
+              .children('span')
+              .text()
+              .replace(/\$|,/g, '')
+              .replace(/免費/, '0');
+          })
+          .get()
+          .sort((a: number, b: number) => a - b)[0]
+      ),
+      about: $bookElem
+        .children('div')
+        .eq(0)
+        .children('div')
+        .children('div')
+        .children('div')
+        .eq(2)
+        .children('a')
         .text(),
     };
 
     // 有作者群，才放
     if (authors) {
-      book.authors = authors.split(/,|、/);
+      book.authors = (authors || '').split(/,|、/);
     }
 
     books[i] = book;
