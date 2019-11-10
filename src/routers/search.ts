@@ -41,7 +41,7 @@ export const searchRouter = Router().get('/', (req, res, next) => {
   // start calc process time
   const hrStart = process.hrtime();
 
-  const searchDateTime = new Date().toISOString();
+  const searchDateTime = new Date();
   const keywords = req.query.q;
   const bookStoresRequest: string[] = req.query.bookStores || [];
   const bombMessage = req.query.bomb;
@@ -128,7 +128,7 @@ export const searchRouter = Router().get('/', (req, res, next) => {
 
       // 發送報告
       const report = {
-        searchDateTime: format(searchDateTime, `YYYY/MM/DD HH:mm:ss`),
+        searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         ...record,
       };
 
