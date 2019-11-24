@@ -156,7 +156,7 @@ function _getBooks($: CheerioStatic, base: string) {
             .children('.bookitem')
             .children('a')
             .children('img')
-            .prop('src'),
+            .data('src'),
           title: title,
           link: resolveURL(
             base,
