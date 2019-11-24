@@ -60,14 +60,12 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic) {
   const $list = $('#main_items li');
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
-  if ($list.length === 0) {
+  if (!$list.length) {
     // console.log('Not found in readmoo!');
 
     return books;

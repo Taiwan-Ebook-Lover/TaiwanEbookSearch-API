@@ -62,21 +62,19 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic, base: string) {
   const $list = $('ul[class=result-items] li');
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
-  if ($list.length === 0) {
+  if (!$list.length) {
     // console.log('Not found in kobo!');
 
     return books;
   }
 
   $list.each((i, elem) => {
-    // 從 script elem 拉 JSON data
+    // Get information from the script element
     const info = JSON.parse(
       $(elem)
         .children('.item-detail')
@@ -84,19 +82,19 @@ function _getBooks($: CheerioStatic, base: string) {
         .html() || '{ data: null }'
     ).data;
 
-    // 若有副標題，併入主標題
+    // Combine title and sub-title
     let title = info.name;
     if (info.alternativeHeadline) {
       title += ` - ${info.alternativeHeadline}`;
     }
 
-    // 合併作者成一個陣列
+    // Prepare authors name
     let authors: string[] = [];
     for (let item of info.author) {
       authors = authors.concat(item.name.split('、'));
     }
 
-    // 價格要先檢查是否為免費
+    // Check if price is `free`
     const $priceField = $(elem)
       .children('.item-detail')
       .children('.item-info')
@@ -116,7 +114,6 @@ function _getBooks($: CheerioStatic, base: string) {
 
     books[i] = {
       id: info.isbn,
-      // 圖片網址為相對位置，需要 resolve
       thumbnail: resolveURL(base, info.thumbnailUrl),
       title,
       link: info.url,
@@ -132,7 +129,6 @@ function _getBooks($: CheerioStatic, base: string) {
       // publisher
     };
 
-    // 作者群有資料才放
     if (authors.length > 0) {
       books[i].authors;
     }

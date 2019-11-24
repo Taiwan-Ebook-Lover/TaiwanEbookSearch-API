@@ -62,13 +62,11 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic, base: string) {
   const $list = $('#search-list-content').children('article');
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
   if (!$list.length) {
     // console.log('Not found in Pubu!');
 
@@ -76,7 +74,7 @@ function _getBooks($: CheerioStatic, base: string) {
   }
 
   $list.each((i, elem) => {
-    // 價格列表包（部分書籍有一般版與下載版兩種價格）
+    // Prepare price (some books has another price for no-DRM version)
     const $priceList = $(elem)
       .children('.searchResultContent')
       .children('ul.price')
@@ -120,7 +118,6 @@ function _getBooks($: CheerioStatic, base: string) {
         .trim()
         .split(/, |,|、|，|／/g)
         .map(author => {
-          // 特別分工的作者，改變格式
           const authorSplit = author.split('：');
 
           if (authorSplit.length > 1) {
@@ -147,7 +144,7 @@ function _getBooks($: CheerioStatic, base: string) {
         .text(),
     };
 
-    // 有多種價格，則為下載版
+    // Add non-DRM price
     if ($priceList.length > 1) {
       book.nonDrmPrice = parseFloat(
         $priceList

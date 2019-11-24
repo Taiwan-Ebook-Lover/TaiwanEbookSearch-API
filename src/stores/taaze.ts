@@ -66,9 +66,8 @@ export default (keywords = '') => {
     });
 };
 
-// 取得書籍們的資料
 function _getBooksInfo(books: Book[] = []) {
-  // 等每本書都叫到資料再繼續
+  // Get detail of each book from API
   return Promise.all(
     books.map(book => {
       return _getBookInfo(book.id);
@@ -81,12 +80,10 @@ function _getBooksInfo(books: Book[] = []) {
       books[i].publishDate = infos[i].publishDate;
       books[i].price = parseFloat(infos[i].saleprice) || -1;
 
-      // 作者群有資料才放
       if (infos[i].authors) {
         books[i].authors;
       }
 
-      // 有翻譯者才放
       if (infos[i].translator) {
         books[i].translator = infos[i].translator;
         books[i].translators = [infos[i].translator];
@@ -97,20 +94,18 @@ function _getBooksInfo(books: Book[] = []) {
   });
 }
 
-// parse 找書
 function _getBooks($: CheerioStatic) {
   const $list = $('#listView').children('.media');
 
   let books: Book[] = [];
 
-  if ($list.length === 0) {
+  if (!$list.length) {
     // console.log('Not found in taaze!');
 
     return books;
   }
 
   $list.each((i, elem) => {
-    // 先取得 id，部分資料需另叫 API 處理
     const id = $(elem).prop('rel');
 
     books[i] = {
@@ -130,7 +125,6 @@ function _getBooks($: CheerioStatic) {
   return books;
 }
 
-// 單本書部分資料
 function _getBookInfo(id = '') {
   const url = `https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp?prodId=${id}`;
 

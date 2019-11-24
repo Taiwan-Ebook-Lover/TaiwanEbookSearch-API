@@ -65,16 +65,12 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic, base: string) {
-  // 分類優先排序設定
-
+  const books: Book[] = [];
   const $categories = $('.listbox');
 
-  const books: Book[] = [];
-
   $categories.each((i, elem) => {
-    // 過濾非書內容之元素
+    // Filter wrong element
     if (!$(elem).children('.listbox_title').length) {
       return;
     }
@@ -82,7 +78,7 @@ function _getBooks($: CheerioStatic, base: string) {
     $(elem)
       .children('.bookdesc')
       .each((i, elem) => {
-        // 若有副標題，併入主標題
+        // Combine title and sub-title
         let title = $(elem)
           .children('.bookdata')
           .children('h2')
@@ -97,8 +93,8 @@ function _getBooks($: CheerioStatic, base: string) {
           title += ` / ${subTitle}`;
         }
 
-        // 分割作者群字串
-        const authorRegex = /(?:\s)?\S*\s:\s/g; // 取得 ` 作者 : ` 字樣以做分割
+        // Prepare author name
+        const authorRegex = /(?:\s)?\S*\s:\s/g; // Use ` 作者 : `  to speared
         const authorsOriginalStr = $(elem)
           .children('.bookdata')
           .children('.bw_item')
@@ -111,12 +107,11 @@ function _getBooks($: CheerioStatic, base: string) {
         });
         const authorsName = authorsOriginalStr.split(authorRegex).slice(1);
 
-        // 準備各類作者包
+        // Speared author / translators / painters / others(combine to author)
         let authors = [];
         let translators = [];
         let painters = [];
 
-        // 依照作者 title 分包
         for (let index in authorTitle) {
           const names = authorsName[index].split('、');
           switch (authorTitle[index]) {
@@ -130,7 +125,6 @@ function _getBooks($: CheerioStatic, base: string) {
               painters = names;
               break;
             default:
-              // 未知類型標記後納入「作者」中
               for (let name of names) {
                 authors.push(`${name} (${authorsName[index]})`);
               }
@@ -192,7 +186,6 @@ function _getBooks($: CheerioStatic, base: string) {
           // publisher:,
         };
 
-        // 作者群有資料才放
         if (authors.length > 0) {
           books[i].authors;
         }

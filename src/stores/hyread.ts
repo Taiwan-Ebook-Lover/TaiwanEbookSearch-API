@@ -63,13 +63,11 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic, base: string) {
   const $books = $('.book-wrap');
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
   if (!$books.length) {
     // console.log('Not found in hyread!');
 

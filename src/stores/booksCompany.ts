@@ -61,21 +61,19 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic) {
   const $list = $('#searchlist ul li');
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
-  if ($list.length === 0) {
+  if (!$list.length) {
     // console.log('Not found in books company!');
 
     return books;
   }
 
   $list.each((i, elem) => {
-    // 合併作者成一個陣列
+    // Combine authors to array
     let authors: string[] = [];
     $(elem)
       .children('a[rel=go_author]')
@@ -125,7 +123,6 @@ function _getBooks($: CheerioStatic) {
         .prop('title'),
     };
 
-    // 作者群有資料才放
     if (authors.length > 0) {
       books[i].authors;
     }

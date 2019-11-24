@@ -61,7 +61,6 @@ export default (keywords = '') => {
     });
 };
 
-// parse 找書
 function _getBooks($: CheerioStatic, rootURL: string, base: string) {
   const $list = $('body > div')
     .eq(0)
@@ -82,7 +81,6 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
   if (!$list.length) {
     console.log('Not found in Play Store!');
 
@@ -99,7 +97,7 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
       .children('div')
       .children('div');
 
-    // 先抓作者群字串（可能沒有）
+    // Prepare authors name
     let authors: string = $bookElem
       .children('div')
       .eq(0)
@@ -148,7 +146,7 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
 
     const id = linkUrl.searchParams.get('id') as string;
 
-    // 設定書籍網址的語言與國家
+    // Set language and region
     linkUrl.searchParams.set('gl', 'tw');
     linkUrl.searchParams.set('hl', 'zh-tw');
 
@@ -170,7 +168,6 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
       price: price >= 0 ? price : -1,
     };
 
-    // 有作者群，才放
     if (authors) {
       book.authors = (authors || '').split(/,|、/);
     }

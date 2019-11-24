@@ -15,35 +15,12 @@ import pubu from '../stores/pubu';
 import hyread from '../stores/hyread';
 import { AnyObject, getProcessTime } from '../interfaces/general';
 
-const bookStoreModel = {
-  readmoo,
-  booksCompany,
-  kobo,
-  taaze,
-  bookWalker,
-  playStore,
-  pubu,
-  hyread,
-};
-
-const bookStoreList = [
-  'booksCompany',
-  'readmoo',
-  'kobo',
-  'taaze',
-  'bookWalker',
-  'playStore',
-  'pubu',
-  'hyread',
-];
-
 export const searchRouter = Router().get('/', (req, res, next) => {
   // start calc process time
   const hrStart = process.hrtime();
 
   const searchDateTime = new Date();
   const keywords = req.query.q;
-  const bookStoresRequest: string[] = req.query.bookStores || [];
   const bombMessage = req.query.bomb;
 
   // parse user agent
@@ -55,24 +32,12 @@ export const searchRouter = Router().get('/', (req, res, next) => {
     });
   }
 
-  // 關鍵字是必須的
   if (!keywords) {
     return res.status(400).send({
       message: 'q is required.',
     });
   }
 
-  // 過濾掉不適用的書店
-  let bookStores: string[] = bookStoresRequest.filter(bookStore => {
-    return bookStoreList.includes(bookStore);
-  });
-
-  // 預設找所有書店
-  if (!bookStores.length) {
-    bookStores = bookStoreList;
-  }
-
-  // 等全部查詢完成
   Promise.all([
     booksCompany(keywords),
     readmoo(keywords),
@@ -84,17 +49,14 @@ export const searchRouter = Router().get('/', (req, res, next) => {
     hyread(keywords),
   ])
     .then(searchResults => {
-      // 整理結果並紀錄
       let response: AnyObject<any> = {};
       let results = [];
 
       for (let searchResult of searchResults) {
-        // 只回傳書的內容
         response[searchResult.title] = searchResult.books;
 
-        // 資料庫只記錄數量
+        // Record numbers of books only
         const quantity = searchResult.books.length;
-
         delete searchResult.books;
 
         results.push({
@@ -107,7 +69,6 @@ export const searchRouter = Router().get('/', (req, res, next) => {
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
 
-      // 準備搜尋歷史紀錄內容
       const recordBase = {
         keywords,
         results,
@@ -115,7 +76,6 @@ export const searchRouter = Router().get('/', (req, res, next) => {
         ...ua.getResult(),
       };
 
-      // 寫入歷史紀錄
       const record = {
         searchDateTime,
         ...recordBase,
@@ -126,7 +86,6 @@ export const searchRouter = Router().get('/', (req, res, next) => {
         insertRecord(record);
       }
 
-      // 發送報告
       const report = {
         searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         ...record,
