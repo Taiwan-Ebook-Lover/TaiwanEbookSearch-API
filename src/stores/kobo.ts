@@ -104,15 +104,14 @@ function _getBooks($: CheerioStatic, base: string) {
 
     let price = 0;
     if (!$priceField.hasClass('free')) {
-      price =
-        parseFloat(
-          $priceField
-            .children('span')
-            .children('span')
-            .first()
-            .text()
-            .replace(/NT\$|,|\s/g, '')
-        ) || -1;
+      price = parseFloat(
+        $priceField
+          .children('span')
+          .children('span')
+          .first()
+          .text()
+          .replace(/NT\$|,|\s/g, '')
+      );
     }
 
     books[i] = {
@@ -128,7 +127,7 @@ function _getBooks($: CheerioStatic, base: string) {
         .children('span')
         .children('.currency')
         .text(),
-      price,
+      price: price >= 0 ? price : -1,
       about: info.description ? `${info.description} ...` : undefined,
       // publisher
     };

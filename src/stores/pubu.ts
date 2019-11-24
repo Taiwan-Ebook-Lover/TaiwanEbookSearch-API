@@ -82,6 +82,13 @@ function _getBooks($: CheerioStatic, base: string) {
       .children('ul.price')
       .children('li');
 
+    const price = parseFloat(
+      $priceList
+        .eq(0)
+        .children('span')
+        .text()
+    );
+
     let book: Book = {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
       thumbnail: $(elem)
@@ -103,13 +110,7 @@ function _getBooks($: CheerioStatic, base: string) {
         base
       ),
       priceCurrency: 'TWD',
-      price:
-        parseFloat(
-          $priceList
-            .eq(0)
-            .children('span')
-            .text()
-        ) || -1,
+      price: price >= 0 ? price : -1,
       authors: $(elem)
         .children('.searchResultContent')
         .children('p')

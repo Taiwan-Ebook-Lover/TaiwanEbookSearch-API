@@ -87,6 +87,16 @@ function _getBooks($: CheerioStatic) {
         );
       });
 
+    const price = parseFloat(
+      $(elem)
+        .children('.price')
+        .children('strong')
+        .last()
+        .children('b')
+        .text()
+        .replace(/NT\$|,/g, '')
+    );
+
     books[i] = {
       id: $(elem)
         .children('.input_buy')
@@ -105,16 +115,7 @@ function _getBooks($: CheerioStatic) {
         .children('input')
         .prop('value')}`,
       priceCurrency: 'TWD',
-      price:
-        parseFloat(
-          $(elem)
-            .children('.price')
-            .children('strong')
-            .last()
-            .children('b')
-            .text()
-            .replace(/NT\$|,/g, '')
-        ) || -1,
+      price: price >= 0 ? price : -1,
       about: $(elem)
         .children('p')
         .text()

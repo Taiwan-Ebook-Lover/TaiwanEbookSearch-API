@@ -74,6 +74,16 @@ function _getBooks($: CheerioStatic) {
   }
 
   $list.each((i, elem) => {
+    const price = parseFloat(
+      $(elem)
+        .children('.caption')
+        .children('.price-info')
+        .children('.our-price')
+        .children('strong')
+        .text()
+        .replace(/NT\$|,/g, '')
+    );
+
     books[i] = {
       id: $(elem)
         .children('.caption')
@@ -101,16 +111,7 @@ function _getBooks($: CheerioStatic) {
         .children('.price-info')
         .children('meta[itemprop=priceCurrency]')
         .prop('content'),
-      price:
-        parseFloat(
-          $(elem)
-            .children('.caption')
-            .children('.price-info')
-            .children('.our-price')
-            .children('strong')
-            .text()
-            .replace(/NT\$|,/g, '')
-        ) || -1,
+      price: price >= 0 ? price : -1,
       about: $(elem)
         .children('.caption')
         .children('.description')

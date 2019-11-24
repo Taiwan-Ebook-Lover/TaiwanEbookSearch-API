@@ -125,6 +125,27 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
       base
     );
 
+    const price = parseFloat(
+      $bookElem
+        .children('div')
+        .eq(1)
+        .children('div')
+        .children('div')
+        .children('div')
+        .children('button')
+        .children('div')
+        .children('span')
+        .map((index, priceElem) => {
+          return $(priceElem)
+            .children('span')
+            .text()
+            .replace(/\$|,/g, '')
+            .replace(/免費/, '0');
+        })
+        .get()
+        .sort((a: number, b: number) => a - b)[0]
+    );
+
     const id = linkUrl.searchParams.get('id') as string;
 
     // 設定書籍網址的語言與國家
@@ -146,35 +167,7 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
         .prop('title'),
       link: linkUrl.href,
       priceCurrency: 'TWD',
-      price: parseFloat(
-        $bookElem
-          .children('div')
-          .eq(1)
-          .children('div')
-          .children('div')
-          .children('div')
-          .children('button')
-          .children('div')
-          .children('span')
-          .map((index, priceElem) => {
-            return $(priceElem)
-              .children('span')
-              .text()
-              .replace(/\$|,/g, '')
-              .replace(/免費/, '0');
-          })
-          .get()
-          .sort((a: number, b: number) => a - b)[0]
-      ),
-      about: $bookElem
-        .children('div')
-        .eq(0)
-        .children('div')
-        .children('div')
-        .children('div')
-        .eq(2)
-        .children('a')
-        .text(),
+      price: price >= 0 ? price : -1,
     };
 
     // 有作者群，才放

@@ -138,6 +138,18 @@ function _getBooks($: CheerioStatic, base: string) {
           }
         }
 
+        // Prepare price
+        const price = parseFloat(
+          $(elem)
+            .children('.bookdata')
+            .children('.bw_item')
+            .children('.writerinfo')
+            .children('h4')
+            .children('span')
+            .text()
+            .replace(/\D/g, '')
+        );
+
         books[i] = {
           id: $(elem)
             .children('.bookdata')
@@ -161,17 +173,7 @@ function _getBooks($: CheerioStatic, base: string) {
               .prop('href')
           ),
           priceCurrency: 'TWD',
-          price:
-            parseFloat(
-              $(elem)
-                .children('.bookdata')
-                .children('.bw_item')
-                .children('.writerinfo')
-                .children('h4')
-                .children('span')
-                .text()
-                .replace(/\D/g, '')
-            ) || -1,
+          price: price >= 0 ? price : -1,
           about: $(elem)
             .children('.bookdata')
             .children('.topic_content')
