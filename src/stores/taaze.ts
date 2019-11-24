@@ -1,4 +1,4 @@
-import rp from 'request-promise-native';
+import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
 import { Book } from '../interfaces/stores';
@@ -12,32 +12,30 @@ export default (keywords = '') => {
 
   // URL encode
   keywords = encodeURIComponent(keywords);
+  const base = `https://www.taaze.tw/rwd_searchResult.html?keyType%5B%5D=1&prodKind=4&catFocus=14&keyword%5B%5D=${keywords}`;
 
   const options = {
-    uri: `https://www.taaze.tw/rwd_searchResult.html?keyType%5B%5D=1&prodKind=4&catFocus=14&keyword%5B%5D=${keywords}`,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
+    method: 'GET',
+    compress: true,
     timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in taaze!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      const books: Book[] = _getBooks(cheerio.load(response.body));
+      return response.text();
+    })
+    .then(body => {
+      const books: Book[] = _getBooks(cheerio.load(body));
 
-      // 沒這書就直接傳吧
       if (!books.length) {
         return books;
-      } else {
-        // 再取得所有書的 info
-        return _getBooksInfo(books);
       }
+
+      return _getBooksInfo(books);
     })
     .then(books => {
       // calc process time
@@ -134,15 +132,17 @@ function _getBooks($: CheerioStatic) {
 
 // 單本書部分資料
 function _getBookInfo(id = '') {
+  const url = `https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp?prodId=${id}`;
+
   const options = {
-    uri: 'https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp',
-    qs: {
-      prodId: id,
-    },
-    json: true,
+    method: 'GET',
+    compress: true,
+    timeout: 10000,
   };
 
-  return rp(options).then(info => {
-    return info[0];
-  });
+  return fetch(url, options)
+    .then(response => response.json())
+    .then(info => {
+      return info[0];
+    });
 }

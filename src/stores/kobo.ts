@@ -1,6 +1,6 @@
 import { resolve as resolveURL } from 'url';
 
-import rp from 'request-promise-native';
+import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
 import { Book } from '../interfaces/stores';
@@ -14,25 +14,24 @@ export default (keywords = '') => {
 
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `https://www.kobo.com/tw/zh/search?Query=${keywords}`;
+  const base = `https://www.kobo.com/tw/zh/search?fcmedia=Book&Query=${keywords}`;
 
   const options = {
-    uri: base,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
+    method: 'GET',
+    compress: true,
     timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in kobo!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), base);
     })
     .then(books => {
       // calc process time

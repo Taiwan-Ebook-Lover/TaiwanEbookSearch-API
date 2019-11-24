@@ -1,4 +1,4 @@
-import rp from 'request-promise-native';
+import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
 import { Book } from '../interfaces/stores';
@@ -12,25 +12,26 @@ export default (keywords = '') => {
 
   // URL encode
   keywords = encodeURIComponent(keywords);
+  const base = `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`;
 
   const options = {
-    uri: `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
+    method: 'GET',
+    compress: true,
     timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in books company!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body));
+      return response.text();
     })
+    .then(body => {
+      return _getBooks(cheerio.load(body));
+    })
+
     .then(books => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);

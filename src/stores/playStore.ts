@@ -1,4 +1,4 @@
-import rp from 'request-promise-native';
+import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
 import { Book } from '../interfaces/stores';
@@ -16,23 +16,21 @@ export default (keywords = '') => {
   const base = `${rootURL}/store/search?q=${keywords}&c=books&authuser=0&gl=tw&hl=zh-tw`;
 
   const options = {
-    method: 'POST',
-    uri: base,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
+    method: 'GET',
+    compress: true,
     timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in Play Store!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), rootURL, base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), rootURL, base);
     })
     .then(books => {
       // calc process time

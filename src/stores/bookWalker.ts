@@ -1,6 +1,6 @@
 import { resolve as resolveURL } from 'url';
 
-import rp from 'request-promise-native';
+import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
 import { Book } from '../interfaces/stores';
@@ -17,25 +17,24 @@ export default (keywords = '') => {
   const base = `https://www.bookwalker.com.tw/search?w=${keywords}&m=0&detail=1`;
 
   const options = {
-    uri: base,
+    method: 'GET',
+    compress: true,
+    timeout: 10000,
     headers: {
       'User-Agent': 'Taiwan-Ebook-Search/0.0.2',
     },
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in bookwalker!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), base);
     })
     .then(books => {
       // calc process time

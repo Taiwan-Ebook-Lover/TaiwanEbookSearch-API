@@ -16,6 +16,7 @@
   "author": "Yuer Lee <passerbyid@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/node-fetch": "^2.5.3",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "compression": "^1.7.4",
@@ -24,9 +25,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongodb": "^3.3.3",
+    "node-fetch": "^2.6.0",
     "node-telegram-bot-api": "^0.40.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.8",
     "ua-parser-js": "^0.7.20"
   },
   "bugs": {
@@ -45,7 +45,6 @@
     "@types/morgan": "^1.7.37",
     "@types/node": "^12.12.7",
     "@types/node-telegram-bot-api": "^0.40.0",
-    "@types/request-promise-native": "^1.0.17",
     "@types/ua-parser-js": "^0.7.33",
     "nodemon": "^1.19.4",
     "prettier": "^1.19.1",
