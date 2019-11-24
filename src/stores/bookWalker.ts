@@ -68,18 +68,16 @@ export default (keywords = '') => {
 // parse 找書
 function _getBooks($: CheerioStatic, base: string) {
   // 分類優先排序設定
-  const categoryTitle = ['一般．實用書', '文學．小說', '雜誌', '漫畫', '輕小說', '日文書'];
-  let categories: Book[][] = [[], [], [], [], [], []];
 
   const $categories = $('.listbox');
 
+  const books: Book[] = [];
+
   $categories.each((i, elem) => {
     // 過濾非書內容之元素
-    if ($(elem).children('.listbox_title').length === 0) {
+    if (!$(elem).children('.listbox_title').length) {
       return;
     }
-
-    let books: Book[] = [];
 
     $(elem)
       .children('.bookdesc')
@@ -205,24 +203,7 @@ function _getBooks($: CheerioStatic, base: string) {
           books[i].painters;
         }
       });
-
-    // 按分類優先排序擺放
-    const categoryIndex = categoryTitle.indexOf(
-      $(elem)
-        .children('.listbox_title')
-        .children('.bw_title')
-        .text()
-        .trim()
-    );
-    categories[categoryIndex] = books;
   });
-
-  let books: Book[] = [];
-
-  // 展開各分類書籍
-  for (let category of categories) {
-    books.push(...category);
-  }
 
   return books;
 }
