@@ -100,12 +100,12 @@ function _getBooks($: CheerioStatic, base: string) {
         .children('a')
         .prop('title'),
       link: resolveURL(
+        base,
         $(elem)
           .children('.searchResultContent')
           .children('h2')
           .children('a')
-          .prop('href'),
-        base
+          .prop('href')
       ),
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
