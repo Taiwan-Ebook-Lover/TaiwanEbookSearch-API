@@ -20,7 +20,7 @@ export const searchRouter = Router().get('/', (req, res, next) => {
   const hrStart = process.hrtime();
 
   const searchDateTime = new Date();
-  const keywords = req.query.q;
+  const keywords = req.query.q as string;
   const bombMessage = req.query.bomb;
 
   // parse user agent
