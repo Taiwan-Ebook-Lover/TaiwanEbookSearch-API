@@ -87,8 +87,8 @@ export const searchRouter = Router().get('/', (req, res, next) => {
       }
 
       const report = {
-        searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         ...record,
+        searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
       };
 
       sendMessage(`${JSON.stringify(report, null, '  ')}`);
