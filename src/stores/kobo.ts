@@ -26,9 +26,9 @@ export default (keywords = '') => {
       books: [],
       error: {
         message: 'Bookstore is not open.',
-        type: 'bookstore-invalid'
+        type: 'bookstore-invalid',
       },
-    }
+    };
   }
 
   // URL encode
