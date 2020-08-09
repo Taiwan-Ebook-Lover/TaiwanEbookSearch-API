@@ -13,7 +13,8 @@ export default (keywords = '') => {
   const hrStart = process.hrtime();
 
   // if bookstore is close
-  if (process.env.PUBU && process.env.PUBU !== 'open') {
+  const status = process.env.PUBU || 'open';
+  if (status !== 'open') {
     const hrEnd = process.hrtime(hrStart);
     const processTime = getProcessTime(hrEnd);
 

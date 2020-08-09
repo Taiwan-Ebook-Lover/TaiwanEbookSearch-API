@@ -11,7 +11,8 @@ export default (keywords = '') => {
   const hrStart = process.hrtime();
 
   // if bookstore is close
-  if (process.env.TAAZE && process.env.TAAZE !== 'open') {
+  const status = process.env.TAAZE || 'open';
+  if (status !== 'open') {
     const hrEnd = process.hrtime(hrStart);
     const processTime = getProcessTime(hrEnd);
 

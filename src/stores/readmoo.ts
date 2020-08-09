@@ -11,7 +11,8 @@ export default (keywords = '') => {
   const hrStart = process.hrtime();
 
   // if bookstore is close
-  if (process.env.READMOO && process.env.READMOO !== 'open') {
+  const status = process.env.READMOO || 'open';
+  if (status !== 'open') {
     const hrEnd = process.hrtime(hrStart);
     const processTime = getProcessTime(hrEnd);
 
