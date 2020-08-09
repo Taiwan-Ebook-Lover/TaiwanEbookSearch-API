@@ -38,6 +38,9 @@ export default (keywords = '') => {
     compress: true,
     timeout: 10000,
     agent: process.env.PROXY ? new HttpsProxyAgent(process.env.PROXY) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
+    },
   };
 
   return fetch(base, options)

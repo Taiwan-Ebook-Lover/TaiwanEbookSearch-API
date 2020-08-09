@@ -41,7 +41,7 @@ export default (keywords = '') => {
     timeout: 10000,
     agent: process.env.PROXY ? new HttpsProxyAgent(process.env.PROXY) : undefined,
     headers: {
-      'User-Agent': 'Taiwan-Ebook-Search/0.0.2',
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
     },
   };
 
