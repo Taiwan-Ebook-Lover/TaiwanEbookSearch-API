@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import cheerio from 'cheerio';
 
 import { Book } from '../interfaces/stores';
@@ -36,6 +37,7 @@ export default (keywords = '') => {
     method: 'GET',
     compress: true,
     timeout: 10000,
+    agent: process.env.PROXY ? new HttpsProxyAgent(process.env.PROXY) : undefined,
   };
 
   return fetch(base, options)
