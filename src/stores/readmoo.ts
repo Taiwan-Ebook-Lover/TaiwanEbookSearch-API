@@ -11,9 +11,11 @@ export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
-  // if bookstore is close
   const status = process.env.READMOO || 'open';
-  if (status !== 'open') {
+  const proxy = process.env.PROXY;
+  const agent = status === 'proxy' && proxy ? new HttpsProxyAgent(proxy) : undefined;
+
+  if (status === 'close') {
     const hrEnd = process.hrtime(hrStart);
     const processTime = getProcessTime(hrEnd);
 
@@ -37,7 +39,7 @@ export default (keywords = '') => {
     method: 'GET',
     compress: true,
     timeout: 10000,
-    agent: process.env.PROXY ? new HttpsProxyAgent(process.env.PROXY) : undefined,
+    agent,
     headers: {
       'User-Agent': 'Taiwan-Ebook-Search/0.1',
     },
