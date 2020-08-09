@@ -1,6 +1,6 @@
 {
   "name": "ebook-api",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "API",
   "main": "src/index.ts",
   "scripts": {
