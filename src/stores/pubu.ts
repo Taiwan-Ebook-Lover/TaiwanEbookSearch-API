@@ -12,6 +12,23 @@ export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
+  // if bookstore is close
+  if (process.env.PUBU && process.env.PUBU !== 'open') {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+
+    return {
+      title,
+      isOkay: false,
+      processTime,
+      books: [],
+      error: {
+        message: 'Bookstore is not open.',
+        type: 'bookstore-invalid'
+      },
+    }
+  }
+
   // URL encode
   keywords = encodeURIComponent(keywords);
   const base = `https://www.pubu.com.tw/search?q=${keywords}`;

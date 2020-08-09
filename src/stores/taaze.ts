@@ -10,6 +10,23 @@ export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
+  // if bookstore is close
+  if (process.env.TAAZE && process.env.TAAZE !== 'open') {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+
+    return {
+      title,
+      isOkay: false,
+      processTime,
+      books: [],
+      error: {
+        message: 'Bookstore is not open.',
+        type: 'bookstore-invalid'
+      },
+    }
+  }
+
   // URL encode
   keywords = encodeURIComponent(keywords);
   const base = `https://www.taaze.tw/rwd_searchResult.html?keyType%5B%5D=1&prodKind=4&catFocus=14&keyword%5B%5D=${keywords}`;

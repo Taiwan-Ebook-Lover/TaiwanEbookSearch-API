@@ -10,6 +10,23 @@ export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
+  // if bookstore is close
+  if (process.env.BOOKSCOMPANY && process.env.BOOKSCOMPANY !== 'open') {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+
+    return {
+      title,
+      isOkay: false,
+      processTime,
+      books: [],
+      error: {
+        message: 'Bookstore is not open.',
+        type: 'bookstore-invalid'
+      },
+    }
+  }
+
   // URL encode
   keywords = encodeURIComponent(keywords);
   const base = `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`;
