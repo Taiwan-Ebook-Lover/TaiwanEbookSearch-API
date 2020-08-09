@@ -12,6 +12,24 @@ export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
+  // if bookstore is close
+  const status = process.env.BOOKWALKER || 'open';
+  if (status !== 'open') {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+
+    return {
+      title,
+      isOkay: false,
+      processTime,
+      books: [],
+      error: {
+        message: 'Bookstore is not open.',
+        type: 'bookstore-invalid'
+      },
+    }
+  }
+
   // URL encode
   keywords = encodeURIComponent(keywords);
   const base = `https://www.bookwalker.com.tw/search?w=${keywords}&m=0&detail=1`;
