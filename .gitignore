@@ -87,3 +87,6 @@ Temporary Items
 
 # Paw API file
 *.paw
+
+# firebase service account json
+serviceAccount.json
