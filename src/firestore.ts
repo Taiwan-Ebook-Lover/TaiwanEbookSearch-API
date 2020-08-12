@@ -1,5 +1,6 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import { Bookstore } from './interfaces/bookstore';
+import { AnyObject } from './interfaces/general';
 
 export let firestore: FirebaseFirestore.Firestore;
 
@@ -13,7 +14,6 @@ export const connect = (url: string, serviceAccount: ServiceAccount) => {
         credential: admin.credential.cert(serviceAccount),
         databaseURL: url,
       });
-      console.log('test');
       resolve(admin.firestore());
     }
   })
@@ -50,3 +50,12 @@ export const getBookstores = async (id?: string) => {
   }
   return bookstores;
 };
+
+export const insertSearch = async (data: AnyObject<any>) => {
+  console.log(data);
+  const res = await firestore.collection('searches').add(data);
+  console.log('Added document with ID: ', res.id);
+  return res.id;
+};
+
+export const getSearch = async (id?: string) => {};
