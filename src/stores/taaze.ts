@@ -1,10 +1,11 @@
 import rp from 'request-promise-native';
 import cheerio from 'cheerio';
 
-import { Book } from '../interfaces/stores';
+import { Book } from '../interfaces/book';
 import { getProcessTime } from '../interfaces/general';
 
-const title = 'taaze';
+const id = 'taaze' as const;
+const displayName = 'Taaze 讀冊生活' as const;
 
 export default (keywords = '') => {
   // start calc process time
@@ -45,10 +46,13 @@ export default (keywords = '') => {
       const processTime = getProcessTime(hrEnd);
 
       return {
-        title,
+        id,
+        displayName,
         isOkay: true,
+        status: 'found',
         processTime,
         books,
+        quantity: books.length,
       };
     })
     .catch(error => {
@@ -59,10 +63,13 @@ export default (keywords = '') => {
       console.log(error.message);
 
       return {
-        title,
+        id,
+        displayName,
         isOkay: false,
+        status: 'Time out.',
         processTime,
         books: [],
+        quantity: 0,
         error,
       };
     });
