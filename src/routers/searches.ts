@@ -3,7 +3,7 @@ import { UAParser } from 'ua-parser-js';
 import { format } from 'date-fns';
 
 import { sendMessage } from '../bot';
-import { db, insertRecord } from '../db';
+import { firestore, insertSearch, getSearch } from '../firestore';
 
 import readmoo from '../stores/readmoo';
 import booksCompany from '../stores/booksCompany';
@@ -15,18 +15,18 @@ import pubu from '../stores/pubu';
 import hyread from '../stores/hyread';
 import { AnyObject, getProcessTime } from '../interfaces/general';
 
-const bookStoreModel = {
-  readmoo,
-  booksCompany,
-  kobo,
-  taaze,
-  bookWalker,
-  playStore,
-  pubu,
-  hyread,
+const bookstoreModel: AnyObject<any> = {
+  readmoo: readmoo,
+  booksCompany: booksCompany,
+  kobo: kobo,
+  taaze: taaze,
+  bookWalker: bookWalker,
+  playStore: playStore,
+  pubu: pubu,
+  hyread: hyread,
 };
 
-const bookStoreList = [
+const bookstoreList = [
   'booksCompany',
   'readmoo',
   'kobo',
@@ -37,13 +37,15 @@ const bookStoreList = [
   'hyread',
 ];
 
-export const searchRouter = Router().get('/', (req, res, next) => {
+const searchesRouter = Router();
+
+searchesRouter.post('/', (req, res, next) => {
   // start calc process time
   const hrStart = process.hrtime();
 
   const searchDateTime = new Date();
   const keywords = req.query.q;
-  const bookStoresRequest: string[] = req.query.bookStores || [];
+  const bookstoresRequest: string[] = req.query.bookstores || [];
   const bombMessage = req.query.bomb;
 
   // parse user agent
@@ -63,78 +65,57 @@ export const searchRouter = Router().get('/', (req, res, next) => {
   }
 
   // 過濾掉不適用的書店
-  let bookStores: string[] = bookStoresRequest.filter(bookStore => {
-    return bookStoreList.includes(bookStore);
+  let bookstores: string[] = bookstoresRequest.filter(bookstore => {
+    return bookstoreList.includes(bookstore);
   });
 
   // 預設找所有書店
-  if (!bookStores.length) {
-    bookStores = bookStoreList;
+  if (!bookstores.length) {
+    bookstores = bookstoreList;
   }
 
   // 等全部查詢完成
-  Promise.all([
-    booksCompany(keywords),
-    readmoo(keywords),
-    kobo(keywords),
-    taaze(keywords),
-    bookWalker(keywords),
-    playStore(keywords),
-    pubu(keywords),
-    hyread(keywords),
-  ])
+  Promise.all(
+    bookstores.map((bookstore: string) => {
+      return bookstoreModel[bookstore](keywords);
+    })
+  )
     .then(searchResults => {
       // 整理結果並紀錄
       let response: AnyObject<any> = {};
-      let results = [];
+      let results: any[] = [];
 
-      for (let searchResult of searchResults) {
-        // 只回傳書的內容
-        response[searchResult.title] = searchResult.books;
-
-        // 資料庫只記錄數量
-        const quantity = searchResult.books.length;
-
-        delete searchResult.books;
-
-        results.push({
-          ...searchResult,
-          quantity,
-        });
+      for (const searchResult of searchResults) {
+        results.push(searchResult);
       }
 
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
 
-      // 準備搜尋歷史紀錄內容
-      const recordBase = {
+      response = {
         keywords,
-        results,
+        searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         processTime,
         ...ua.getResult(),
+        results,
       };
 
-      // 寫入歷史紀錄
-      const record = {
-        searchDateTime,
-        ...recordBase,
-      };
-
-      if (db) {
+      if (firestore) {
         // insert search record
-        insertRecord(record);
+        const id = insertSearch(response);
+        response.id = id;
       }
 
       // 發送報告
-      const report = {
-        searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
-        ...record,
-      };
+      // const report = {
+      //   searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
+      //   ...record,
+      // };
 
-      sendMessage(`${JSON.stringify(report, null, '  ')}`);
+      // sendMessage(`${JSON.stringify(report, null, '  ')}`);
 
-      return res.send(response);
+      return res.status(201).send(response);
     })
     .catch(error => {
       console.time('Error time: ');
@@ -147,3 +128,7 @@ export const searchRouter = Router().get('/', (req, res, next) => {
       });
     });
 });
+
+searchesRouter.get('/:id', (req, res, next) => {});
+
+export { searchesRouter };
