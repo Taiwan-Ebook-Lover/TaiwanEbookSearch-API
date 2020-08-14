@@ -50,7 +50,7 @@ app.use(
  * Route
  */
 
-app.use('/searches', searchRouter);
+app.use('/searches', searchesRouter);
 
 app.use('/bookstores', bookstoresRouter);
 
