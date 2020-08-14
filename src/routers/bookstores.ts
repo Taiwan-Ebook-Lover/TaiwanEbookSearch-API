@@ -19,12 +19,12 @@ bookstoresRouter.get('/', (req, res, next) => {
 });
 
 bookstoresRouter.get('/:id', (req, res, next) => {
-  const id: string = req.params.id;
-  getBookstores(id)
+  const bookstoreId: string = req.params.id;
+  getBookstores(bookstoreId)
     .then(bookstores => {
       if (bookstores.length == 0) {
         return res.status(400).send({
-          message: `Bookstore ${id} is invalid.`,
+          message: `Bookstore ${bookstoreId} is invalid.`,
         });
       }
       return res.status(200).send(bookstores);
