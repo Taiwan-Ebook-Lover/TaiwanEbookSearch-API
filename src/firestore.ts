@@ -60,11 +60,16 @@ export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
     });
 }; 
 
-export const insertSearch = async (data: AnyObject<any>) => {
-  console.log(data);
-  const res = await firestore.collection('searches').add(data);
-  console.log('Added document with ID: ', res.id);
-  return res.id;
+export const insertSearch = (data: AnyObject<any>): Promise<string> => {
+  return firestore.collection('searches').add(data)
+    .then(res => {
+      return res.id;
+    })
+    .catch(error => {
+      console.time('Error time: ');
+      console.error(error);
+      return '';
+    });
 };
 
 export const getSearch = async (id?: string) => {};
