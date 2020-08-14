@@ -16,14 +16,14 @@ import hyread from '../stores/hyread';
 import { AnyObject, getProcessTime } from '../interfaces/general';
 
 const bookstoreModel: AnyObject<any> = {
-  readmoo: readmoo,
-  booksCompany: booksCompany,
-  kobo: kobo,
-  taaze: taaze,
-  bookWalker: bookWalker,
-  playStore: playStore,
-  pubu: pubu,
-  hyread: hyread,
+  readmoo,
+  booksCompany,
+  kobo,
+  taaze,
+  bookWalker,
+  playStore,
+  pubu,
+  hyread,
 };
 
 const bookstoreList = [
@@ -80,40 +80,48 @@ searchesRouter.post('/', (req, res, next) => {
       return bookstoreModel[bookstore](keywords);
     })
   )
-    .then(searchResults => {
+    .then(async searchResults => {
       // 整理結果並紀錄
       let response: AnyObject<any> = {};
       let results: any[] = [];
+      let telegramResults: any[] = [];
 
-      for (const searchResult of searchResults) {
-        results.push(searchResult);
+      for (let searchResult of searchResults) {
+        results.push({...searchResult});
+        delete searchResult.books;
+        telegramResults.push(searchResult);
       }
 
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
 
-      response = {
+      const baseResponse = {
         keywords,
         searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         processTime,
         ...ua.getResult(),
+      }
+
+      response = {
+        ...baseResponse,
         results,
       };
-
+      
       if (firestore) {
         // insert search record
-        const id = insertSearch(response);
-        response.id = id;
+        response = JSON.parse(JSON.stringify(response));
+        const searchID = await insertSearch(response);
+        response.searchID = searchID;
       }
 
       // 發送報告
-      // const report = {
-      //   searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
-      //   ...record,
-      // };
+      const report = {
+        ...baseResponse,
+        ...telegramResults,
+      };
 
-      // sendMessage(`${JSON.stringify(report, null, '  ')}`);
+      sendMessage(`${JSON.stringify(report, null, '  ')}`);
 
       return res.status(201).send(response);
     })
