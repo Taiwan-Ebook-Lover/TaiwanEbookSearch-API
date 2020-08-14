@@ -137,6 +137,26 @@ searchesRouter.post('/', (req, res, next) => {
     });
 });
 
-searchesRouter.get('/:id', (req, res, next) => {});
+searchesRouter.get('/:id', async (req, res, next) => {
+  const searchId: string = req.params.id;
+  getSearch(searchId)
+    .then(search => {
+      if (search) {
+        return res.status(200).send(search);
+      } else {
+        return res.status(404).send({
+          message: 'Search not found.',
+        });
+      }
+    })
+    .catch(error => {
+      console.time('Error time: ');
+      console.error(error);
+
+      return res.status(503).send({
+        message: 'Something is wrong...',
+      });
+    });
+});
 
 export { searchesRouter };
