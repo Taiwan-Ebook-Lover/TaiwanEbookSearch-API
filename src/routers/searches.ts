@@ -85,8 +85,10 @@ searchesRouter.post('/', (req, res, next) => {
       let response: AnyObject<any> = {};
       let results: any[] = [];
       let telegramResults: any[] = [];
+      let totalQuantity: number = 0;
 
       for (let searchResult of searchResults) {
+        totalQuantity += searchResult.quantity;
         results.push({...searchResult});
         delete searchResult.books;
         telegramResults.push(searchResult);
@@ -100,7 +102,8 @@ searchesRouter.post('/', (req, res, next) => {
         keywords,
         searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         processTime,
-        ...ua.getResult(),
+        userAgent: ua.getResult(),
+        totalQuantity,
       }
 
       response = {
@@ -110,7 +113,7 @@ searchesRouter.post('/', (req, res, next) => {
       
       if (firestore) {
         // insert search record
-        response = JSON.parse(JSON.stringify(response));
+        response = JSON.parse(JSON.stringify(response, (key, value) => value === undefined ? null : value));
         const searchID = await insertSearch(response);
         response.searchID = searchID;
       }
