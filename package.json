@@ -1,19 +1,23 @@
 {
-  "name": "ebook-api",
+  "name": "taiwan-ebook-search-api",
   "version": "0.1.0",
   "description": "API",
   "main": "src/index.ts",
   "scripts": {
     "start": "node ./dist/index",
+    "build": "tsc",
     "tsc": "tsc",
     "dev": "tsc -w & nodemon ./dist/index",
     "prettier": "prettier --write \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/passerbyid/ebook-api.git"
+    "url": "git+https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API.git"
   },
   "author": "Yuer Lee <passerbyid@gmail.com>",
+  "contributors": [
+    "Safefly Tsai <ast850328@gmail.com> (https://safefly.tw)"
+  ],
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -31,9 +35,9 @@
     "ua-parser-js": "^0.7.21"
   },
   "bugs": {
-    "url": "https://github.com/passerbyid/ebook-api/issues"
+    "url": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API/issues"
   },
-  "homepage": "https://github.com/passerbyid/ebook-api#readme",
+  "homepage": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API",
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
     "@types/cheerio": "^0.22.21",
