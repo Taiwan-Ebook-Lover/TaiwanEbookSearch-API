@@ -1,5 +1,6 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import { Bookstore } from './interfaces/bookstore';
+import { AnyObject } from './interfaces/general';
 
 export let firestore: FirebaseFirestore.Firestore;
 
@@ -56,5 +57,32 @@ export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
       console.time('Error time: ');
       console.error(error);
       return bookstores;
+    });
+}; 
+
+export const insertSearch = (data: AnyObject<any>): Promise<string> => {
+  return firestore.collection('searches').add(data)
+    .then(res => {
+      return res.id;
+    })
+    .catch(error => {
+      console.time('Error time: ');
+      console.error(error);
+      return '';
+    });
+};
+
+export const getSearch = (searchID: string): Promise<AnyObject<any>> => {
+  return firestore.collection('searches').doc(searchID).get()
+    .then(doc => {
+      if (!doc.exists) {
+        throw Error('No matching bookstore.');
+      }
+      return {...doc.data(), searchID};
+    })
+    .catch(error => {
+      console.time('Error time: ');
+      console.error(error);
+      return {};
     });
 };

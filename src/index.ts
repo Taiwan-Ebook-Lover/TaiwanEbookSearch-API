@@ -6,7 +6,7 @@ import compression from 'compression';
 import './env';
 import { botInit } from './bot';
 import { connect } from './firestore';
-import { searchRouter } from './routers/search';
+import { searchesRouter } from './routers/searches';
 import { bookstoresRouter } from './routers/bookstores';
 import { ServiceAccount } from 'firebase-admin';
 import * as serviceAccount from './auth/serviceAccount.json';
@@ -50,7 +50,7 @@ app.use(
  * Route
  */
 
-app.use('/search', searchRouter);
+app.use('/searches', searchesRouter);
 
 app.use('/bookstores', bookstoresRouter);
 
