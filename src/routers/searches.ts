@@ -45,7 +45,7 @@ searchesRouter.post('/', (req, res, next) => {
 
   const searchDateTime = new Date();
   const keywords = req.query.q;
-  const bookstoresRequest: string[] = req.query.bookstores || [];
+  const bookstoresRequest: string[] = (req.query.bookstores as string[]) || [];
   const bombMessage = req.query.bomb;
 
   // parse user agent
@@ -89,7 +89,7 @@ searchesRouter.post('/', (req, res, next) => {
 
       for (let searchResult of searchResults) {
         totalQuantity += searchResult.quantity;
-        results.push({...searchResult});
+        results.push({ ...searchResult });
         delete searchResult.books;
         telegramResults.push(searchResult);
       }
@@ -104,16 +104,18 @@ searchesRouter.post('/', (req, res, next) => {
         processTime,
         userAgent: ua.getResult(),
         totalQuantity,
-      }
+      };
 
       response = {
         ...baseResponse,
         results,
       };
-      
+
       if (firestore) {
         // insert search record
-        response = JSON.parse(JSON.stringify(response, (key, value) => value === undefined ? null : value));
+        response = JSON.parse(
+          JSON.stringify(response, (key, value) => (value === undefined ? null : value))
+        );
         const searchID = await insertSearch(response);
         response.searchID = searchID;
       }
