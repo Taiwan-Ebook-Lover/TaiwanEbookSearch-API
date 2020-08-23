@@ -1,11 +1,5 @@
 {
-    "cSpell.words": [
-        "DBURL",
-        "GROUPID",
-        "bookwalker",
-        "hyread",
-        "pubu",
-        "readmoo",
-        "taaze"
-    ]
+  "cSpell.words": ["DBURL", "GROUPID", "bookwalker", "hyread", "pubu", "readmoo", "taaze"],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
