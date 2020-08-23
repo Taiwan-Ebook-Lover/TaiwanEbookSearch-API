@@ -58,12 +58,14 @@ export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
     });
 };
 
-export const insertSearch = (data: AnyObject<any>): Promise<string> => {
+export const insertSearch = (data: AnyObject<any>): Promise<any> => {
+  data = JSON.parse(JSON.stringify(data, (key, value) => (value === undefined ? null : value)));
   return firestore
     .collection('searches')
     .add(data)
     .then(res => {
-      return res.id;
+      data.id = res.id;
+      return data;
     })
     .catch(error => {
       console.time('Error time: ');

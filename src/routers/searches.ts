@@ -39,6 +39,24 @@ const bookstoreList = [
 
 const searchesRouter = Router();
 
+const _telegramPrettier = (data: AnyObject<any>): string => {
+  const results: [] = data.results.map(({ books, ...result }: AnyObject<any>) => result);
+  return `
+  Keywords: *${data.keywords}*
+Search Time: ${data.searchDateTime}
+Process Time: ${Math.round((data.processTime / 1000) * 100) / 100}s
+Total: ${data.totalQuantity}
+User Agent: ${data.userAgent.ua}
+Search ID: \`${data.id}\`
+Link: [🔗](https://yuer.tw/sunnyworm.png)
+Bookstore Result: ${results.map(
+    ({ displayName, isOkay, quantity, processTime }: AnyObject<any>): string => `
+${isOkay ? '✅' : '❌'}  ${displayName} (${quantity} | ${Math.round((processTime / 1000) * 100) /
+      100}s)`
+  )}
+  `;
+};
+
 searchesRouter.post('/', (req, res, next) => {
   // start calc process time
   const hrStart = process.hrtime();
@@ -82,53 +100,37 @@ searchesRouter.post('/', (req, res, next) => {
   )
     .then(async searchResults => {
       // 整理結果並紀錄
-      let response: AnyObject<any> = {};
       let results: any[] = [];
-      let telegramResults: any[] = [];
       let totalQuantity: number = 0;
 
-      for (let searchResult of searchResults) {
+      for (const searchResult of searchResults) {
         totalQuantity += searchResult.quantity;
         results.push({ ...searchResult });
-        delete searchResult.books;
-        telegramResults.push(searchResult);
       }
 
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
 
-      const baseResponse = {
+      const insertData: AnyObject<any> = {
         keywords,
         searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         processTime,
         userAgent: ua.getResult(),
         totalQuantity,
-      };
-
-      response = {
-        ...baseResponse,
         results,
       };
 
-      if (firestore) {
-        // insert search record
-        response = JSON.parse(
-          JSON.stringify(response, (key, value) => (value === undefined ? null : value))
-        );
-        const searchID = await insertSearch(response);
-        response.searchID = searchID;
+      if (!firestore) {
+        throw Error('Firestore is invalid.');
       }
 
-      // 發送報告
-      const report = {
-        ...baseResponse,
-        ...telegramResults,
-      };
+      const search = await insertSearch(insertData);
+      const telegramMessage: string = _telegramPrettier(search);
 
-      sendMessage(`${JSON.stringify(report, null, '  ')}`);
+      sendMessage(telegramMessage);
 
-      return res.status(201).send(response);
+      return res.status(201).send(search);
     })
     .catch(error => {
       console.time('Error time: ');
