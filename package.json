@@ -2,7 +2,7 @@
   "name": "taiwan-ebook-search-api",
   "version": "0.1.0",
   "description": "API",
-  "main": "src/index.ts",
+  "main": "./dist/index.ts",
   "scripts": {
     "start": "node ./dist/index",
     "build": "tsc",
