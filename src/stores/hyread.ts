@@ -103,25 +103,10 @@ function _getBooks($: CheerioStatic, base: string) {
         .children('.coverBox')
         .children('.bookPic')
         .prop('src'),
-      title: $(elem)
-        .children('.book-title-01')
-        .children('a')
-        .text(),
-      link: resolveURL(
-        base,
-        $(elem)
-          .children('.book-title-01')
-          .children('a')
-          .prop('href')
-      ),
+      title: $(elem).children('.book-title-01').children('a').text(),
+      link: resolveURL(base, $(elem).children('.book-title-01').children('a').prop('href')),
       priceCurrency: 'TWD',
-      price:
-        parseFloat(
-          $(elem)
-            .children('.book-money')
-            .children('.book-price')
-            .text()
-        ) || -1,
+      price: parseFloat($(elem).children('.book-money').children('.book-price').text()) || -1,
       // about: ,
     };
 

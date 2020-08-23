@@ -93,16 +93,8 @@ function _getBooks($: CheerioStatic, base: string) {
       .children('.bookdesc')
       .each((i, elem) => {
         // 若有副標題，併入主標題
-        let title = $(elem)
-          .children('.bookdata')
-          .children('h2')
-          .children('a')
-          .text();
-        let subTitle = $(elem)
-          .children('.bookdata')
-          .children('h3')
-          .children('a')
-          .text();
+        let title = $(elem).children('.bookdata').children('h2').children('a').text();
+        let subTitle = $(elem).children('.bookdata').children('h3').children('a').text();
         if (subTitle) {
           title += ` / ${subTitle}`;
         }
@@ -164,11 +156,7 @@ function _getBooks($: CheerioStatic, base: string) {
           title: title,
           link: resolveURL(
             base,
-            $(elem)
-              .children('.bookdata')
-              .children('h2')
-              .children('a')
-              .prop('href')
+            $(elem).children('.bookdata').children('h2').children('a').prop('href')
           ),
           priceCurrency: 'TWD',
           price:
@@ -216,11 +204,7 @@ function _getBooks($: CheerioStatic, base: string) {
 
     // 按分類優先排序擺放
     const categoryIndex = categoryTitle.indexOf(
-      $(elem)
-        .children('.listbox_title')
-        .children('.bw_title')
-        .text()
-        .trim()
+      $(elem).children('.listbox_title').children('.bw_title').text().trim()
     );
     categories[categoryIndex] = books;
   });

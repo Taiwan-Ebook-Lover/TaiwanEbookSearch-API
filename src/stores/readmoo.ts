@@ -94,21 +94,9 @@ function _getBooks($: CheerioStatic) {
         .children('meta[itemprop=identifier]')
         .prop('content'),
       thumbnail:
-        $(elem)
-          .children('.thumbnail')
-          .children('a')
-          .children('img')
-          .data('lazy-original') || '',
-      title: $(elem)
-        .children('.caption')
-        .children('h4')
-        .children('a')
-        .text(),
-      link: $(elem)
-        .children('.caption')
-        .children('h4')
-        .children('a')
-        .prop('href'),
+        $(elem).children('.thumbnail').children('a').children('img').data('lazy-original') || '',
+      title: $(elem).children('.caption').children('h4').children('a').text(),
+      link: $(elem).children('.caption').children('h4').children('a').prop('href'),
       priceCurrency: $(elem)
         .children('.caption')
         .children('.price-info')
@@ -124,10 +112,7 @@ function _getBooks($: CheerioStatic) {
             .text()
             .replace(/NT\$|,/g, '')
         ) || -1,
-      about: $(elem)
-        .children('.caption')
-        .children('.description')
-        .text(),
+      about: $(elem).children('.caption').children('.description').text(),
     };
   });
 

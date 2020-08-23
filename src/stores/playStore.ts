@@ -166,11 +166,7 @@ function _getBooks($: CheerioStatic, rootURL: string, base: string) {
           .children('div')
           .children('span')
           .map((index, priceElem) => {
-            return $(priceElem)
-              .children('span')
-              .text()
-              .replace(/\$|,/g, '')
-              .replace(/免費/, '0');
+            return $(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0');
           })
           .get()
           .sort((a: number, b: number) => a - b)[0]

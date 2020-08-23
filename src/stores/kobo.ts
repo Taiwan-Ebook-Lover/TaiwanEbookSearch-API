@@ -86,10 +86,7 @@ function _getBooks($: CheerioStatic, base: string) {
   $list.each((i, elem) => {
     // 從 script elem 拉 JSON data
     const info = JSON.parse(
-      $(elem)
-        .children('.item-detail')
-        .children('script')
-        .html() || '{ data: null }'
+      $(elem).children('.item-detail').children('script').html() || '{ data: null }'
     ).data;
 
     // 若有副標題，併入主標題
@@ -105,10 +102,7 @@ function _getBooks($: CheerioStatic, base: string) {
     }
 
     // 價格要先檢查是否為免費
-    const $priceField = $(elem)
-      .children('.item-detail')
-      .children('.item-info')
-      .children('.price');
+    const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
 
     let price = 0;
     if (!$priceField.hasClass('free')) {

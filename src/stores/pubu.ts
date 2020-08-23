@@ -85,39 +85,18 @@ function _getBooks($: CheerioStatic, base: string) {
 
   $list.each((i, elem) => {
     // 價格列表包（部分書籍有一般版與下載版兩種價格）
-    const $priceList = $(elem)
-      .children('.searchResultContent')
-      .children('ul.price')
-      .children('li');
+    const $priceList = $(elem).children('.searchResultContent').children('ul.price').children('li');
 
     let book: Book = {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem)
-        .children('.cover-div')
-        .children('a')
-        .children('img')
-        .prop('src'),
-      title: $(elem)
-        .children('.searchResultContent')
-        .children('h2')
-        .children('a')
-        .prop('title'),
+      thumbnail: $(elem).children('.cover-div').children('a').children('img').prop('src'),
+      title: $(elem).children('.searchResultContent').children('h2').children('a').prop('title'),
       link: resolveURL(
-        $(elem)
-          .children('.searchResultContent')
-          .children('h2')
-          .children('a')
-          .prop('href'),
+        $(elem).children('.searchResultContent').children('h2').children('a').prop('href'),
         base
       ),
       priceCurrency: 'TWD',
-      price:
-        parseFloat(
-          $priceList
-            .eq(0)
-            .children('span')
-            .text()
-        ) || -1,
+      price: parseFloat($priceList.eq(0).children('span').text()) || -1,
       authors: $(elem)
         .children('.searchResultContent')
         .children('p')
@@ -136,32 +115,19 @@ function _getBooks($: CheerioStatic, base: string) {
 
           return author;
         }),
-      publisher: $(elem)
-        .children('.searchResultContent')
-        .children('p')
-        .eq(2)
-        .children('a')
-        .text(),
+      publisher: $(elem).children('.searchResultContent').children('p').eq(2).children('a').text(),
       publishDate: $(elem)
         .children('.searchResultContent')
         .children('p')
         .eq(0)
         .text()
         .replace(/(出版日期：)|\s/g, ''),
-      about: $(elem)
-        .children('.searchResultContent')
-        .children('p.info')
-        .text(),
+      about: $(elem).children('.searchResultContent').children('p.info').text(),
     };
 
     // 有多種價格，則為下載版
     if ($priceList.length > 1) {
-      book.nonDrmPrice = parseFloat(
-        $priceList
-          .eq(1)
-          .children('span')
-          .text()
-      );
+      book.nonDrmPrice = parseFloat($priceList.eq(1).children('span').text());
     }
 
     books[i] = book;
