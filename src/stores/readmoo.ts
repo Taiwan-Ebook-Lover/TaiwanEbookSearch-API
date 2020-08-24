@@ -4,7 +4,7 @@ import cheerio from 'cheerio';
 import { Book } from '../interfaces/book';
 import { getProcessTime } from '../interfaces/general';
 
-const id = 'reedmoo' as const;
+const id = 'readmoo' as const;
 const displayName = 'Readmoo 讀墨' as const;
 
 export default (keywords = '') => {
