@@ -51,8 +51,9 @@ Search ID: \`${data.id}\`
 Link: [🔗](https://yuer.tw/sunnyworm.png)
 Bookstore Result: ${results.map(
     ({ displayName, isOkay, quantity, processTime }: AnyObject<any>): string => `
-${isOkay ? '✅' : '❌'}  ${displayName} (${quantity} | ${Math.round((processTime / 1000) * 100) /
-      100}s)`
+${isOkay ? '✅' : '❌'}  ${displayName} (${quantity} | ${
+      Math.round((processTime / 1000) * 100) / 100
+    }s)`
   )}
   `;
 };
