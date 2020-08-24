@@ -59,13 +59,15 @@ export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
 };
 
 export const insertSearch = (data: AnyObject<any>): Promise<any> => {
-  data = JSON.parse(JSON.stringify(data, (key, value) => (value === undefined ? null : value)));
+  let formattedData = JSON.parse(
+    JSON.stringify(data, (key, value) => (value === undefined ? null : value))
+  );
   return firestore
     .collection('searches')
-    .add(data)
+    .add(formattedData)
     .then(res => {
-      data.id = res.id;
-      return data;
+      formattedData.id = res.id;
+      return formattedData;
     })
     .catch(error => {
       console.time('Error time: ');
