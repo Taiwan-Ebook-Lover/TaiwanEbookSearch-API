@@ -21,5 +21,7 @@ export const botInit = (token: string, group: string) => {
 };
 
 export const sendMessage = (message: string) => {
-  return bot.sendMessage(groupId, message).catch(error => console.error(error));
+  return bot
+    .sendMessage(groupId, message, { parse_mode: 'Markdown' })
+    .catch(error => console.error(error));
 };
