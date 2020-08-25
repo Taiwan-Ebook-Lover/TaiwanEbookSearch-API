@@ -1,5 +1,6 @@
 {
   "cSpell.words": ["DBURL", "GROUPID", "bookwalker", "hyread", "pubu", "readmoo", "taaze"],
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
