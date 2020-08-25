@@ -13,6 +13,7 @@ import bookWalker from '../stores/bookWalker';
 import playStore from '../stores/playStore';
 import pubu from '../stores/pubu';
 import hyread from '../stores/hyread';
+import kindle from '../stores/kindle';
 import { AnyObject, getProcessTime } from '../interfaces/general';
 
 const bookstoreModel: AnyObject<any> = {
@@ -24,6 +25,7 @@ const bookstoreModel: AnyObject<any> = {
   playStore,
   pubu,
   hyread,
+  kindle,
 };
 
 const bookstoreList = [
@@ -35,6 +37,7 @@ const bookstoreList = [
   'playStore',
   'pubu',
   'hyread',
+  'kindle',
 ];
 
 const searchesRouter = Router();
