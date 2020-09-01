@@ -1,5 +1,6 @@
 import { resolve as resolveURL } from 'url';
 
+import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import cheerio from 'cheerio';
@@ -40,7 +41,7 @@ export default (keywords = '') => {
   const options = {
     method: 'GET',
     compress: true,
-    timeout: 10000,
+    signal: timeoutSignal(10000),
     agent,
     headers: {
       'User-Agent': 'Taiwan-Ebook-Search/0.1',

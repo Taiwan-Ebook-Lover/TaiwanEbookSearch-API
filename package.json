@@ -28,6 +28,7 @@
     "mongodb": "^3.6.0",
     "node-fetch": "^2.6.0",
     "node-telegram-bot-api": "^0.50.0",
+    "timeout-signal": "^1.1.0",
     "ua-parser-js": "^0.7.21"
   },
   "bugs": {
