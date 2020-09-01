@@ -30,8 +30,12 @@ export const connect = (url: string, serviceAccount: ServiceAccount): Promise<vo
 export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
   const bookstores: Bookstore[] = [];
   let bookstoreRef: FirebaseFirestore.Query;
-  if (bookstoreId) bookstoreRef = firestore.collection('bookstores').where('id', '==', bookstoreId);
-  else bookstoreRef = firestore.collection('bookstores');
+
+  if (bookstoreId) {
+    bookstoreRef = firestore.collection('bookstores').where('id', '==', bookstoreId);
+  } else {
+    bookstoreRef = firestore.collection('bookstores');
+  }
 
   return bookstoreRef
     .get()
