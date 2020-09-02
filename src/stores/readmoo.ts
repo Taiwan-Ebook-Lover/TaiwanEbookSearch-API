@@ -4,10 +4,10 @@ import cheerio from 'cheerio';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
+import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
 
 export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
-const displayName = 'Readmoo 讀墨' as const;
   // start calc process time
   const hrStart = process.hrtime();
 
@@ -43,16 +43,16 @@ const displayName = 'Readmoo 讀墨' as const;
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
-
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: true,
-        status: 'found',
+        status: 'Crawler success.',
         processTime,
         books,
         quantity: books.length,
       };
+
+      return result;
     })
     .catch(error => {
       // calc process time
@@ -61,16 +61,17 @@ const displayName = 'Readmoo 讀墨' as const;
 
       console.log(error.message);
 
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: false,
-        status: 'Time out.',
+        status: 'Crawler failed.',
         processTime,
         books: [],
         quantity: 0,
-        error,
+        error: error.message,
       };
+
+      return result;
     });
 };
 
