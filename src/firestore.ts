@@ -1,5 +1,5 @@
 import admin, { ServiceAccount } from 'firebase-admin';
-import { Bookstore } from './interfaces/bookstore';
+import { FirestoreBookstore } from './interfaces/firebaseBookstore';
 import { AnyObject } from './interfaces/general';
 
 export let firestore: FirebaseFirestore.Firestore;
@@ -27,11 +27,15 @@ export const connect = (url: string, serviceAccount: ServiceAccount): Promise<vo
     });
 };
 
-export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
-  const bookstores: Bookstore[] = [];
+export const getBookstores = (bookstoreId?: string): Promise<FirestoreBookstore[]> => {
+  const bookstores: FirestoreBookstore[] = [];
   let bookstoreRef: FirebaseFirestore.Query;
-  if (bookstoreId) bookstoreRef = firestore.collection('bookstores').where('id', '==', bookstoreId);
-  else bookstoreRef = firestore.collection('bookstores');
+
+  if (bookstoreId) {
+    bookstoreRef = firestore.collection('bookstores').where('id', '==', bookstoreId);
+  } else {
+    bookstoreRef = firestore.collection('bookstores');
+  }
 
   return bookstoreRef
     .get()
@@ -40,14 +44,8 @@ export const getBookstores = (bookstoreId?: string): Promise<Bookstore[]> => {
         throw Error('No matching bookstore.');
       }
       for (const bookstore of snapshot.docs) {
-        const bookstoreData = bookstore.data();
-        bookstores.push({
-          id: bookstoreData.id,
-          displayName: bookstoreData.displayName,
-          website: bookstoreData.website,
-          isOkay: bookstoreData.isOkay,
-          status: bookstoreData.status,
-        });
+        const bookstoreData = bookstore.data() as FirestoreBookstore;
+        bookstores.push(bookstoreData);
       }
       return bookstores;
     })
