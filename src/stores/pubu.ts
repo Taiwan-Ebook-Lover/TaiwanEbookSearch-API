@@ -1,15 +1,14 @@
-import { resolve as resolveURL } from 'url';
-
 import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+
+import { resolve as resolveURL } from 'url';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
 import { getProcessTime } from '../interfaces/general';
 
-const id = 'pubu' as const;
+export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
 const displayName = 'Pubu 電子商城' as const;
-
-export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
@@ -23,6 +22,7 @@ export default (keywords = '') => {
     simple: false,
     gzip: true,
     timeout: 10000,
+    agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
   };
 
   return rp(options)

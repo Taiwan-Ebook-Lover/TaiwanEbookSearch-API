@@ -1,13 +1,13 @@
 import rp from 'request-promise-native';
 import cheerio from 'cheerio';
 
+import { HttpsProxyAgent } from 'https-proxy-agent';
+
 import { Book } from '../interfaces/book';
 import { getProcessTime } from '../interfaces/general';
 
-const id = 'palyStore' as const;
+export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
 const displayName = 'Google Play 圖書' as const;
-
-export default (keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
@@ -23,6 +23,7 @@ export default (keywords = '') => {
     simple: false,
     gzip: true,
     timeout: 10000,
+    agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
   };
 
   return rp(options)
