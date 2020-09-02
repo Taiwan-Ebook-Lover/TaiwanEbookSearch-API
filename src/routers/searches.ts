@@ -33,8 +33,8 @@ User Agent: ${data.userAgent.ua}
 Search ID: \`${data.id}\`
 Link: [🔗](https://yuer.tw/sunnyworm.png)
 Bookstore Result: ${results.map(
-    ({ displayName, isOkay, quantity, processTime }: AnyObject<any>): string => `
-${isOkay ? '✅' : '❌'}  ${displayName} (${quantity} | ${
+    ({ bookstore, isOkay, quantity, processTime }: AnyObject<any>): string => `
+${isOkay ? '✅' : '❌'}  ${bookstore.displayName} (${quantity} | ${
       Math.round((processTime / 1000) * 100) / 100
     }s)`
   )}
