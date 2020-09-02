@@ -71,16 +71,16 @@ export const insertSearch = (data: AnyObject<any>): Promise<any> => {
     });
 };
 
-export const getSearch = (searchID: string): Promise<AnyObject<any>> => {
+export const getSearch = (id: string): Promise<AnyObject<any>> => {
   return firestore
     .collection('searches')
-    .doc(searchID)
+    .doc(id)
     .get()
     .then(doc => {
       if (!doc.exists) {
         throw Error('No matching bookstore.');
       }
-      return { ...doc.data(), searchID };
+      return { ...doc.data(), id };
     })
     .catch(error => {
       console.time('Error time: ');
