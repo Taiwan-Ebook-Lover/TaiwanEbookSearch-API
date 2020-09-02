@@ -12,6 +12,21 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   // start calc process time
   const hrStart = process.hrtime();
 
+  if (!bookstore.isOnline) {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+    const result: Result = {
+      bookstore,
+      isOkay: false,
+      status: 'Bookstore is offline',
+      processTime,
+      books: [],
+      quantity: 0,
+    };
+
+    return result;
+  }
+
   // URL encode
   keywords = encodeURIComponent(keywords);
 
