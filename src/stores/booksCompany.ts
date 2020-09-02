@@ -6,7 +6,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { Book } from '../interfaces/book';
 import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
-import { Bookstore } from '../interfaces/bookstore';
+import { FirestoreBookstore } from '../interfaces/firebaseBookstore';
 
 export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
@@ -93,26 +93,13 @@ function _getBooks($: CheerioStatic) {
     $(elem)
       .children('a[rel=go_author]')
       .each((i, elem) => {
-        authors = authors.concat(
-          $(elem)
-            .prop('title')
-            .split('、')
-        );
+        authors = authors.concat($(elem).prop('title').split('、'));
       });
 
     books[i] = {
-      id: $(elem)
-        .children('.input_buy')
-        .children('input')
-        .prop('value'),
-      thumbnail: $(elem)
-        .children('a')
-        .children('img')
-        .data('original'),
-      title: $(elem)
-        .children('h3')
-        .children('a')
-        .prop('title'),
+      id: $(elem).children('.input_buy').children('input').prop('value'),
+      thumbnail: $(elem).children('a').children('img').data('original'),
+      title: $(elem).children('h3').children('a').prop('title'),
       link: `http://www.books.com.tw/products/${$(elem)
         .children('.input_buy')
         .children('input')
@@ -132,9 +119,7 @@ function _getBooks($: CheerioStatic) {
         .children('p')
         .text()
         .replace(/...... more\n\t\t\t\t\t\t\t\t/g, ' ...'),
-      publisher: $(elem)
-        .children('a[rel=mid_publish]')
-        .prop('title'),
+      publisher: $(elem).children('a[rel=mid_publish]').prop('title'),
     };
 
     // 作者群有資料才放
