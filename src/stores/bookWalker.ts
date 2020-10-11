@@ -55,7 +55,6 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
       return _getBooks(cheerio.load(body), base);
     })
     .then(books => {
-      console.log(books);
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
