@@ -1,5 +1,6 @@
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
 
 import { resolve as resolveURL } from 'url';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -33,28 +34,28 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   const base = `https://www.bookwalker.com.tw/search?w=${keywords}&m=0&detail=1`;
 
   const options = {
-    uri: base,
-    headers: {
-      'User-Agent': 'Taiwan-Ebook-Search/0.0.2',
-    },
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
+    },
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in bookwalker!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), base);
     })
     .then(books => {
+      console.log(books);
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
