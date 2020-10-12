@@ -1,5 +1,6 @@
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
 
 import { resolve as resolveURL } from 'url';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -33,26 +34,25 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   const base = `https://www.bookwalker.com.tw/search?w=${keywords}&m=0&detail=1`;
 
   const options = {
-    uri: base,
-    headers: {
-      'User-Agent': 'Taiwan-Ebook-Search/0.0.2',
-    },
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
+    },
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in bookwalker!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), base);
     })
     .then(books => {
       // calc process time
@@ -93,8 +93,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 // parse 找書
 function _getBooks($: CheerioStatic, base: string) {
   // 分類優先排序設定
-  const categoryTitle = ['一般．實用書', '文學．小說', '雜誌', '漫畫', '輕小說', '日文書'];
-  let categories: Book[][] = [[], [], [], [], [], []];
+  let books: Book[] = [];
 
   const $categories = $('.listbox');
 
@@ -103,8 +102,6 @@ function _getBooks($: CheerioStatic, base: string) {
     if ($(elem).children('.listbox_title').length === 0) {
       return;
     }
-
-    let books: Book[] = [];
 
     $(elem)
       .children('.bookdesc')
@@ -218,20 +215,7 @@ function _getBooks($: CheerioStatic, base: string) {
           books[i].painters;
         }
       });
-
-    // 按分類優先排序擺放
-    const categoryIndex = categoryTitle.indexOf(
-      $(elem).children('.listbox_title').children('.bw_title').text().trim()
-    );
-    categories[categoryIndex] = books;
   });
-
-  let books: Book[] = [];
-
-  // 展開各分類書籍
-  for (let category of categories) {
-    books.push(...category);
-  }
 
   return books;
 }

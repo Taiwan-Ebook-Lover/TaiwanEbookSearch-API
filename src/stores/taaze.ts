@@ -1,5 +1,6 @@
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
 
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
@@ -7,6 +8,7 @@ import { Book } from '../interfaces/book';
 import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
 import { FirestoreBookstore } from '../interfaces/firebaseBookstore';
+import { response } from 'express';
 
 export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
@@ -29,25 +31,28 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
   // URL encode
   keywords = encodeURIComponent(keywords);
+  const base = `https://www.taaze.tw/rwd_searchResult.html?keyType%5B%5D=1&prodKind=4&catFocus=14&keyword%5B%5D=${keywords}`;
 
   const options = {
-    uri: `https://www.taaze.tw/rwd_searchResult.html?keyType%5B%5D=1&prodKind=4&catFocus=14&keyword%5B%5D=${keywords}`,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
+    },
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in taaze!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      const books: Book[] = _getBooks(cheerio.load(response.body));
+      return response.text();
+    })
+    .then(body => {
+      const books: Book[] = _getBooks(cheerio.load(body));
 
       // 沒這書就直接傳吧
       if (!books.length) {
@@ -159,15 +164,22 @@ function _getBooks($: CheerioStatic) {
 
 // 單本書部分資料
 function _getBookInfo(id = '') {
+  const base = `https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp?prodId=${id}`;
+
   const options = {
-    uri: 'https://www.taaze.tw/new_ec/rwd/lib/searchbookAgent.jsp',
-    qs: {
-      prodId: id,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
     },
-    json: true,
   };
 
-  return rp(options).then(info => {
-    return info[0];
-  });
+  return fetch(base, options)
+    .then(response => {
+      return response.json();
+    })
+    .then(info => {
+      return info[0];
+    });
 }

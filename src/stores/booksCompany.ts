@@ -1,5 +1,6 @@
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
 
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
@@ -29,25 +30,28 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
   // URL encode
   keywords = encodeURIComponent(keywords);
+  const base = `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`;
 
   const options = {
-    uri: `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
+    },
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in books company!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body));
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body));
     })
     .then(books => {
       // calc process time

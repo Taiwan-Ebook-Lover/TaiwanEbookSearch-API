@@ -27,11 +27,13 @@
     "date-fns": "^2.15.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "firebase-admin": "^9.1.1",
+    "firebase-admin": "^9.2.0",
     "mongodb": "^3.6.0",
+    "node-fetch": "^2.6.1",
     "node-telegram-bot-api": "^0.50.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
+    "timeout-signal": "^1.1.0",
     "ua-parser-js": "^0.7.21"
   },
   "bugs": {
@@ -49,6 +51,7 @@
     "@types/mongodb": "^3.5.26",
     "@types/morgan": "^1.9.1",
     "@types/node": "^12.12.54",
+    "@types/node-fetch": "^2.5.7",
     "@types/node-telegram-bot-api": "^0.50.2",
     "@types/request-promise-native": "^1.0.17",
     "@types/ua-parser-js": "^0.7.33",
