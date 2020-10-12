@@ -20,7 +20,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@types/node-fetch": "^2.5.7",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "compression": "^1.7.4",
@@ -52,6 +51,7 @@
     "@types/mongodb": "^3.5.26",
     "@types/morgan": "^1.9.1",
     "@types/node": "^12.12.54",
+    "@types/node-fetch": "^2.5.7",
     "@types/node-telegram-bot-api": "^0.50.2",
     "@types/request-promise-native": "^1.0.17",
     "@types/ua-parser-js": "^0.7.33",
