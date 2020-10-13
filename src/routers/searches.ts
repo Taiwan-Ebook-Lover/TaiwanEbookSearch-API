@@ -3,18 +3,10 @@ import { UAParser } from 'ua-parser-js';
 import { format } from 'date-fns';
 
 import { sendMessage } from '../bot';
-import { firestore, insertSearch, getSearch } from '../firestore';
-
-import readmoo from '../stores/readmoo';
-import booksCompany from '../stores/booksCompany';
-import kobo from '../stores/kobo';
-import taaze from '../stores/taaze';
-import bookWalker from '../stores/bookWalker';
-import playStore from '../stores/playStore';
-import pubu from '../stores/pubu';
-import hyread from '../stores/hyread';
-import kindle from '../stores/kindle';
+import { Bookstore } from '../interfaces/bookstore';
 import { AnyObject, getProcessTime } from '../interfaces/general';
+import { firestore, insertSearch, getSearch, getBookstores } from '../firestore';
+import { readmoo, booksCompany, kobo, taaze, bookWalker, playStore, pubu, hyread } from '../stores';
 
 const bookstoreModel: AnyObject<any> = {
   readmoo,
@@ -27,18 +19,6 @@ const bookstoreModel: AnyObject<any> = {
   hyread,
   kindle,
 };
-
-const bookstoreList = [
-  'booksCompany',
-  'readmoo',
-  'kobo',
-  'taaze',
-  'bookWalker',
-  'playStore',
-  'pubu',
-  'hyread',
-  'kindle',
-];
 
 const searchesRouter = Router();
 
@@ -53,19 +33,19 @@ User Agent: ${data.userAgent.ua}
 Search ID: \`${data.id}\`
 Link: [🔗](https://yuer.tw/sunnyworm.png)
 Bookstore Result: ${results.map(
-    ({ displayName, isOkay, quantity, processTime }: AnyObject<any>): string => `
-${isOkay ? '✅' : '❌'}  ${displayName} (${quantity} | ${
+    ({ bookstore, isOkay, quantity, processTime }: AnyObject<any>): string => `
+${isOkay ? '✅' : '❌'}  ${bookstore.displayName} (${quantity} | ${
       Math.round((processTime / 1000) * 100) / 100
     }s)`
   )}
   `;
 };
 
-searchesRouter.post('/', (req, res, next) => {
+searchesRouter.post('/', async (req, res, next) => {
   // start calc process time
   const hrStart = process.hrtime();
-
   const searchDateTime = new Date();
+
   const keywords = req.query.q;
   const bookstoresRequest: string[] = (req.query.bookstores as string[]) || [];
   const bombMessage = req.query.bomb;
@@ -86,21 +66,19 @@ searchesRouter.post('/', (req, res, next) => {
     });
   }
 
-  // 過濾掉不適用的書店
-  let bookstores: string[] = bookstoresRequest.filter(bookstore => {
-    return bookstoreList.includes(bookstore);
-  });
+  const bookstores = await getBookstores();
 
-  // 預設找所有書店
-  if (!bookstores.length) {
-    bookstores = bookstoreList;
+  let selectedBookstores = bookstores.filter(store => bookstoresRequest.includes(store.id));
+
+  if (!selectedBookstores.length) {
+    selectedBookstores = bookstores;
   }
 
   // 等全部查詢完成
   Promise.all(
-    bookstores.map((bookstore: string) => {
-      return bookstoreModel[bookstore](keywords);
-    })
+    selectedBookstores.map((bookstore: Bookstore) =>
+      bookstoreModel[bookstore.id](bookstore, keywords)
+    )
   )
     .then(async searchResults => {
       // 整理結果並紀錄

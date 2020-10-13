@@ -6,7 +6,7 @@ const bookstoresRouter = Router();
 bookstoresRouter.get('/', (req, res, next) => {
   getBookstores()
     .then(bookstores => {
-      return res.status(200).send(bookstores);
+      return res.status(200).send(bookstores.map(({ proxyUrl, ...bookstore }) => bookstore));
     })
     .catch(error => {
       console.time('Error time: ');
@@ -27,7 +27,8 @@ bookstoresRouter.get('/:id', (req, res, next) => {
           message: `Bookstore ${bookstoreId} is invalid.`,
         });
       }
-      return res.status(200).send(bookstores);
+      const { proxyUrl, ...bookstore } = bookstores[0];
+      return res.status(200).send(bookstore);
     })
     .catch(error => {
       console.time('Error time: ');

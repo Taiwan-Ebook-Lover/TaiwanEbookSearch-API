@@ -2,6 +2,6 @@ export interface Bookstore {
   id: string;
   displayName: string;
   website: string;
-  isOkay: boolean;
+  isOnline: boolean;
   status: string;
 }

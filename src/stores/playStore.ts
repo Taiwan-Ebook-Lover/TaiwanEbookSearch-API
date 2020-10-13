@@ -1,15 +1,32 @@
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
+
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
+import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
+import { FirestoreBookstore } from '../interfaces/firebaseBookstore';
 
-const id = 'palyStore' as const;
-const displayName = 'Google Play 圖書' as const;
-
-export default (keywords = '') => {
+export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
+
+  if (!bookstore.isOnline) {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+    const result: Result = {
+      bookstore,
+      isOkay: false,
+      status: 'Bookstore is offline',
+      processTime,
+      books: [],
+      quantity: 0,
+    };
+
+    return result;
+  }
 
   // URL encode
   keywords = encodeURIComponent(keywords);
@@ -17,38 +34,40 @@ export default (keywords = '') => {
   const base = `${rootURL}/store/search?q=${keywords}&c=books&authuser=0&gl=tw&hl=zh-tw`;
 
   const options = {
-    method: 'POST',
-    uri: base,
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
+    agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
+    },
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in Play Store!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), rootURL, base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), rootURL, base);
     })
     .then(books => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
-
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: true,
-        status: 'found',
+        status: 'Crawler success.',
         processTime,
         books,
         quantity: books.length,
       };
+
+      return result;
     })
     .catch(error => {
       // calc process time
@@ -57,16 +76,17 @@ export default (keywords = '') => {
 
       console.log(error.message);
 
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: false,
-        status: 'Time out.',
+        status: 'Crawler failed.',
         processTime,
         books: [],
         quantity: 0,
-        error,
+        error: error.message,
       };
+
+      return result;
     });
 };
 

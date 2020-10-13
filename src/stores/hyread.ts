@@ -1,60 +1,73 @@
-import { resolve as resolveURL } from 'url';
-
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
+
+import { resolve as resolveURL } from 'url';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
+import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
+import { FirestoreBookstore } from '../interfaces/firebaseBookstore';
 
-const id = 'hyread' as const;
-const displayName = 'HyRead 電子書' as const;
-
-export default (keywords = '') => {
+export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
-  // URL encode
-  // keywords = encodeURIComponent(keywords);
+  if (!bookstore.isOnline) {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+    const result: Result = {
+      bookstore,
+      isOkay: false,
+      status: 'Bookstore is offline',
+      processTime,
+      books: [],
+      quantity: 0,
+    };
 
-  const base = `https://ebook.hyread.com.tw/searchList.jsp`;
+    return result;
+  }
+
+  // URL encode
+  keywords = encodeURIComponent(keywords);
+  const base = `https://ebook.hyread.com.tw/searchList.jsp?search_field=FullText&MZAD=0&search_input=${keywords}`;
 
   const options = {
-    uri: base,
-    qs: {
-      search_field: 'FullText',
-      MZAD: 0,
-      search_input: keywords,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
+    agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
+    headers: {
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
     },
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in hyread!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
 
-      return _getBooks(cheerio.load(response.body), base);
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body), base);
     })
     .then(books => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
-
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: true,
-        status: 'found',
+        status: 'Crawler success.',
         processTime,
         books,
         quantity: books.length,
       };
+
+      return result;
     })
     .catch(error => {
       // calc process time
@@ -63,16 +76,17 @@ export default (keywords = '') => {
 
       console.log(error.message);
 
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: false,
-        status: 'Time out.',
+        status: 'Crawler failed.',
         processTime,
         books: [],
         quantity: 0,
-        error,
+        error: error.message,
       };
+
+      return result;
     });
 };
 
