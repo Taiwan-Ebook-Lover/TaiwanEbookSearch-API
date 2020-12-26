@@ -67,11 +67,12 @@ searchesRouter.post('/', async (req, res, next) => {
   }
 
   const bookstores = await getBookstores();
+  const validBookstores = bookstores.filter(store => store.isOnline);
 
-  let selectedBookstores = bookstores.filter(store => bookstoresRequest.includes(store.id));
+  let selectedBookstores = validBookstores.filter(store => bookstoresRequest.includes(store.id));
 
   if (!selectedBookstores.length) {
-    selectedBookstores = bookstores;
+    selectedBookstores = validBookstores;
   }
 
   // 等全部查詢完成
