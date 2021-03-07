@@ -6,7 +6,17 @@ import { sendMessage } from '../bot';
 import { Bookstore } from '../interfaces/bookstore';
 import { AnyObject, getProcessTime } from '../interfaces/general';
 import { firestore, insertSearch, getSearch, getBookstores } from '../firestore';
-import { readmoo, booksCompany, kobo, taaze, bookWalker, playStore, pubu, hyread } from '../stores';
+import {
+  readmoo,
+  booksCompany,
+  kobo,
+  taaze,
+  bookWalker,
+  playStore,
+  pubu,
+  hyread,
+  kindle,
+} from '../stores';
 
 const bookstoreModel: AnyObject<any> = {
   readmoo,

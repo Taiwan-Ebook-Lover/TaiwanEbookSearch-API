@@ -1,54 +1,72 @@
-import rp from 'request-promise-native';
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import timeoutSignal from 'timeout-signal';
+
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
+import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
+import { FirestoreBookstore } from '../interfaces/firebaseBookstore';
 
-const id = 'kindle' as const;
-const displayName = 'Amazon Kindle' as const;
-
-export default (keywords = '') => {
+export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
+  if (!bookstore.isOnline) {
+    const hrEnd = process.hrtime(hrStart);
+    const processTime = getProcessTime(hrEnd);
+    const result: Result = {
+      bookstore,
+      isOkay: false,
+      status: 'Bookstore is offline',
+      processTime,
+      books: [],
+      quantity: 0,
+    };
+
+    return result;
+  }
+
+  // URL encode
+  keywords = encodeURIComponent(keywords);
+  const base = `https://www.amazon.com/s?k=${keywords}&i=digital-text`;
+
   const options = {
-    uri: `https://www.amazon.com/s`,
+    method: 'GET',
+    compress: true,
+    signal: timeoutSignal(10000),
+    agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
     headers: {
-      'User-Agent': 'Taiwan-Ebook-Search/0.0.2',
+      'User-Agent': 'Taiwan-Ebook-Search/0.1',
     },
-    qs: {
-      k: keywords,
-      i: 'digital-text',
-    },
-    resolveWithFullResponse: true,
-    simple: false,
-    gzip: true,
-    timeout: 10000,
   };
 
-  return rp(options)
+  return fetch(base, options)
     .then(response => {
-      if (!/^2/.test('' + response.statusCode)) {
-        // console.log('Not found or error in kindle!');
-
-        return [];
+      if (!response.ok) {
+        throw response.statusText;
       }
-      return _getBooks(cheerio.load(response.body));
+
+      return response.text();
+    })
+    .then(body => {
+      return _getBooks(cheerio.load(body));
     })
     .then(books => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
-
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: true,
-        status: 'found',
+        status: 'Crawler success.',
         processTime,
         books,
         quantity: books.length,
       };
+
+      return result;
     })
     .catch(error => {
       // calc process time
@@ -57,39 +75,56 @@ export default (keywords = '') => {
 
       console.log(error.message);
 
-      return {
-        id,
-        displayName,
+      const result: Result = {
+        bookstore,
         isOkay: false,
-        status: 'Time out.',
+        status: 'Crawler failed.',
         processTime,
         books: [],
         quantity: 0,
-        error,
+        error: error.message,
       };
+
+      return result;
     });
 };
 
 // parse 找書
 function _getBooks($: CheerioStatic) {
+  const $list = $('.s-main-slot').children('.s-result-item');
+
   let books: Book[] = [];
-  const $list = $('.s-main-slot').children();
+
+  if ($list.length === 0) {
+    // console.log('Not found in kindle!');
+
+    return books;
+  }
 
   $list.each((i, elem) => {
     const id = $(elem).attr('data-asin');
-    // 沒東西
+
     if (!id) {
       return;
     }
+
     const $h2 = $(elem).find('h2');
     books.push({
       id,
       title: $h2.text().trim(),
-      price: parseFloat($(elem).find('.a-price .a-offscreen').eq(0).text().replace('$', '')),
+      price: parseFloat(
+        $(elem)
+          .find('.a-price .a-offscreen')
+          .eq(0)
+          .text()
+          .replace('$', '')
+      ),
       priceCurrency: 'USD',
       link: `https://www.amazon.com${$h2.find('a').attr('href')}`,
       about: '',
-      thumbnail: $(elem).find('img').attr('src'),
+      thumbnail: $(elem)
+        .find('img')
+        .attr('src'),
     });
   });
 
