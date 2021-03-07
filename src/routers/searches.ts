@@ -3,9 +3,10 @@ import { UAParser } from 'ua-parser-js';
 import { format } from 'date-fns';
 
 import { sendMessage } from '../bot';
-import { Bookstore } from '../interfaces/bookstore';
-import { AnyObject, getProcessTime } from '../interfaces/general';
 import { firestore, insertSearch, getSearch, getBookstores } from '../firestore';
+
+import { AnyObject, getProcessTime } from '../interfaces/general';
+import { Bookstore } from '../interfaces/bookstore';
 import {
   readmoo,
   booksCompany,
