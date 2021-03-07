@@ -6,3 +6,4 @@ export { default as readmoo } from './readmoo';
 export { default as playStore } from './playStore';
 export { default as pubu } from './pubu';
 export { default as hyread } from './hyread';
+export { default as kindle } from './kindle';

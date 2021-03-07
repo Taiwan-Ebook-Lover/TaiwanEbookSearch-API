@@ -7,7 +7,17 @@ import { firestore, insertSearch, getSearch, getBookstores } from '../firestore'
 
 import { AnyObject, getProcessTime } from '../interfaces/general';
 import { Bookstore } from '../interfaces/bookstore';
-import { readmoo, booksCompany, kobo, taaze, bookWalker, playStore, pubu, hyread } from '../stores';
+import {
+  readmoo,
+  booksCompany,
+  kobo,
+  taaze,
+  bookWalker,
+  playStore,
+  pubu,
+  hyread,
+  kindle,
+} from '../stores';
 
 const bookstoreModel: AnyObject<any> = {
   readmoo,
@@ -18,6 +28,7 @@ const bookstoreModel: AnyObject<any> = {
   playStore,
   pubu,
   hyread,
+  kindle,
 };
 
 const searchesRouter = Router();
