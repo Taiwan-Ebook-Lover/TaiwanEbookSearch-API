@@ -21,20 +21,20 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "^1.0.0-rc.5",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "date-fns": "^2.15.0",
+    "date-fns": "^2.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "firebase-admin": "^9.2.0",
-    "mongodb": "^3.6.0",
+    "firebase-admin": "^9.5.0",
+    "mongodb": "^3.6.4",
     "node-fetch": "^2.6.1",
-    "node-telegram-bot-api": "^0.50.0",
+    "node-telegram-bot-api": "^0.51.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "timeout-signal": "^1.1.0",
-    "ua-parser-js": "^0.7.21"
+    "ua-parser-js": "^0.7.24"
   },
   "bugs": {
     "url": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API/issues"
@@ -42,21 +42,21 @@
   "homepage": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API",
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
-    "@types/cheerio": "^0.22.21",
+    "@types/cheerio": "^0.22.24",
     "@types/compression": "^1.7.0",
-    "@types/cors": "^2.8.7",
+    "@types/cors": "^2.8.10",
     "@types/date-fns": "^2.6.0",
     "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.7",
-    "@types/mongodb": "^3.5.26",
-    "@types/morgan": "^1.9.1",
-    "@types/node": "^12.12.54",
-    "@types/node-fetch": "^2.5.7",
-    "@types/node-telegram-bot-api": "^0.50.2",
+    "@types/express": "^4.17.11",
+    "@types/mongodb": "^3.6.9",
+    "@types/morgan": "^1.9.2",
+    "@types/node": "^14.14.31",
+    "@types/node-fetch": "^2.5.8",
+    "@types/node-telegram-bot-api": "^0.51.1",
     "@types/request-promise-native": "^1.0.17",
-    "@types/ua-parser-js": "^0.7.33",
-    "nodemon": "^2.0.4",
-    "prettier": "^2.0.5",
-    "typescript": "~4.0.2"
+    "@types/ua-parser-js": "^0.7.35",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "typescript": "~4.2.3"
   }
 }
