@@ -88,7 +88,7 @@ export default (keywords = '') => {
 };
 
 function _getBooks($: CheerioStatic) {
-  const $list = $('#searchlist ul li');
+  const $list = $('#itemlist_table > tbody');
 
   let books: Book[] = [];
 
@@ -101,52 +101,40 @@ function _getBooks($: CheerioStatic) {
   $list.each((i, elem) => {
     // Combine authors to array
     let authors: string[] = [];
-    $(elem)
-      .children('a[rel=go_author]')
-      .each((i, elem) => {
-        authors = authors.concat(
-          $(elem)
-            .prop('title')
-            .split('、')
-        );
-      });
+
+    $('a[rel=go_author]', elem).each((i, e) => {
+      authors = authors.concat(
+        $(e)
+          .prop('title')
+          .split('、')
+      );
+    });
+
+    const id = $('input[name=prod_check]', elem).prop('value');
 
     const price = parseFloat(
-      $(elem)
-        .children('.price')
+      $('.list-nav', elem)
+        .children('li')
         .children('strong')
         .last()
-        .children('b')
         .text()
         .replace(/NT\$|,/g, '')
     );
 
     books[i] = {
-      id: $(elem)
-        .children('.input_buy')
-        .children('input')
-        .prop('value'),
-      thumbnail: $(elem)
-        .children('a')
+      id,
+      thumbnail: $('a[rel=mid_image]', elem)
         .children('img')
-        .data('original'),
-      title: $(elem)
-        .children('h3')
-        .children('a')
-        .prop('title'),
-      link: `http://www.books.com.tw/products/${$(elem)
-        .children('.input_buy')
-        .children('input')
-        .prop('value')}`,
+        .data('src'),
+      title: $('a[rel=mid_name]', elem).prop('title'),
+      link: `http://www.books.com.tw/products/${id}`,
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
-      about: $(elem)
+      about: $('.txt_cont', elem)
         .children('p')
         .text()
         .replace(/...... more\n\t\t\t\t\t\t\t\t/g, ' ...'),
-      publisher: $(elem)
-        .children('a[rel=mid_publish]')
-        .prop('title'),
+      publisher: $('a[rel=mid_publish]', elem).prop('title'),
     };
 
     if (authors.length > 0) {
