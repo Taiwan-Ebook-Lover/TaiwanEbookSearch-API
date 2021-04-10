@@ -91,7 +91,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: CheerioStatic, rootURL: string, base: string) {
+function _getBooks($: cheerio.Root, rootURL: string, base: string) {
   const $list = $('body > div')
     .eq(0)
     .children('div')
