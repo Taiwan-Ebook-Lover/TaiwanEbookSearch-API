@@ -91,7 +91,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: CheerioStatic, base: string) {
+function _getBooks($: cheerio.Root, base: string) {
   const $books = $('.book-wrap');
 
   let books: Book[] = [];
@@ -103,7 +103,7 @@ function _getBooks($: CheerioStatic, base: string) {
     return books;
   }
 
-  $books.each((index, elem) => {
+  $books.each((i, elem) => {
     const book = {
       id: $(elem)
         .children('.book-title-01')

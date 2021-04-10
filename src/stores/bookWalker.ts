@@ -91,7 +91,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: CheerioStatic, base: string) {
+function _getBooks($: cheerio.Root, base: string) {
   // 分類優先排序設定
   let books: Book[] = [];
 

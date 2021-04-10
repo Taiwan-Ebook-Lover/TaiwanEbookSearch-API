@@ -90,7 +90,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: CheerioStatic) {
+function _getBooks($: cheerio.Root) {
   const $list = $('.s-main-slot').children('.s-result-item');
 
   let books: Book[] = [];
@@ -112,19 +112,11 @@ function _getBooks($: CheerioStatic) {
     books.push({
       id,
       title: $h2.text().trim(),
-      price: parseFloat(
-        $(elem)
-          .find('.a-price .a-offscreen')
-          .eq(0)
-          .text()
-          .replace('$', '')
-      ),
+      price: parseFloat($(elem).find('.a-price .a-offscreen').eq(0).text().replace('$', '')),
       priceCurrency: 'USD',
       link: `https://www.amazon.com${$h2.find('a').attr('href')}`,
       about: '',
-      thumbnail: $(elem)
-        .find('img')
-        .attr('src'),
+      thumbnail: $(elem).find('img').attr('src'),
     });
   });
 

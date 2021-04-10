@@ -130,7 +130,7 @@ function _getBooksInfo(books: Book[] = []) {
 }
 
 // parse 找書
-function _getBooks($: CheerioStatic) {
+function _getBooks($: cheerio.Root) {
   const $list = $('#listView').children('.media');
 
   let books: Book[] = [];
