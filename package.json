@@ -42,7 +42,7 @@
   "homepage": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API",
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
-    "@types/cheerio": "^0.22.24",
+    "@types/cheerio": "^0.22.28",
     "@types/compression": "^1.7.0",
     "@types/cors": "^2.8.10",
     "@types/date-fns": "^2.6.0",
