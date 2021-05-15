@@ -7,7 +7,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { Book } from '../interfaces/book';
 import { Result } from '../interfaces/result';
 import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firebaseBookstore';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
 import { response } from 'express';
 
 export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
