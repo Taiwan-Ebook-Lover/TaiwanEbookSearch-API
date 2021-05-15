@@ -97,16 +97,12 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 function _getBooksInfo(books: Book[] = []) {
-  return Promise.all(
-    books.map(book => {
-      return _getBookInfo(book.id);
-    })
-  ).then(infos => {
+  return Promise.all(books.map(book => _getBookInfo(book.id))).then(infos => {
     for (let i in books) {
       books[i].title = infos[i].booktitle;
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
       books[i].publisher = infos[i].publisher;
-      books[i].publishDate = infos[i].publishDate;
+      books[i].publishDate = infos[i].publishdate;
       books[i].price = parseFloat(infos[i].saleprice) || -1;
 
       if (infos[i].authors) {
@@ -169,10 +165,6 @@ function _getBookInfo(id = '') {
   };
 
   return fetch(base, options)
-    .then(response => {
-      return response.json();
-    })
-    .then(info => {
-      return info[0];
-    });
+    .then(response => response.json())
+    .then(info => info[0]);
 }
