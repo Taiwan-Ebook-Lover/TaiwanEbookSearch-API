@@ -152,7 +152,7 @@ function _getBooks($: CheerioAPI, base: string) {
             .children('.bookitem')
             .children('a')
             .children('img')
-            .prop('src'),
+            .data('src') as string,
           title: title,
           link: resolveURL(
             base,
