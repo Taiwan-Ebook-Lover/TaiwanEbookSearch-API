@@ -1,5 +1,5 @@
 import admin, { ServiceAccount } from 'firebase-admin';
-import { FirestoreBookstore } from './interfaces/firebaseBookstore';
+import { FirestoreBookstore } from './interfaces/firestoreBookstore';
 import { AnyObject } from './interfaces/general';
 
 export let firestore: FirebaseFirestore.Firestore;
