@@ -140,7 +140,7 @@ function _getBooks($: CheerioAPI) {
 
     books[i] = {
       id,
-      thumbnail: `http://media.taaze.tw/showLargeImage.html?sc=${id}`,
+      thumbnail: `https://media.taaze.tw/showLargeImage.html?sc=${id}`,
       title: id, //info.booktitle
       link: `https://www.taaze.tw/goods/${id}.html`,
       priceCurrency: 'TWD',
