@@ -1,7 +1,7 @@
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import cheerio from 'cheerio';
+import cheerio, { CheerioAPI } from 'cheerio';
 
 import { Book } from '../interfaces/stores';
 import { getProcessTime } from '../interfaces/general';
@@ -87,7 +87,7 @@ export default (keywords = '') => {
     });
 };
 
-function _getBooks($: CheerioStatic, rootURL: string, base: string) {
+function _getBooks($: CheerioAPI, rootURL: string, base: string) {
   const $list = $('body > div')
     .eq(0)
     .children('div')

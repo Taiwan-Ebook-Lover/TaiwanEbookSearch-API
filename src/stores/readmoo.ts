@@ -1,7 +1,7 @@
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import cheerio from 'cheerio';
+import cheerio, { CheerioAPI } from 'cheerio';
 
 import { Book } from '../interfaces/stores';
 import { getProcessTime } from '../interfaces/general';
@@ -86,7 +86,7 @@ export default (keywords = '') => {
     });
 };
 
-function _getBooks($: CheerioStatic) {
+function _getBooks($: CheerioAPI) {
   const $list = $('#main_items li');
 
   let books: Book[] = [];
@@ -119,7 +119,7 @@ function _getBooks($: CheerioStatic) {
           .children('.thumbnail')
           .children('a')
           .children('img')
-          .data('lazy-original') || '',
+          .data('lazy-original') as string || '',
       title: $(elem)
         .children('.caption')
         .children('h4')

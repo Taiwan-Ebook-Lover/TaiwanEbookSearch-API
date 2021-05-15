@@ -18,7 +18,7 @@
   "dependencies": {
     "@types/node-fetch": "^2.5.7",
     "body-parser": "^1.19.0",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "1.0.0-rc.9",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "date-fns": "^2.16.1",
@@ -37,7 +37,6 @@
   "homepage": "https://github.com/passerbyid/ebook-api#readme",
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
-    "@types/cheerio": "^0.22.21",
     "@types/compression": "^1.7.0",
     "@types/cors": "^2.8.7",
     "@types/date-fns": "^2.6.0",
