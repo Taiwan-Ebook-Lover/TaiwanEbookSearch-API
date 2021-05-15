@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -91,7 +91,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: cheerio.Root, rootURL: string, base: string) {
+function _getBooks($: CheerioAPI, rootURL: string, base: string) {
   const $list = $('body > div')
     .eq(0)
     .children('div')
@@ -175,22 +175,20 @@ function _getBooks($: cheerio.Root, rootURL: string, base: string) {
         .prop('title'),
       link: linkUrl.href,
       priceCurrency: 'TWD',
-      price: parseFloat(
-        $bookElem
-          .children('div')
-          .eq(1)
-          .children('div')
-          .children('div')
-          .children('div')
-          .children('button')
-          .children('div')
-          .children('span')
-          .map((index, priceElem) => {
-            return $(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0');
-          })
-          .get()
-          .sort((a: number, b: number) => a - b)[0]
-      ),
+      price: $bookElem
+        .children('div')
+        .eq(1)
+        .children('div')
+        .children('div')
+        .children('div')
+        .children('button')
+        .children('div')
+        .children('span')
+        .map((index, priceElem) =>
+          Number($(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0'))
+        )
+        .get()
+        .sort((a: number, b: number) => a - b)[0],
       about: $bookElem
         .children('div')
         .eq(0)

@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -90,7 +90,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: cheerio.Root) {
+function _getBooks($: CheerioAPI) {
   const $list = $('.s-main-slot').children('.s-result-item');
 
   let books: Book[] = [];

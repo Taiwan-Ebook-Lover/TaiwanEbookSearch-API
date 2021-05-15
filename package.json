@@ -21,7 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "cheerio": "^1.0.0-rc.5",
+    "cheerio": "1.0.0-rc.9",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "date-fns": "^2.19.0",
@@ -42,7 +42,6 @@
   "homepage": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API",
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
-    "@types/cheerio": "^0.22.28",
     "@types/compression": "^1.7.0",
     "@types/cors": "^2.8.10",
     "@types/date-fns": "^2.6.0",

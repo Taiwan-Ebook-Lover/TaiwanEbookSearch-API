@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -90,7 +90,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: cheerio.Root) {
+function _getBooks($: CheerioAPI) {
   const $list = $('#main_items li');
 
   let books: Book[] = [];
@@ -110,7 +110,11 @@ function _getBooks($: cheerio.Root) {
         .children('meta[itemprop=identifier]')
         .prop('content'),
       thumbnail:
-        $(elem).children('.thumbnail').children('a').children('img').data('lazy-original') || '',
+        ($(elem)
+          .children('.thumbnail')
+          .children('a')
+          .children('img')
+          .data('lazy-original') as string) || '',
       title: $(elem).children('.caption').children('h4').children('a').text(),
       link: $(elem).children('.caption').children('h4').children('a').prop('href'),
       priceCurrency: $(elem)
