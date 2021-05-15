@@ -98,6 +98,29 @@ function _getBooks($: CheerioAPI) {
   }
 
   $list.each((i, elem) => {
+    const authors = [
+      $(elem)
+        .children('.caption')
+        .children('.contributor-info')
+        .children('a')
+        .text()
+        .replace(/\s+/g, ''),
+    ];
+
+    const publisher = $(elem)
+      .children('.caption')
+      .children('.publisher-info')
+      .children('a')
+      .text()
+      .replace(/\s+/g, '');
+
+    const publishDate = $(elem)
+      .children('.caption')
+      .children('.publish-date')
+      .children('span')
+      .text()
+      .replace(/出版日期：|\s/g, '');
+
     const price = parseFloat(
       $(elem)
         .children('.caption')
@@ -129,7 +152,39 @@ function _getBooks($: CheerioAPI) {
         .prop('content'),
       price: price >= 0 ? price : -1,
       about: $(elem).children('.caption').children('.description').text(),
+      authors: [
+        $(elem)
+          .children('.caption')
+          .children('.contributor-info')
+          .children('a')
+          .text()
+          .replace(/\s+/g, ''),
+      ],
+      publisher: $(elem)
+        .children('.caption')
+        .children('.publisher-info')
+        .children('a')
+        .text()
+        .replace(/\s+/g, ''),
+      publishDate: $(elem)
+        .children('.caption')
+        .children('.publish-date')
+        .children('span')
+        .text()
+        .replace(/(出版日期：)|\s/g, ''),
     };
+
+    if (authors.length > 0) {
+      books[i].authors = authors;
+    }
+
+    if (publisher !== '') {
+      books[i].publisher = publisher;
+    }
+
+    if (publishDate !== '') {
+      books[i].publishDate = publishDate;
+    }
   });
 
   return books;
