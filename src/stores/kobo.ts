@@ -5,24 +5,23 @@ import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import cheerio, { CheerioAPI } from 'cheerio';
 
-import { Book } from '../interfaces/stores';
+import { Book } from '../interfaces/book';
 import { getProcessTime } from '../interfaces/general';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
 
 const title = 'kobo' as const;
 
-export default (keywords = '') => {
+export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
   const hrStart = process.hrtime();
 
-  const status = process.env.KOBO || 'open';
-  const proxy = process.env.PROXY;
-  const agent = status === 'proxy' && proxy ? new HttpsProxyAgent(proxy) : undefined;
-
-  if (status === 'close') {
+  if (!bookstore.isOnline) {
     const hrEnd = process.hrtime(hrStart);
     const processTime = getProcessTime(hrEnd);
-
-    return {
+    const result = {
+      bookstore,
+      status: 'Bookstore is offline',
+      quantity: 0,
       title,
       isOkay: false,
       processTime,
@@ -30,8 +29,10 @@ export default (keywords = '') => {
       error: {
         message: 'Bookstore is not open.',
         type: 'bookstore-invalid',
-      },
+      }
     };
+
+    return result;
   }
 
   // URL encode
@@ -42,7 +43,7 @@ export default (keywords = '') => {
     method: 'GET',
     compress: true,
     signal: timeoutSignal(10000),
-    agent,
+    agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
     headers: {
       'User-Agent': 'Taiwan-Ebook-Search/0.1',
     },
@@ -65,6 +66,9 @@ export default (keywords = '') => {
       const processTime = getProcessTime(hrEnd);
 
       return {
+        bookstore,
+        status: 'Crawler success.',
+        quantity: books.length,
         title,
         isOkay: true,
         processTime,
@@ -79,6 +83,9 @@ export default (keywords = '') => {
       console.log(error.message);
 
       return {
+        bookstore,
+        status: 'Crawler failed.',
+        quantity: 0,
         title,
         isOkay: false,
         processTime,
