@@ -3,19 +3,33 @@ import { UAParser } from 'ua-parser-js';
 import { format } from 'date-fns';
 
 import { sendMessage } from '../bot';
-import { db, insertRecord } from '../db';
+import { firestore, insertSearch, getSearch, getBookstores } from '../firestore';
 
-import readmoo from '../stores/readmoo';
-import booksCompany from '../stores/booksCompany';
-import kobo from '../stores/kobo';
-import taaze from '../stores/taaze';
-import bookWalker from '../stores/bookWalker';
-import playStore from '../stores/playStore';
-import pubu from '../stores/pubu';
-import hyread from '../stores/hyread';
 import { AnyObject, getProcessTime } from '../interfaces/general';
+import { Bookstore } from '../interfaces/bookstore';
+import {
+  readmoo,
+  booksCompany,
+  kobo,
+  taaze,
+  bookWalker,
+  playStore,
+  pubu,
+  hyread
+} from '../stores';
 
-export const searchRouter = Router().get('/', (req, res, next) => {
+const bookstoreModel: AnyObject<any> = {
+  readmoo,
+  booksCompany,
+  kobo,
+  taaze,
+  bookWalker,
+  playStore,
+  pubu,
+  hyread
+};
+
+export const searchRouter = Router().get('/', async (req, res, next) => {
   // start calc process time
   const hrStart = process.hrtime();
 
@@ -38,17 +52,15 @@ export const searchRouter = Router().get('/', (req, res, next) => {
     });
   }
 
-  Promise.all([
-    booksCompany(keywords),
-    readmoo(keywords),
-    kobo(keywords),
-    taaze(keywords),
-    bookWalker(keywords),
-    playStore(keywords),
-    pubu(keywords),
-    hyread(keywords),
-  ])
-    .then(searchResults => {
+  let bookstores = await getBookstores();
+  bookstores = bookstores.filter((bookstore: Bookstore) => bookstore.id != 'kindle');
+  console.log(bookstores);
+
+  Promise.all(
+    bookstores.map((bookstore: Bookstore) => bookstoreModel[bookstore.id](bookstore, keywords))
+  )
+    .then(async searchResults => {
+      console.log(searchResults);
       const response = Object.fromEntries(
         searchResults.map(result => [result.title, result.books])
       );
@@ -74,17 +86,35 @@ export const searchRouter = Router().get('/', (req, res, next) => {
         ...recordBase,
       };
 
-      if (db) {
-        // insert search record
-        insertRecord(record);
-      }
-
       const report = {
         ...record,
         searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
       };
 
       sendMessage(`${JSON.stringify(report, null, '  ')}`);
+
+      let firestoreResults: any[] = [];
+      let totalQuantity: number = 0;
+
+      for (const searchResult of searchResults) {
+        totalQuantity += searchResult.quantity;
+        firestoreResults.push({ ...searchResult });
+      }
+
+      const insertData: AnyObject<any> = {
+        keywords,
+        searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
+        processTime,
+        userAgent: ua.getResult(),
+        totalQuantity,
+        results: firestoreResults,
+      };
+
+      if (!firestore) {
+        throw Error('Firestore is invalid.');
+      }
+
+      await insertSearch(insertData);
 
       return res.send(response);
     })
