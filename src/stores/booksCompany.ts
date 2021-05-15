@@ -91,55 +91,50 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
 // parse 找書
 function _getBooks($: CheerioAPI) {
-  const $list = $('#searchlist ul li');
+  const $list = $('#itemlist_table > tbody');
 
   let books: Book[] = [];
 
-  // 找不到就是沒這書
-  if ($list.length === 0) {
+  if (!$list.length) {
     // console.log('Not found in books company!');
 
     return books;
   }
 
   $list.each((i, elem) => {
-    // 合併作者成一個陣列
     let authors: string[] = [];
-    $(elem)
-      .children('a[rel=go_author]')
-      .each((i, elem) => {
-        authors = authors.concat($(elem).prop('title').split('、'));
-      });
+
+    $('a[rel=go_author]', elem).each((i, e) => {
+      authors = authors.concat($(e).prop('title').split('、'));
+    });
+
+    const id = $('input[name=prod_check]', elem).prop('value');
+
+    const price = parseFloat(
+      $('.list-nav', elem)
+        .children('li')
+        .children('strong')
+        .last()
+        .text()
+        .replace(/NT\$|,/g, '')
+    );
 
     books[i] = {
-      id: $(elem).children('.input_buy').children('input').prop('value'),
-      thumbnail: $(elem).children('a').children('img').data('original') as string,
-      title: $(elem).children('h3').children('a').prop('title'),
-      link: `http://www.books.com.tw/products/${$(elem)
-        .children('.input_buy')
-        .children('input')
-        .prop('value')}`,
+      id,
+      thumbnail: $('a[rel=mid_image]', elem).children('img').data('src') as string,
+      title: $('a[rel=mid_name]', elem).prop('title'),
+      link: `http://www.books.com.tw/products/${id}`,
       priceCurrency: 'TWD',
-      price:
-        parseFloat(
-          $(elem)
-            .children('.price')
-            .children('strong')
-            .last()
-            .children('b')
-            .text()
-            .replace(/NT\$|,/g, '')
-        ) || -1,
-      about: $(elem)
+      price: price >= 0 ? price : -1,
+      about: $('.txt_cont', elem)
         .children('p')
         .text()
         .replace(/...... more\n\t\t\t\t\t\t\t\t/g, ' ...'),
-      publisher: $(elem).children('a[rel=mid_publish]').prop('title'),
+      publisher: $('a[rel=mid_publish]', elem).prop('title'),
     };
 
-    // 作者群有資料才放
     if (authors.length > 0) {
-      books[i].authors;
+      books[i].authors = authors;
     }
   });
 
