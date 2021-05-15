@@ -92,67 +92,53 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
 // parse 找書
 function _getBooks($: CheerioAPI, base: string) {
-  // 分類優先排序設定
   let books: Book[] = [];
 
   const $categories = $('.listbox');
 
   $categories.each((i, elem) => {
-    // 過濾非書內容之元素
-    if ($(elem).children('.listbox_title').length === 0) {
+    if (!$(elem).children('.listbox_title').length) {
       return;
     }
 
     $(elem)
       .children('.bookdesc')
       .each((i, elem) => {
-        // 若有副標題，併入主標題
         let title = $(elem).children('.bookdata').children('h2').children('a').text();
         let subTitle = $(elem).children('.bookdata').children('h3').children('a').text();
         if (subTitle) {
           title += ` / ${subTitle}`;
         }
 
-        // 分割作者群字串
-        const authorRegex = /(?:\s)?\S*\s:\s/g; // 取得 ` 作者 : ` 字樣以做分割
-        const authorsOriginalStr = $(elem)
+        const authors: string[] = [];
+        const translators: string[] = [];
+        const painters: string[] = [];
+
+        $(elem)
           .children('.bookdata')
           .children('.bw_item')
           .children('.writerinfo')
           .children('.writer_data')
           .children('li')
-          .text();
-        const authorTitle = (authorsOriginalStr.match(authorRegex) || []).map(str => {
-          return str.replace(/\s|:/g, '');
-        });
-        const authorsName = authorsOriginalStr.split(authorRegex).slice(1);
-
-        // 準備各類作者包
-        let authors = [];
-        let translators = [];
-        let painters = [];
-
-        // 依照作者 title 分包
-        for (let index in authorTitle) {
-          const names = authorsName[index].split('、');
-          switch (authorTitle[index]) {
-            case '作者':
-              authors = names;
-              break;
-            case '譯者':
-              translators = names;
-              break;
-            case '插畫':
-              painters = names;
-              break;
-            default:
-              // 未知類型標記後納入「作者」中
-              for (let name of names) {
-                authors.push(`${name} (${authorsName[index]})`);
-              }
-              break;
-          }
-        }
+          .map((i, el) => $(el).text())
+          .toArray()
+          .map(str => str.split(' : '))
+          .forEach(([authorTitle, authorName]) => {
+            switch (authorTitle) {
+              case '作者':
+                authors.push(authorName);
+                break;
+              case '譯者':
+                translators.push(authorName);
+                break;
+              case '插畫':
+                painters.push(authorName);
+                break;
+              default:
+                authors.push(`${authorName} (${authorTitle})`);
+                break;
+            }
+          });
 
         books[i] = {
           id: $(elem)
@@ -202,17 +188,16 @@ function _getBooks($: CheerioAPI, base: string) {
           // publisher:,
         };
 
-        // 作者群有資料才放
         if (authors.length > 0) {
-          books[i].authors;
+          books[i].authors = authors;
         }
 
         if (translators.length > 0) {
-          books[i].translators;
+          books[i].translators = translators;
         }
 
         if (painters.length > 0) {
-          books[i].painters;
+          books[i].painters = painters;
         }
       });
   });
