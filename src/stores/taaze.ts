@@ -54,11 +54,9 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     .then(body => {
       const books: Book[] = _getBooks(cheerio.load(body));
 
-      // 沒這書就直接傳吧
       if (!books.length) {
         return books;
       } else {
-        // 再取得所有書的 info
         return _getBooksInfo(books);
       }
     })
@@ -98,9 +96,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     });
 };
 
-// 取得書籍們的資料
 function _getBooksInfo(books: Book[] = []) {
-  // 等每本書都叫到資料再繼續
   return Promise.all(
     books.map(book => {
       return _getBookInfo(book.id);
@@ -113,12 +109,10 @@ function _getBooksInfo(books: Book[] = []) {
       books[i].publishDate = infos[i].publishDate;
       books[i].price = parseFloat(infos[i].saleprice) || -1;
 
-      // 作者群有資料才放
       if (infos[i].authors) {
-        books[i].authors;
+        books[i].authors = infos[i].authors;
       }
 
-      // 有翻譯者才放
       if (infos[i].translator) {
         books[i].translator = infos[i].translator;
         books[i].translators = [infos[i].translator];
@@ -142,7 +136,6 @@ function _getBooks($: CheerioAPI) {
   }
 
   $list.each((i, elem) => {
-    // 先取得 id，部分資料需另叫 API 處理
     const id = $(elem).prop('rel');
 
     books[i] = {
