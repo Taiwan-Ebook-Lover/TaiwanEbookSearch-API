@@ -115,11 +115,18 @@ function _getBooks($: CheerioAPI, base: string) {
       title += ` - ${info.alternativeHeadline}`;
     }
 
-    // 合併作者成一個陣列
-    let authors: string[] = [];
-    for (let item of info.author) {
-      authors = authors.concat(item.name.split('、'));
-    }
+    const authors = (
+      eval(
+        $(elem)
+          .children('.item-detail')
+          .children('.item-info')
+          .children('.contributors')
+          .children('.synopsis-contributors')
+          .children('.synopsis-text')
+          .children('.contributor-name')
+          .data('track-info') as string
+      )?.author ?? ''
+    ).split('、');
 
     // 價格要先檢查是否為免費
     const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
@@ -155,9 +162,8 @@ function _getBooks($: CheerioAPI, base: string) {
       // publisher
     };
 
-    // 作者群有資料才放
-    if (authors.length > 0) {
-      books[i].authors;
+    if (authors?.length > 0) {
+      books[i].authors = authors;
     }
   });
 
