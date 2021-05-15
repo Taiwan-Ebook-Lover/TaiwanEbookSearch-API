@@ -1,5 +1,3 @@
-import { resolve as resolveURL } from 'url';
-
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -109,10 +107,10 @@ function _getBooks($: CheerioAPI, base: string) {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
       thumbnail: $(elem).children('.cover-div').children('a').children('img').prop('src'),
       title: $(elem).children('.searchResultContent').children('h2').children('a').prop('title'),
-      link: resolveURL(
-        base,
-        $(elem).children('.searchResultContent').children('h2').children('a').prop('href')
-      ),
+      link: new URL(
+        $(elem).children('.searchResultContent').children('h2').children('a').prop('href'),
+        base
+      ).toString(),
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
       authors: $(elem)

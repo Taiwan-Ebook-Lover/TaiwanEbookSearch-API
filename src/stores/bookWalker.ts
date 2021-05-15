@@ -1,5 +1,3 @@
-import { resolve as resolveURL } from 'url';
-
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -109,43 +107,35 @@ function _getBooks($: CheerioAPI, base: string) {
         }
 
         // Prepare author name
-        const authorRegex = /(?:\s)?\S*\s:\s/g; // Use ` 作者 : `  to speared
-        const authorsOriginalStr = $(elem)
+        const authors: string[] = [];
+        const translators: string[] = [];
+        const painters: string[] = [];
+
+        $(elem)
           .children('.bookdata')
           .children('.bw_item')
           .children('.writerinfo')
           .children('.writer_data')
           .children('li')
-          .text();
-        const authorTitle = (authorsOriginalStr.match(authorRegex) || []).map(str => {
-          return str.replace(/\s|:/g, '');
-        });
-        const authorsName = authorsOriginalStr.split(authorRegex).slice(1);
-
-        // Speared author / translators / painters / others(combine to author)
-        let authors = [];
-        let translators = [];
-        let painters = [];
-
-        for (let index in authorTitle) {
-          const names = authorsName[index].split('、');
-          switch (authorTitle[index]) {
-            case '作者':
-              authors = names;
-              break;
-            case '譯者':
-              translators = names;
-              break;
-            case '插畫':
-              painters = names;
-              break;
-            default:
-              for (let name of names) {
-                authors.push(`${name} (${authorsName[index]})`);
-              }
-              break;
-          }
-        }
+          .map((i, el) => $(el).text())
+          .toArray()
+          .map(str => str.split(' : '))
+          .forEach(([authorTitle, authorName]) => {
+            switch (authorTitle) {
+              case '作者':
+                authors.push(authorName);
+                break;
+              case '譯者':
+                translators.push(authorName);
+                break;
+              case '插畫':
+                painters.push(authorName);
+                break;
+              default:
+                authors.push(`${authorName} (${authorTitle})`);
+                break;
+            }
+          });
 
         // Prepare price
         const price = parseFloat(
@@ -173,10 +163,10 @@ function _getBooks($: CheerioAPI, base: string) {
             .children('img')
             .data('src') as string,
           title: title,
-          link: resolveURL(
-            base,
-            $(elem).children('.bookdata').children('h2').children('a').prop('href')
-          ),
+          link: new URL(
+            $(elem).children('.bookdata').children('h2').children('a').prop('href'),
+            base
+          ).toString(),
           priceCurrency: 'TWD',
           price: price >= 0 ? price : -1,
           about: $(elem)
@@ -198,15 +188,15 @@ function _getBooks($: CheerioAPI, base: string) {
         };
 
         if (authors.length > 0) {
-          books[i].authors;
+          books[i].authors = authors;
         }
 
         if (translators.length > 0) {
-          books[i].translators;
+          books[i].translators = translators;
         }
 
         if (painters.length > 0) {
-          books[i].painters;
+          books[i].painters = painters;
         }
       });
   });

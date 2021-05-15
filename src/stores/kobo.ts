@@ -1,5 +1,3 @@
-import { resolve as resolveURL } from 'url';
-
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -112,10 +110,18 @@ function _getBooks($: CheerioAPI, base: string) {
     }
 
     // Prepare authors name
-    let authors: string[] = [];
-    for (let item of info.author) {
-      authors = authors.concat(item.name.split('、'));
-    }
+    const authors = (
+      eval(
+        $(elem)
+          .children('.item-detail')
+          .children('.item-info')
+          .children('.contributors')
+          .children('.synopsis-contributors')
+          .children('.synopsis-text')
+          .children('.contributor-name')
+          .data('track-info') as string
+      )?.author ?? ''
+    ).split('、');
 
     // Check if price is `free`
     const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
@@ -134,7 +140,7 @@ function _getBooks($: CheerioAPI, base: string) {
 
     books[i] = {
       id: info.isbn,
-      thumbnail: resolveURL(base, info.thumbnailUrl),
+      thumbnail: new URL(info.thumbnailUrl, base).toString(),
       title,
       link: info.url,
       priceCurrency: $(elem)
@@ -150,7 +156,7 @@ function _getBooks($: CheerioAPI, base: string) {
     };
 
     if (authors.length > 0) {
-      books[i].authors;
+      books[i].authors = authors;
     }
   });
 

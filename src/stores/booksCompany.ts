@@ -34,7 +34,7 @@ export default (keywords = '') => {
 
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `http://search.books.com.tw/search/query/key/${keywords}/cat/EBA`;
+  const base = `https://search.books.com.tw/search/query/key/${keywords}/cat/EBA`;
 
   const options = {
     method: 'GET',
@@ -121,7 +121,7 @@ function _getBooks($: CheerioAPI) {
       id,
       thumbnail: $('a[rel=mid_image]', elem).children('img').data('src') as string,
       title: $('a[rel=mid_name]', elem).prop('title'),
-      link: `http://www.books.com.tw/products/${id}`,
+      link: `https://www.books.com.tw/products/${id}`,
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
       about: $('.txt_cont', elem)
@@ -132,7 +132,7 @@ function _getBooks($: CheerioAPI) {
     };
 
     if (authors.length > 0) {
-      books[i].authors;
+      books[i].authors = authors;
     }
   });
 

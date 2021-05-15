@@ -94,20 +94,16 @@ export default (keywords = '') => {
 
 function _getBooksInfo(books: Book[] = []) {
   // Get detail of each book from API
-  return Promise.all(
-    books.map(book => {
-      return _getBookInfo(book.id);
-    })
-  ).then(infos => {
+  return Promise.all(books.map(book => _getBookInfo(book.id))).then(infos => {
     for (let i in books) {
       books[i].title = infos[i].booktitle;
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
       books[i].publisher = infos[i].publisher;
-      books[i].publishDate = infos[i].publishDate;
+      books[i].publishDate = infos[i].publishdate;
       books[i].price = parseFloat(infos[i].saleprice) || -1;
 
       if (infos[i].authors) {
-        books[i].authors;
+        books[i].authors = infos[i].authors;
       }
 
       if (infos[i].translator) {
@@ -136,7 +132,7 @@ function _getBooks($: CheerioAPI) {
 
     books[i] = {
       id,
-      thumbnail: `http://media.taaze.tw/showLargeImage.html?sc=${id}`,
+      thumbnail: `https://media.taaze.tw/showLargeImage.html?sc=${id}`,
       title: id, //info.booktitle
       link: `https://www.taaze.tw/goods/${id}.html`,
       priceCurrency: 'TWD',
@@ -162,7 +158,5 @@ function _getBookInfo(id = '') {
 
   return fetch(url, options)
     .then(response => response.json())
-    .then(info => {
-      return info[0];
-    });
+    .then(info => info[0]);
 }
