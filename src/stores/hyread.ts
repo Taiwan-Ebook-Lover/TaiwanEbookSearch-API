@@ -101,12 +101,7 @@ function _getBooks($: CheerioAPI, base: string) {
   }
 
   $books.each((index, elem) => {
-    const price = parseFloat(
-      $(elem)
-        .children('.book-money')
-        .children('.book-price')
-        .text()
-    );
+    const price = parseFloat($(elem).children('.book-money').children('.book-price').text());
 
     const book = {
       id: $(elem)
@@ -121,17 +116,8 @@ function _getBooks($: CheerioAPI, base: string) {
         .children('.coverBox')
         .children('.bookPic')
         .prop('src'),
-      title: $(elem)
-        .children('.book-title-01')
-        .children('a')
-        .text(),
-      link: resolveURL(
-        base,
-        $(elem)
-          .children('.book-title-01')
-          .children('a')
-          .prop('href')
-      ),
+      title: $(elem).children('.book-title-01').children('a').text(),
+      link: resolveURL(base, $(elem).children('.book-title-01').children('a').prop('href')),
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
       // about: ,

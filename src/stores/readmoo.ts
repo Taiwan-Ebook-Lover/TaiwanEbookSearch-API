@@ -115,31 +115,20 @@ function _getBooks($: CheerioAPI) {
         .children('meta[itemprop=identifier]')
         .prop('content'),
       thumbnail:
-        $(elem)
+        ($(elem)
           .children('.thumbnail')
           .children('a')
           .children('img')
-          .data('lazy-original') as string || '',
-      title: $(elem)
-        .children('.caption')
-        .children('h4')
-        .children('a')
-        .text(),
-      link: $(elem)
-        .children('.caption')
-        .children('h4')
-        .children('a')
-        .prop('href'),
+          .data('lazy-original') as string) || '',
+      title: $(elem).children('.caption').children('h4').children('a').text(),
+      link: $(elem).children('.caption').children('h4').children('a').prop('href'),
       priceCurrency: $(elem)
         .children('.caption')
         .children('.price-info')
         .children('meta[itemprop=priceCurrency]')
         .prop('content'),
       price: price >= 0 ? price : -1,
-      about: $(elem)
-        .children('.caption')
-        .children('.description')
-        .text(),
+      about: $(elem).children('.caption').children('.description').text(),
     };
   });
 

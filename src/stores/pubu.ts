@@ -101,37 +101,17 @@ function _getBooks($: CheerioAPI, base: string) {
 
   $list.each((i, elem) => {
     // Prepare price (some books has another price for no-DRM version)
-    const $priceList = $(elem)
-      .children('.searchResultContent')
-      .children('ul.price')
-      .children('li');
+    const $priceList = $(elem).children('.searchResultContent').children('ul.price').children('li');
 
-    const price = parseFloat(
-      $priceList
-        .eq(0)
-        .children('span')
-        .text()
-    );
+    const price = parseFloat($priceList.eq(0).children('span').text());
 
     let book: Book = {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem)
-        .children('.cover-div')
-        .children('a')
-        .children('img')
-        .prop('src'),
-      title: $(elem)
-        .children('.searchResultContent')
-        .children('h2')
-        .children('a')
-        .prop('title'),
+      thumbnail: $(elem).children('.cover-div').children('a').children('img').prop('src'),
+      title: $(elem).children('.searchResultContent').children('h2').children('a').prop('title'),
       link: resolveURL(
         base,
-        $(elem)
-          .children('.searchResultContent')
-          .children('h2')
-          .children('a')
-          .prop('href')
+        $(elem).children('.searchResultContent').children('h2').children('a').prop('href')
       ),
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
@@ -152,32 +132,19 @@ function _getBooks($: CheerioAPI, base: string) {
 
           return author;
         }),
-      publisher: $(elem)
-        .children('.searchResultContent')
-        .children('p')
-        .eq(2)
-        .children('a')
-        .text(),
+      publisher: $(elem).children('.searchResultContent').children('p').eq(2).children('a').text(),
       publishDate: $(elem)
         .children('.searchResultContent')
         .children('p')
         .eq(0)
         .text()
         .replace(/(出版日期：)|\s/g, ''),
-      about: $(elem)
-        .children('.searchResultContent')
-        .children('p.info')
-        .text(),
+      about: $(elem).children('.searchResultContent').children('p.info').text(),
     };
 
     // Add non-DRM price
     if ($priceList.length > 1) {
-      book.nonDrmPrice = parseFloat(
-        $priceList
-          .eq(1)
-          .children('span')
-          .text()
-      );
+      book.nonDrmPrice = parseFloat($priceList.eq(1).children('span').text());
     }
 
     books[i] = book;

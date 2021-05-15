@@ -102,10 +102,7 @@ function _getBooks($: CheerioAPI, base: string) {
   $list.each((i, elem) => {
     // Get information from the script element
     const info = JSON.parse(
-      $(elem)
-        .children('.item-detail')
-        .children('script')
-        .html() || '{ data: null }'
+      $(elem).children('.item-detail').children('script').html() || '{ data: null }'
     ).data;
 
     // Combine title and sub-title
@@ -121,10 +118,7 @@ function _getBooks($: CheerioAPI, base: string) {
     }
 
     // Check if price is `free`
-    const $priceField = $(elem)
-      .children('.item-detail')
-      .children('.item-info')
-      .children('.price');
+    const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
 
     let price = 0;
     if (!$priceField.hasClass('free')) {

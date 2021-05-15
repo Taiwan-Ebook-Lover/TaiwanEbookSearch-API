@@ -102,16 +102,8 @@ function _getBooks($: CheerioAPI, base: string) {
       .children('.bookdesc')
       .each((i, elem) => {
         // Combine title and sub-title
-        let title = $(elem)
-          .children('.bookdata')
-          .children('h2')
-          .children('a')
-          .text();
-        let subTitle = $(elem)
-          .children('.bookdata')
-          .children('h3')
-          .children('a')
-          .text();
+        let title = $(elem).children('.bookdata').children('h2').children('a').text();
+        let subTitle = $(elem).children('.bookdata').children('h3').children('a').text();
         if (subTitle) {
           title += ` / ${subTitle}`;
         }
@@ -183,11 +175,7 @@ function _getBooks($: CheerioAPI, base: string) {
           title: title,
           link: resolveURL(
             base,
-            $(elem)
-              .children('.bookdata')
-              .children('h2')
-              .children('a')
-              .prop('href')
+            $(elem).children('.bookdata').children('h2').children('a').prop('href')
           ),
           priceCurrency: 'TWD',
           price: price >= 0 ? price : -1,

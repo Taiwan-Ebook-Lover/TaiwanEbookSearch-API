@@ -159,13 +159,7 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
       .children('div')
       .children('span')
       .map((index, priceElem) =>
-        Number(
-          $(priceElem)
-            .children('span')
-            .text()
-            .replace(/\$|,/g, '')
-            .replace(/免費/, '0')
-        )
+        Number($(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0'))
       )
       .get()
       .sort((a: number, b: number) => a - b)[0];

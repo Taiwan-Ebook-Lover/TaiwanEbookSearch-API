@@ -103,11 +103,7 @@ function _getBooks($: CheerioAPI) {
     let authors: string[] = [];
 
     $('a[rel=go_author]', elem).each((i, e) => {
-      authors = authors.concat(
-        $(e)
-          .prop('title')
-          .split('、')
-      );
+      authors = authors.concat($(e).prop('title').split('、'));
     });
 
     const id = $('input[name=prod_check]', elem).prop('value');
@@ -123,9 +119,7 @@ function _getBooks($: CheerioAPI) {
 
     books[i] = {
       id,
-      thumbnail: $('a[rel=mid_image]', elem)
-        .children('img')
-        .data('src') as string,
+      thumbnail: $('a[rel=mid_image]', elem).children('img').data('src') as string,
       title: $('a[rel=mid_name]', elem).prop('title'),
       link: `http://www.books.com.tw/products/${id}`,
       priceCurrency: 'TWD',
