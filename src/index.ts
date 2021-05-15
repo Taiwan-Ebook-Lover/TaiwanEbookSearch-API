@@ -4,9 +4,11 @@ import cors from 'cors';
 import compression from 'compression';
 
 import './env';
-import { connect } from './db';
 import { botInit } from './bot';
+import { connect } from './firestore';
 import { searchRouter } from './routers/search';
+import { ServiceAccount } from 'firebase-admin';
+import * as serviceAccount from './auth/serviceAccount.json';
 
 const app: express.Application = express();
 
@@ -14,7 +16,7 @@ const init = () => {
   // Telegram bot is coming
   botInit(process.env.TOKEN as string, process.env.GROUPID as string);
   // Database is coming too
-  connect(process.env.DBURL as string);
+  connect(process.env.DBURL as string, serviceAccount as ServiceAccount);
 
   /**
    * Build db, Server
