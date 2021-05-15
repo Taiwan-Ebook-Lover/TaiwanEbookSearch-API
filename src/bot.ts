@@ -4,7 +4,7 @@ let bot: TelegramBot;
 let groupId: string;
 
 export const botInit = (token: string, group: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     if (bot) {
       return reject('bot is already inited.');
     }

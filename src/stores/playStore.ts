@@ -149,26 +149,26 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
       base
     );
 
-    const price = parseFloat(
-      $bookElem
-        .children('div')
-        .eq(1)
-        .children('div')
-        .children('div')
-        .children('div')
-        .children('button')
-        .children('div')
-        .children('span')
-        .map((index, priceElem) => {
-          return $(priceElem)
+    const price = $bookElem
+      .children('div')
+      .eq(1)
+      .children('div')
+      .children('div')
+      .children('div')
+      .children('button')
+      .children('div')
+      .children('span')
+      .map((index, priceElem) =>
+        Number(
+          $(priceElem)
             .children('span')
             .text()
             .replace(/\$|,/g, '')
-            .replace(/免費/, '0');
-        })
-        .get()
-        .sort((a: number, b: number) => a - b)[0]
-    );
+            .replace(/免費/, '0')
+        )
+      )
+      .get()
+      .sort((a: number, b: number) => a - b)[0];
 
     const id = linkUrl.searchParams.get('id') as string;
 

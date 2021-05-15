@@ -49,21 +49,14 @@ export const searchRouter = Router().get('/', (req, res, next) => {
     hyread(keywords),
   ])
     .then(searchResults => {
-      let response: AnyObject<any> = {};
-      let results = [];
+      const response = Object.fromEntries(
+        searchResults.map(result => [result.title, result.books])
+      );
 
-      for (let searchResult of searchResults) {
-        response[searchResult.title] = searchResult.books;
-
-        // Record numbers of books only
-        const quantity = searchResult.books.length;
-        delete searchResult.books;
-
-        results.push({
-          ...searchResult,
-          quantity,
-        });
-      }
+      const results = searchResults.map(({ books, ...result }) => ({
+        ...result,
+        quantity: books.length,
+      }));
 
       // calc process time
       const hrEnd = process.hrtime(hrStart);
