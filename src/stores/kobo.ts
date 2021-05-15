@@ -2,7 +2,6 @@ import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
-import { resolve as resolveURL } from 'url';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
@@ -146,8 +145,7 @@ function _getBooks($: CheerioAPI, base: string) {
 
     books[i] = {
       id: info.isbn,
-      // 圖片網址為相對位置，需要 resolve
-      thumbnail: resolveURL(base, info.thumbnailUrl),
+      thumbnail: new URL(info.thumbnailUrl, base).toString(),
       title,
       link: info.url,
       priceCurrency: $(elem)

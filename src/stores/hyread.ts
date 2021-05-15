@@ -2,7 +2,6 @@ import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
-import { resolve as resolveURL } from 'url';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { Book } from '../interfaces/book';
@@ -118,7 +117,7 @@ function _getBooks($: CheerioAPI, base: string) {
         .children('.bookPic')
         .prop('src'),
       title: $(elem).children('.book-title-01').children('a').text(),
-      link: resolveURL(base, $(elem).children('.book-title-01').children('a').prop('href')),
+      link: new URL($(elem).children('.book-title-01').children('a').prop('href'), base).toString(),
       priceCurrency: 'TWD',
       price: parseFloat($(elem).children('.book-money').children('.book-price').text()) || -1,
       // about: ,

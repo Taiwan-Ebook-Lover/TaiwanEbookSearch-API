@@ -140,7 +140,6 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
       .children('div')
       .text();
 
-    // resolve book's link
     let linkUrl = new URL(
       $bookElem
         .children('div')
