@@ -1,6 +1,6 @@
 {
   "name": "taiwan-ebook-search-api",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "API",
   "main": "./dist/index.ts",
   "scripts": {
