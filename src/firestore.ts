@@ -61,7 +61,7 @@ export const insertSearch = (data: AnyObject<any>): Promise<any> => {
     JSON.stringify(data, (key, value) => (value === undefined ? null : value))
   );
   return firestore
-    .collection('searches_v0.1')
+    .collection('searches')
     .add(formattedData)
     .then(({ id }) => ({ ...formattedData, id }))
     .catch(error => {

@@ -108,6 +108,7 @@ export const searchRouter = Router().get('/', async (req, res, next) => {
         userAgent: ua.getResult(),
         totalQuantity,
         results: firestoreResults,
+        apiVersion: process.env.npm_package_version
       };
 
       if (!firestore) {
