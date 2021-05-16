@@ -42,7 +42,7 @@ Process Time: ${Math.round((data.processTime / 1000) * 100) / 100}s
 Total: ${data.totalQuantity}
 User Agent: ${data.userAgent.ua}
 Search ID: \`${data.id}\`
-Link: [🔗](https://yuer.tw/sunnyworm.png)
+Link: [🔗](https://taiwan-ebook-lover.github.io/searches/${data.id})
 Bookstore Result: ${results.map(
     ({ bookstore, isOkay, quantity, processTime }: AnyObject<any>): string => `
 ${isOkay ? '✅' : '❌'}  ${bookstore.displayName} (${quantity} | ${
