@@ -115,7 +115,6 @@ function _getBooks($: CheerioAPI) {
       price: parseFloat($(elem).find('.a-price .a-offscreen').eq(0).text().replace('$', '')),
       priceCurrency: 'USD',
       link: `https://www.amazon.com${$h2.find('a').attr('href')}`,
-      about: '',
       thumbnail: $(elem).find('img').attr('src'),
     });
   });
