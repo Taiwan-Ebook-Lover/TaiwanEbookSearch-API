@@ -103,6 +103,20 @@ function _getBooks($: CheerioAPI) {
   }
 
   $list.each((i, elem) => {
+    const id = $(elem)
+      .children('.caption')
+      .children('.price-info')
+      .children('meta[itemprop=identifier]')
+      .prop('content');
+
+    const apCode = new Buffer(`https://readmoo.com/book/${id}`)
+      .toString('base64')
+      .replace(/\=*/g, '');
+    const apId = process.env.READMOO_AP_ID;
+    const link = apId
+      ? `https://readmoo.com/ap/target/${apId}?url=${apCode}`
+      : $(elem).children('.caption').children('h4').children('a').prop('href');
+
     const authors = [
       $(elem)
         .children('.caption')
@@ -127,11 +141,7 @@ function _getBooks($: CheerioAPI) {
       .replace(/出版日期：|\s/g, '');
 
     books[i] = {
-      id: $(elem)
-        .children('.caption')
-        .children('.price-info')
-        .children('meta[itemprop=identifier]')
-        .prop('content'),
+      id,
       thumbnail:
         ($(elem)
           .children('.thumbnail')
@@ -139,7 +149,7 @@ function _getBooks($: CheerioAPI) {
           .children('img')
           .data('lazy-original') as string) || '',
       title: $(elem).children('.caption').children('h4').children('a').text(),
-      link: $(elem).children('.caption').children('h4').children('a').prop('href'),
+      link,
       priceCurrency: $(elem)
         .children('.caption')
         .children('.price-info')
