@@ -113,6 +113,7 @@ searchesRouter.post('/', async (req, res, next) => {
         userAgent: ua.getResult(),
         totalQuantity,
         results,
+        apiVersion: process.env.npm_package_version,
       };
 
       if (!firestore) {
