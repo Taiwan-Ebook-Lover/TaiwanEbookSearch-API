@@ -44,17 +44,17 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   };
 
   return fetch(base, options)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw response.statusText;
       }
 
       return response.text();
     })
-    .then(body => {
+    .then((body) => {
       return _getBooks(cheerio.load(body), rootURL, base);
     })
-    .then(books => {
+    .then((books) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -69,7 +69,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -150,7 +150,7 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
         .eq(0)
         .children('a')
         .prop('href'),
-      base
+      base,
     );
 
     const id = linkUrl.searchParams.get('id') as string;
@@ -184,7 +184,7 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
         .children('div')
         .children('span')
         .map((index, priceElem) =>
-          Number($(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0'))
+          Number($(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0')),
         )
         .get()
         .sort((a: number, b: number) => a - b)[0],

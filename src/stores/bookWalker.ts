@@ -43,17 +43,17 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   };
 
   return fetch(base, options)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw response.statusText;
       }
 
       return response.text();
     })
-    .then(body => {
+    .then((body) => {
       return _getBooks(cheerio.load(body), base);
     })
-    .then(books => {
+    .then((books) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -68,7 +68,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -121,7 +121,7 @@ function _getBooks($: CheerioAPI, base: string) {
           .children('li')
           .map((i, el) => $(el).text())
           .toArray()
-          .map(str => str.split(' : '))
+          .map((str) => str.split(' : '))
           .forEach(([authorTitle, authorName]) => {
             switch (authorTitle) {
               case '作者':
@@ -155,7 +155,7 @@ function _getBooks($: CheerioAPI, base: string) {
           title: title,
           link: new URL(
             $(elem).children('.bookdata').children('h2').children('a').prop('href'),
-            base
+            base,
           ).toString(),
           priceCurrency: 'TWD',
           price:
@@ -167,7 +167,7 @@ function _getBooks($: CheerioAPI, base: string) {
                 .children('h4')
                 .children('span')
                 .text()
-                .replace(/\D/g, '')
+                .replace(/\D/g, ''),
             ) || -1,
           about: $(elem)
             .children('.bookdata')
@@ -182,7 +182,7 @@ function _getBooks($: CheerioAPI, base: string) {
                 .children('.bookinfo')
                 .children('h5')
                 .children('span')
-                .text()
+                .text(),
             ),
           // publisher:,
         };

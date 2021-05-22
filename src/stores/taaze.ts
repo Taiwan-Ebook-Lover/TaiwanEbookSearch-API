@@ -44,14 +44,14 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   };
 
   return fetch(base, options)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw response.statusText;
       }
 
       return response.text();
     })
-    .then(body => {
+    .then((body) => {
       const books: Book[] = _getBooks(cheerio.load(body));
 
       if (!books.length) {
@@ -60,7 +60,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
         return _getBooksInfo(books);
       }
     })
-    .then(books => {
+    .then((books) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -75,7 +75,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -97,7 +97,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 function _getBooksInfo(books: Book[] = []) {
-  return Promise.all(books.map(book => _getBookInfo(book.id))).then(infos => {
+  return Promise.all(books.map((book) => _getBookInfo(book.id))).then((infos) => {
     for (let i in books) {
       books[i].title = infos[i].booktitle;
       books[i].about = infos[i].bookprofile.replace(/\r/g, '');
@@ -165,6 +165,6 @@ function _getBookInfo(id = '') {
   };
 
   return fetch(base, options)
-    .then(response => response.json())
-    .then(info => info[0]);
+    .then((response) => response.json())
+    .then((info) => info[0]);
 }

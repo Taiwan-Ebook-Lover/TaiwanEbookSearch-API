@@ -43,17 +43,17 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   };
 
   return fetch(base, options)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw response.statusText;
       }
 
       return response.text();
     })
-    .then(body => {
+    .then((body) => {
       return _getBooks(cheerio.load(body));
     })
-    .then(books => {
+    .then((books) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -68,7 +68,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -163,7 +163,7 @@ function _getBooks($: CheerioAPI) {
             .children('.our-price')
             .children('strong')
             .text()
-            .replace(/NT\$|,/g, '')
+            .replace(/NT\$|,/g, ''),
         ) || -1,
       about: $(elem).children('.caption').children('.description').text(),
     };

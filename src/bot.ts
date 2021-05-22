@@ -13,7 +13,7 @@ export const botInit = (token: string, group: string) => {
     groupId = group;
 
     resolve();
-  }).catch(error => {
+  }).catch((error) => {
     if (error) {
       console.error(error);
     }
@@ -23,5 +23,5 @@ export const botInit = (token: string, group: string) => {
 export const sendMessage = (message: string) => {
   return bot
     .sendMessage(groupId, message, { parse_mode: 'Markdown' })
-    .catch(error => console.error(error));
+    .catch((error) => console.error(error));
 };

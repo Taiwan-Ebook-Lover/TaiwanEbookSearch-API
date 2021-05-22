@@ -47,7 +47,7 @@ Bookstore Result: ${results.map(
     ({ bookstore, isOkay, quantity, processTime }: AnyObject<any>): string => `
 ${isOkay ? '✅' : '❌'}  ${bookstore.displayName} (${quantity} | ${
       Math.round((processTime / 1000) * 100) / 100
-    }s)`
+    }s)`,
   )}
   `;
 };
@@ -78,9 +78,9 @@ searchesRouter.post('/', async (req, res, next) => {
   }
 
   const bookstores = await getBookstores();
-  const validBookstores = bookstores.filter(store => store.isOnline);
+  const validBookstores = bookstores.filter((store) => store.isOnline);
 
-  let selectedBookstores = validBookstores.filter(store => bookstoresRequest.includes(store.id));
+  let selectedBookstores = validBookstores.filter((store) => bookstoresRequest.includes(store.id));
 
   if (!selectedBookstores.length) {
     selectedBookstores = validBookstores;
@@ -89,10 +89,10 @@ searchesRouter.post('/', async (req, res, next) => {
   // 等全部查詢完成
   Promise.all(
     selectedBookstores.map((bookstore: Bookstore) =>
-      bookstoreModel[bookstore.id](bookstore, keywords)
-    )
+      bookstoreModel[bookstore.id](bookstore, keywords),
+    ),
   )
-    .then(async searchResults => {
+    .then(async (searchResults) => {
       // 整理結果並紀錄
       let results: any[] = [];
       let totalQuantity: number = 0;
@@ -127,7 +127,7 @@ searchesRouter.post('/', async (req, res, next) => {
 
       return res.status(201).send(search);
     })
-    .catch(error => {
+    .catch((error) => {
       console.time('Error time: ');
       console.error(error);
 
@@ -142,7 +142,7 @@ searchesRouter.post('/', async (req, res, next) => {
 searchesRouter.get('/:id', async (req, res, next) => {
   const searchId: string = req.params.id;
   getSearch(searchId)
-    .then(search => {
+    .then((search) => {
       if (search) {
         return res.status(200).send(search);
       } else {
@@ -151,7 +151,7 @@ searchesRouter.get('/:id', async (req, res, next) => {
         });
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.time('Error time: ');
       console.error(error);
 

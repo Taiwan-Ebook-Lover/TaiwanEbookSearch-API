@@ -1,0 +1,32 @@
+name: Code Check
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - '.vscode/**'
+      - '.idea/**'
+      - '.husky/**'
+
+jobs:
+  code-check:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --ignore-scripts --progress=false --no-audit --no-fund
+
+      - name: Format Check
+        run: npm run format-check
+
+      - name: Compile Test
+        run: npm run build

@@ -21,7 +21,7 @@ export const connect = (url: string, serviceAccount: ServiceAccount): Promise<vo
       // update firestore
       firestore = connection;
     })
-    .catch(error => {
+    .catch((error) => {
       console.time('Error time: ');
       console.error(error);
     });
@@ -49,7 +49,7 @@ export const getBookstores = (bookstoreId?: string): Promise<FirestoreBookstore[
       }
       return bookstores;
     })
-    .catch(error => {
+    .catch((error) => {
       console.time('Error time: ');
       console.error(error);
       return bookstores;
@@ -58,13 +58,13 @@ export const getBookstores = (bookstoreId?: string): Promise<FirestoreBookstore[
 
 export const insertSearch = (data: AnyObject<any>): Promise<any> => {
   const formattedData = JSON.parse(
-    JSON.stringify(data, (key, value) => (value === undefined ? null : value))
+    JSON.stringify(data, (key, value) => (value === undefined ? null : value)),
   );
   return firestore
     .collection('searches')
     .add(formattedData)
     .then(({ id }) => ({ ...formattedData, id }))
-    .catch(error => {
+    .catch((error) => {
       console.time('Error time: ');
       console.error(error);
       return '';
@@ -76,13 +76,13 @@ export const getSearch = (id: string): Promise<AnyObject<any>> => {
     .collection('searches')
     .doc(id)
     .get()
-    .then(doc => {
+    .then((doc) => {
       if (!doc.exists) {
         throw Error('No matching bookstore.');
       }
       return { ...doc.data(), id };
     })
-    .catch(error => {
+    .catch((error) => {
       console.time('Error time: ');
       console.error(error);
       return {};

@@ -9,15 +9,20 @@ import { connect } from './firestore';
 import { searchesRouter } from './routers/searches';
 import { bookstoresRouter } from './routers/bookstores';
 import { ServiceAccount } from 'firebase-admin';
-import * as serviceAccount from './auth/serviceAccount.json';
 
 const app: express.Application = express();
 
 const init = () => {
   // Telegram bot is coming
   botInit(process.env.TOKEN as string, process.env.GROUPID as string);
+
   // Database is coming too
-  connect(process.env.DBURL as string, serviceAccount as ServiceAccount);
+  const firebaseUrl: string = process.env.DBURL ?? '';
+  const serviceAccount: ServiceAccount = JSON.parse(
+    Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 as string, 'base64').toString(),
+  );
+
+  connect(firebaseUrl, serviceAccount);
 
   /**
    * Build db, Server
@@ -43,7 +48,7 @@ app.use(
     methods: ['GET', 'POST', 'PATCH', 'OPTION', 'DELETE'],
     credentials: true,
     origin: true,
-  })
+  }),
 );
 
 /**
