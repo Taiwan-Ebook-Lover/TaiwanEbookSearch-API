@@ -43,7 +43,7 @@ app.use(
     methods: ['GET', 'POST', 'PATCH', 'OPTION', 'DELETE'],
     credentials: true,
     origin: true,
-  })
+  }),
 );
 
 /**

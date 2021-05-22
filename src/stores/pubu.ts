@@ -43,17 +43,17 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   };
 
   return fetch(base, options)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw response.statusText;
       }
 
       return response.text();
     })
-    .then(body => {
+    .then((body) => {
       return _getBooks(cheerio.load(body), base);
     })
-    .then(books => {
+    .then((books) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -68,7 +68,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -112,7 +112,7 @@ function _getBooks($: CheerioAPI, base: string) {
       title: $(elem).children('.searchResultContent').children('h2').children('a').prop('title'),
       link: new URL(
         $(elem).children('.searchResultContent').children('h2').children('a').prop('href'),
-        base
+        base,
       ).toString(),
       priceCurrency: 'TWD',
       price: parseFloat($priceList.eq(0).children('span').text()) || -1,
@@ -124,7 +124,7 @@ function _getBooks($: CheerioAPI, base: string) {
         .text()
         .trim()
         .split(/, |,|、|，|／/g)
-        .map(author => {
+        .map((author) => {
           // 特別分工的作者，改變格式
           const authorSplit = author.split('：');
 

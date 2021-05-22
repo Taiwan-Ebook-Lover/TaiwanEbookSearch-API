@@ -43,17 +43,17 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
   };
 
   return fetch(base, options)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw response.statusText;
       }
 
       return response.text();
     })
-    .then(body => {
+    .then((body) => {
       return _getBooks(cheerio.load(body), base);
     })
-    .then(books => {
+    .then((books) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -68,7 +68,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       // calc process time
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
@@ -105,7 +105,7 @@ function _getBooks($: CheerioAPI, base: string) {
   $list.each((i, elem) => {
     // 從 script elem 拉 JSON data
     const info = JSON.parse(
-      $(elem).children('.item-detail').children('script').html() || '{ data: null }'
+      $(elem).children('.item-detail').children('script').html() || '{ data: null }',
     ).data;
 
     // 若有副標題，併入主標題
@@ -123,7 +123,7 @@ function _getBooks($: CheerioAPI, base: string) {
           .children('.synopsis-contributors')
           .children('.synopsis-text')
           .children('.contributor-name')
-          .data('track-info') as string
+          .data('track-info') as string,
       )?.author ?? ''
     ).split('、');
 
@@ -139,7 +139,7 @@ function _getBooks($: CheerioAPI, base: string) {
             .children('span')
             .first()
             .text()
-            .replace(/NT\$|,|\s/g, '')
+            .replace(/NT\$|,|\s/g, ''),
         ) || -1;
     }
 
