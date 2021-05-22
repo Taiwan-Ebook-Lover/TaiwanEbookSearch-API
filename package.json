@@ -6,6 +6,7 @@
     "scripts": {
         "prepare": "husky install",
         "postinstall": "husky install && rm -rf .git/hooks && ln -s ../.husky .git/hooks",
+        "convert-firebase-config": "openssl base64 -A",
         "start": "node ./dist/index",
         "build": "tsc",
         "tsc": "tsc",
