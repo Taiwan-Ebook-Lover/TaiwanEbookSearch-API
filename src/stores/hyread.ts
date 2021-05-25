@@ -39,6 +39,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
     headers: {
       'User-Agent': `Taiwan-Ebook-Search/${process.env.npm_package_version}`,
+      cookie: 'notBot=1',
     },
   };
 
