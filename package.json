@@ -32,7 +32,7 @@
         "date-fns": "^2.21.3",
         "dotenv": "^9.0.2",
         "express": "^4.17.1",
-        "firebase-admin": "^9.8.0",
+        "firebase-admin": "^10.0.2",
         "https-proxy-agent": "^5.0.0",
         "mongodb": "^3.6.6",
         "node-fetch": "^2.6.1",
