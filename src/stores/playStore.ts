@@ -92,22 +92,13 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
 // parse 找書
 function _getBooks($: CheerioAPI, rootURL: string, base: string) {
-  const $list = $('body > div')
-    .eq(0)
-    .children('div')
-    .eq(3)
-    .children('c-wiz')
-    .children('div')
-    .children('div')
+  const $list = $('body > c-wiz')
     .eq(1)
     .children('div')
-    .children('c-wiz')
-    .children('c-wiz')
-    .children('c-wiz')
     .children('div')
-    .children('div')
-    .eq(1)
-    .children('div');
+    .children('c-wiz')
+    .children('c-wiz')
+    .find('div[role=listitem]');
 
   let books: Book[] = [];
 
@@ -119,41 +110,41 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
   }
 
   $list.each((i, elem) => {
-    const $bookElem = $(elem)
-      .children('c-wiz')
-      .children('div')
-      .children('div')
-      .children('div')
-      .eq(1)
-      .children('div')
-      .children('div');
-
-    // 先抓作者群字串（可能沒有）
-    let authors: string = $bookElem
-      .children('div')
-      .eq(0)
-      .children('div')
-      .children('div')
-      .children('div')
-      .eq(1)
-      .children('a')
-      .children('div')
-      .text();
+    const $bookElem = $(elem);
 
     let linkUrl = new URL(
-      $bookElem
-        .children('div')
-        .eq(0)
-        .children('div')
-        .children('div')
-        .children('div')
-        .eq(0)
-        .children('a')
-        .prop('href'),
+      $bookElem.children('div').eq(0).children('div').eq(0).children('a').prop('href'),
       base,
     );
 
     const id = linkUrl.searchParams.get('id') as string;
+
+    let price = Number(0);
+    const $priceRootElem = $bookElem
+      .children('div')
+      .eq(0)
+      .children('div')
+      .eq(0)
+      .children('a')
+      .children('div')
+      .eq(1)
+      .children('div')
+      .eq(1)
+      .children('div')
+      .last()
+      .children()
+      .children('span');
+    if ($priceRootElem.text() != '免費') {
+      const priceElems = $priceRootElem.find('span[aria-hidden="true"] > span');
+      if (!priceElems.length) {
+        price = Number($priceRootElem.text().replace(/\$|,/g, ''));
+      } else {
+        price = priceElems
+          .map((index, priceElem) => Number($(priceElem).text().replace(/\$|,/g, '')))
+          .get()
+          .sort((a: number, b: number) => a - b)[0];
+      }
+    }
 
     // 設定書籍網址的語言與國家
     linkUrl.searchParams.set('gl', 'tw');
@@ -161,48 +152,22 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
 
     let book: Book = {
       id,
-      thumbnail: `${rootURL}/books/content/images/frontcover/${id}?fife=w320-h460`,
+      thumbnail: `${rootURL}/books/publisher/content/images/frontcover/${id}?fife=w256-h256`,
       title: $bookElem
         .children('div')
         .eq(0)
         .children('div')
-        .children('div')
-        .children('div')
         .eq(0)
         .children('a')
-        .children('div')
-        .prop('title'),
-      link: linkUrl.href,
-      priceCurrency: 'TWD',
-      price: $bookElem
         .children('div')
         .eq(1)
         .children('div')
-        .children('div')
-        .children('div')
-        .children('button')
-        .children('div')
-        .children('span')
-        .map((index, priceElem) =>
-          Number($(priceElem).children('span').text().replace(/\$|,/g, '').replace(/免費/, '0')),
-        )
-        .get()
-        .sort((a: number, b: number) => a - b)[0],
-      about: $bookElem
-        .children('div')
         .eq(0)
-        .children('div')
-        .children('div')
-        .children('div')
-        .eq(2)
-        .children('a')
-        .text(),
+        .prop('title'),
+      link: linkUrl.href,
+      priceCurrency: 'TWD',
+      price,
     };
-
-    // 有作者群，才放
-    if (authors) {
-      book.authors = (authors || '').split(/,|、/);
-    }
 
     books[i] = book;
   });

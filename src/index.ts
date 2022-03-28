@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import compression from 'compression';
 
@@ -37,10 +36,10 @@ const init = () => {
 app.use(compression());
 
 // for parsing application/json
-app.use(bodyParser.json());
+app.use(express.json());
 
 // for parsing application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 // for cors
 app.use(

@@ -30,7 +30,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `https://www.pubu.com.tw/search?q=${keywords}`;
+  const base = `https://www.pubu.com.tw/search?sort=0&orderBy=&haveBOOK=true&haveMAGAZINE=false&haveMEDIA=false&q=${keywords}`;
 
   const options = {
     method: 'GET',
@@ -91,36 +91,31 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
 // parse 找書
 function _getBooks($: CheerioAPI, base: string) {
-  const $list = $('#search-list-content').children('article');
+  const $list = $('#search-list-content').children('div').children('article');
 
   let books: Book[] = [];
 
   // 找不到就是沒這書
   if (!$list.length) {
     // console.log('Not found in Pubu!');
-
     return books;
   }
 
   $list.each((i, elem) => {
     // 價格列表包（部分書籍有一般版與下載版兩種價格）
-    const $priceList = $(elem).children('.searchResultContent').children('ul.price').children('li');
+    const $priceList = $(elem).find('.info-price').children('div');
 
     let book: Book = {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem).children('.cover-div').children('a').children('img').prop('src'),
-      title: $(elem).children('.searchResultContent').children('h2').children('a').prop('title'),
-      link: new URL(
-        $(elem).children('.searchResultContent').children('h2').children('a').prop('href'),
-        base,
-      ).toString(),
+      thumbnail: $(elem).find('.cover').children('img').prop('data-src'),
+      title: $(elem).find('.cover').children('img').prop('title'),
+      link: new URL($(elem).children('div').children('a').prop('href'), base).toString(),
       priceCurrency: 'TWD',
-      price: parseFloat($priceList.eq(0).children('span').text()) || -1,
+      price: parseFloat($priceList.eq(0).children('span').text().replace('NT$', '')) || -1,
       authors: $(elem)
-        .children('.searchResultContent')
-        .children('p')
-        .eq(1)
+        .find('.info-others')
         .children('a')
+        .eq(1)
         .text()
         .trim()
         .split(/, |,|、|，|／/g)
@@ -134,16 +129,8 @@ function _getBooks($: CheerioAPI, base: string) {
 
           return author;
         }),
-      publisher: $(elem).children('.searchResultContent').children('p').eq(2).children('a').text(),
-      publishDate: $(elem)
-        .children('.searchResultContent')
-        .children('p')
-        .eq(0)
-        .text()
-        .replace(/(出版日期：)|\s/g, ''),
-      about: $(elem).children('.searchResultContent').children('p.info').text(),
+      publisher: $(elem).find('.info-others').children('a').eq(0).text(),
     };
-
     // 有多種價格，則為下載版
     if ($priceList.length > 1) {
       book.nonDrmPrice = parseFloat($priceList.eq(1).children('span').text());
