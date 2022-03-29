@@ -1,12 +1,13 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import cors from 'cors';
 import compression from 'compression';
 
-import './env';
-import { botInit } from './bot';
-import { connect } from './firestore';
-import { searchesRouter } from './routers/searches';
-import { bookstoresRouter } from './routers/bookstores';
+import 'dotenv/config';
+
+import { botInit } from './bot.js';
+import { connect } from './firestore.js';
+import { searchesRouter } from './routers/searches.js';
+import { bookstoresRouter } from './routers/bookstores.js';
 import { ServiceAccount } from 'firebase-admin';
 
 const app: express.Application = express();
@@ -36,10 +37,10 @@ const init = () => {
 app.use(compression());
 
 // for parsing application/json
-app.use(express.json());
+app.use(express.json() as RequestHandler);
 
 // for parsing application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }) as RequestHandler);
 
 // for cors
 app.use(
