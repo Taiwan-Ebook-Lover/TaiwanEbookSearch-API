@@ -2,12 +2,13 @@ import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
-import { HttpsProxyAgent } from 'https-proxy-agent';
+import pkg from 'https-proxy-agent';
+const { HttpsProxyAgent } = pkg;
 
-import { Book } from '../interfaces/book';
-import { Result } from '../interfaces/result';
-import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
+import { Book } from '../interfaces/book.js';
+import { Result } from '../interfaces/result.js';
+import { getProcessTime } from '../interfaces/general.js';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
 export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time

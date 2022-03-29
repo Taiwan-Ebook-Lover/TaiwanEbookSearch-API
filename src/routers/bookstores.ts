@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getBookstores } from '../firestore';
+import { getBookstores } from '../firestore.js';
 
 const bookstoresRouter = Router();
 

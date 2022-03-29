@@ -2,13 +2,13 @@ import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
-import { HttpsProxyAgent } from 'https-proxy-agent';
+import pkg from 'https-proxy-agent';
+const { HttpsProxyAgent } = pkg;
 
-import { Book } from '../interfaces/book';
-import { Result } from '../interfaces/result';
-import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
-import { response } from 'express';
+import { Book } from '../interfaces/book.js';
+import { Result } from '../interfaces/result.js';
+import { getProcessTime } from '../interfaces/general.js';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
 export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
   // start calc process time
@@ -166,5 +166,5 @@ function _getBookInfo(id = '') {
 
   return fetch(base, options)
     .then((response) => response.json())
-    .then((info) => info[0]);
+    .then((info) => (info as any[])[0]);
 }

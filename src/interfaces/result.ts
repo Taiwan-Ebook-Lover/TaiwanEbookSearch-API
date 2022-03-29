@@ -1,5 +1,5 @@
-import { Book } from './book';
-import { Bookstore } from './bookstore';
+import { Book } from './book.js';
+import { Bookstore } from './bookstore.js';
 
 export interface Result {
   bookstore: Bookstore;
