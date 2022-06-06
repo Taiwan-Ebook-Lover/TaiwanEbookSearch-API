@@ -110,7 +110,7 @@ function _getBooks($: CheerioAPI, base: string) {
       // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
       thumbnail: $(elem).find('.cover').children('img').prop('data-src'),
       title: $(elem).find('.cover').children('img').prop('title'),
-      link: new URL($(elem).children('div').children('a').prop('href'), base).toString(),
+      link: new URL($(elem).children('div').children('a').prop('href') ?? '', base).toString(),
       priceCurrency: 'TWD',
       price: parseFloat($priceList.eq(0).children('span').text().replace('NT$', '')) || -1,
       authors: $(elem)

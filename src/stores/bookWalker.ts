@@ -141,12 +141,9 @@ function _getBooks($: CheerioAPI, base: string) {
           });
 
         books[i] = {
-          id: $(elem)
-            .children('.bookdata')
-            .children('h2')
-            .children('a')
-            .prop('href')
-            .replace('/product/', ''),
+          id: (
+            $(elem).children('.bookdata').children('h2').children('a').prop('href') ?? ''
+          ).replace('/product/', ''),
           thumbnail: $(elem)
             .children('.bookcover')
             .children('.bookitem')
@@ -155,7 +152,7 @@ function _getBooks($: CheerioAPI, base: string) {
             .data('src') as string,
           title: title,
           link: new URL(
-            $(elem).children('.bookdata').children('h2').children('a').prop('href'),
+            $(elem).children('.bookdata').children('h2').children('a').prop('href') ?? '',
             base,
           ).toString(),
           priceCurrency: 'TWD',
