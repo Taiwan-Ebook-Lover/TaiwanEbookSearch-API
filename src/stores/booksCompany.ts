@@ -109,7 +109,7 @@ function _getBooks($: CheerioAPI) {
       authors = authors.concat($(e).prop('title').split('、'));
     });
 
-    const id = $('input[name=prod_check]', elem).prop('value');
+    const id = ($(elem).attr('id') ?? '').match(/(?<=itemlist_)\S*/)?.[0] ?? '';
 
     const price = parseFloat(
       $('.list-nav', elem)
