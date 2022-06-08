@@ -116,7 +116,8 @@ function _getBooks($: CheerioAPI) {
     const apId = process.env.READMOO_AP_ID;
     const link = apId
       ? `https://readmoo.com/ap/target/${apId}?url=${apCode}`
-      : $(elem).children('.caption').children('h4').children('a').prop('href');
+      : $(elem).children('.caption').children('h4').children('a').prop('href') ??
+        'https://readmoo.com';
 
     const authors = [
       $(elem)

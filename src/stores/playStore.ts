@@ -114,7 +114,7 @@ function _getBooks($: CheerioAPI, rootURL: string, base: string) {
     const $bookElem = $(elem);
 
     let linkUrl = new URL(
-      $bookElem.children('div').eq(0).children('div').eq(0).children('a').prop('href'),
+      $bookElem.children('div').eq(0).children('div').eq(0).children('a').prop('href') ?? '',
       base,
     );
 
