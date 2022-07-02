@@ -31,7 +31,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
   // URL encode
   keywords = encodeURIComponent(keywords);
-  const base = `https://search.books.com.tw/search/query/key/${keywords}/cat/EBA`;
+  const base = `https://search.books.com.tw/search/query/cat/all/sort/1/v/0/page/1/spell/1/key/${keywords}`;
 
   const options = {
     method: 'GET',
