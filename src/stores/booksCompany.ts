@@ -122,7 +122,7 @@ function _getBooks($: CheerioAPI) {
 
     books[i] = {
       id,
-      thumbnail: $('a[rel=mid_image]', elem).children('img').data('src') as string,
+      thumbnail: $('.box_1', elem).children('a').children('img').prop('data-src') as string,
       title: $('a[rel=mid_name]', elem).prop('title'),
       link: `https://www.books.com.tw/products/${id}`,
       priceCurrency: 'TWD',
