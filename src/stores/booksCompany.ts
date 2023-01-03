@@ -120,9 +120,15 @@ function _getBooks($: CheerioAPI) {
         .replace(/NT\$|,/g, ''),
     );
 
+    const rawThumbnailUrl = $('.box_1', elem)
+      .children('a')
+      .children('img')
+      .prop('data-src') as string;
+    const thumbnailUrl = _getBooksCompanyThumbnail(rawThumbnailUrl);
+
     books[i] = {
       id,
-      thumbnail: $('.box_1', elem).children('a').children('img').prop('data-src') as string,
+      thumbnail: thumbnailUrl,
       title: $('a[rel=mid_name]', elem).prop('title'),
       link: `https://www.books.com.tw/products/${id}`,
       priceCurrency: 'TWD',
@@ -140,4 +146,11 @@ function _getBooks($: CheerioAPI) {
   });
 
   return books;
+}
+
+function _getBooksCompanyThumbnail(url: string) {
+  const thumbnailRegexPattern = /.+\/getImage\?i=(https:\/\/.+\.jpg).+/;
+  const match = url.match(thumbnailRegexPattern);
+  const thumbnailUrl = match ? match[1] : 'null';
+  return thumbnailUrl;
 }
