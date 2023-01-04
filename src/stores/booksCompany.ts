@@ -120,10 +120,10 @@ function _getBooks($: CheerioAPI) {
         .replace(/NT\$|,/g, ''),
     );
 
-    const rawThumbnailUrl = $('.box_1', elem)
+    const rawThumbnailUrl: string = $('.box_1', elem)
       .children('a')
       .children('img')
-      .prop('data-src') as string;
+      .prop('data-src');
     const thumbnailUrl = _getBooksCompanyThumbnail(rawThumbnailUrl);
 
     books[i] = {
