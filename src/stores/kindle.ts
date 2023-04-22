@@ -92,6 +92,13 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 
 // parse 找書
 function _getBooks($: CheerioAPI) {
+  const noEbookFilter = $('#s-refinements').children('div').first().children().length === 0;
+
+  if (noEbookFilter) {
+    // Avoid returning results from all categories if no ebook matches.
+    return [];
+  }
+
   const $list = $('.s-main-slot').children('.s-result-item');
 
   let books: Book[] = [];
