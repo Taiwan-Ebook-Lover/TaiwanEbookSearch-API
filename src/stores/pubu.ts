@@ -106,31 +106,34 @@ function _getBooks($: CheerioAPI, base: string) {
     // 價格列表包（部分書籍有一般版與下載版兩種價格）
     const $priceList = $(elem).find('.info-price').children('div');
 
+    const id = $(elem).find('.cover').children('a').prop('data-ecga');
+
     let book: Book = {
-      // id: $(elem).children('.caption').children('.price-info').children('meta[itemprop=identifier]').prop('content'),
-      thumbnail: $(elem).find('.cover').children('img').prop('data-src'),
-      title: $(elem).find('.cover').children('img').prop('title'),
-      link: new URL($(elem).children('div').children('a').prop('href') ?? '', base).toString(),
+      id,
+      thumbnail: $(elem).find('.cover').children('a').children('img').prop('data-src'),
+      title: $(elem).find('.cover').children('a').children('img').prop('title'),
+      link: id ? new URL(`ebook/${id}`, base).toString() : '',
       priceCurrency: 'TWD',
       price: parseFloat($priceList.eq(0).children('span').text().replace('NT$', '')) || -1,
-      authors: $(elem)
-        .find('.info-others')
-        .children('a')
-        .eq(1)
-        .text()
-        .trim()
-        .split(/, |,|、|，|／/g)
-        .map((author) => {
-          // 特別分工的作者，改變格式
-          const authorSplit = author.split('：');
+      authors: [
+        ...$(elem)
+          .find('.info-others')
+          .children('a.author')
+          .text()
+          .trim()
+          .split(/, |,|、|，|／/g)
+          .map((author) => {
+            // 特別分工的作者，改變格式
+            const authorSplit = author.split('：');
 
-          if (authorSplit.length > 1) {
-            author = `${authorSplit[1]}（${authorSplit[0]}）`;
-          }
+            if (authorSplit.length > 1) {
+              author = `${authorSplit[1]}（${authorSplit[0]}）`;
+            }
 
-          return author;
-        }),
-      publisher: $(elem).find('.info-others').children('a').eq(0).text(),
+            return author;
+          }),
+      ].flat(Infinity),
+      publisher: $(elem).find('.info-others').children('a:not(.author)').text().trim(),
     };
     // 有多種價格，則為下載版
     if ($priceList.length > 1) {
