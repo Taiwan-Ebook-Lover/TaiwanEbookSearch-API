@@ -7,3 +7,4 @@ export { default as playStore } from './playStore.js';
 export { default as pubu } from './pubu.js';
 export { default as hyread } from './hyread.js';
 export { default as kindle } from './kindle.js';
+export { default as likerLand } from './likerLand.js';
