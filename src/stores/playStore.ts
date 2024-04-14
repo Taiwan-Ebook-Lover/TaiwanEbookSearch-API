@@ -1,4 +1,4 @@
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -92,7 +92,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: CheerioAPI, rootURL: string, base: string) {
+function _getBooks($: cheerio.CheerioAPI, rootURL: string, base: string) {
   const $list = $('body > c-wiz')
     .eq(1)
     .children('div')
