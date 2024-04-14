@@ -17,6 +17,7 @@ import {
   pubu,
   hyread,
   kindle,
+  likerLand,
 } from '../stores/index.js';
 
 const bookstoreModel: AnyObject<any> = {
@@ -29,6 +30,7 @@ const bookstoreModel: AnyObject<any> = {
   pubu,
   hyread,
   kindle,
+  likerLand,
 };
 
 const searchesRouter = Router();
