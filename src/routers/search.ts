@@ -2,11 +2,11 @@ import { Router } from 'express';
 import { UAParser } from 'ua-parser-js';
 import { format } from 'date-fns';
 
-import { sendMessage } from '../bot';
-import { firestore, insertSearch, getSearch, getBookstores } from '../firestore';
+import { sendMessage } from '../bot.js';
+import { firestore, insertSearch, getSearch, getBookstores } from '../firestore.js';
 
-import { AnyObject, getProcessTime } from '../interfaces/general';
-import { Bookstore } from '../interfaces/bookstore';
+import { AnyObject, getProcessTime } from '../interfaces/general.js';
+import { Bookstore } from '../interfaces/bookstore.js';
 import {
   readmoo,
   booksCompany,
@@ -16,7 +16,7 @@ import {
   playStore,
   pubu,
   hyread
-} from '../stores';
+} from '../stores/index.js';
 
 const bookstoreModel: AnyObject<any> = {
   readmoo,

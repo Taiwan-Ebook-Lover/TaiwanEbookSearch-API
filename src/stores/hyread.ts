@@ -1,11 +1,11 @@
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 
-import { Book } from '../interfaces/book';
-import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
+import { Book } from '../interfaces/book.js';
+import { getProcessTime } from '../interfaces/general.js';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
 const title = 'hyread' as const;
 
@@ -27,7 +27,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
       error: {
         message: 'Bookstore is not open.',
         type: 'bookstore-invalid',
-      }
+      },
     };
 
     return result;
@@ -94,7 +94,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     });
 };
 
-function _getBooks($: CheerioAPI, base: string) {
+function _getBooks($: cheerio.CheerioAPI, base: string) {
   const $books = $('.book-wrap');
 
   let books: Book[] = [];
@@ -113,7 +113,7 @@ function _getBooks($: CheerioAPI, base: string) {
         .children('.book-title-01')
         .children('a')
         .prop('href')
-        .replace(/bookDetail.jsp\?id=/, ''),
+        ?.replace(/bookDetail.jsp\?id=/, ''),
       thumbnail: $(elem)
         .children('.book-cover')
         .children('.book-overlay')
@@ -122,7 +122,10 @@ function _getBooks($: CheerioAPI, base: string) {
         .children('.bookPic')
         .prop('src'),
       title: $(elem).children('.book-title-01').children('a').text(),
-      link: new URL($(elem).children('.book-title-01').children('a').prop('href'), base).toString(),
+      link: new URL(
+        $(elem).children('.book-title-01').children('a').prop('href') ?? '',
+        base
+      ).toString(),
       priceCurrency: 'TWD',
       price: price >= 0 ? price : -1,
       // about: ,

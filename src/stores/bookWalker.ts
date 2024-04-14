@@ -1,11 +1,11 @@
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 
-import { Book } from '../interfaces/book';
-import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
+import { Book } from '../interfaces/book.js';
+import { getProcessTime } from '../interfaces/general.js';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
 const title = 'bookWalker' as const;
 
@@ -93,7 +93,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     });
 };
 
-function _getBooks($: CheerioAPI, base: string) {
+function _getBooks($: cheerio.CheerioAPI, base: string) {
   const books: Book[] = [];
   const $categories = $('.listbox');
 
@@ -162,7 +162,7 @@ function _getBooks($: CheerioAPI, base: string) {
             .children('h2')
             .children('a')
             .prop('href')
-            .replace('/product/', ''),
+            ?.replace('/product/', ''),
           thumbnail: $(elem)
             .children('.bookcover')
             .children('.bookitem')
@@ -171,7 +171,7 @@ function _getBooks($: CheerioAPI, base: string) {
             .data('src') as string,
           title: title,
           link: new URL(
-            $(elem).children('.bookdata').children('h2').children('a').prop('href'),
+            $(elem).children('.bookdata').children('h2').children('a').prop('href') ?? '',
             base
           ).toString(),
           priceCurrency: 'TWD',

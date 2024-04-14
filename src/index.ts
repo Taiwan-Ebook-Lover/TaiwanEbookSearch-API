@@ -1,14 +1,14 @@
-import express from 'express';
-import bodyParser from 'body-parser';
+import express, { RequestHandler } from 'express';
 import cors from 'cors';
 import compression from 'compression';
 
-import './env';
-import { botInit } from './bot';
-import { connect } from './firestore';
-import { searchRouter } from './routers/search';
+import 'dotenv/config';
+
+import { botInit } from './bot.js';
+import { connect } from './firestore.js';
+import { searchRouter } from './routers/search.js';
 import { ServiceAccount } from 'firebase-admin';
-import * as serviceAccount from './auth/serviceAccount.json';
+import serviceAccount from './auth/serviceAccount.json' assert { type: 'json' };
 
 const app: express.Application = express();
 
@@ -31,10 +31,10 @@ const init = () => {
 app.use(compression());
 
 // for parsing application/json
-app.use(bodyParser.json());
+app.use(express.json() as RequestHandler);
 
 // for parsing application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }) as RequestHandler);
 
 // for cors
 app.use(

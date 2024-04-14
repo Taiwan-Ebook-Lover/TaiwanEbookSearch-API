@@ -1,11 +1,11 @@
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 
-import { Book } from '../interfaces/book';
-import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
+import { Book } from '../interfaces/book.js';
+import { getProcessTime } from '../interfaces/general.js';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
 const title = 'taaze';
 
@@ -123,7 +123,7 @@ function _getBooksInfo(books: Book[] = []) {
   });
 }
 
-function _getBooks($: CheerioAPI) {
+function _getBooks($: cheerio.CheerioAPI) {
   const $list = $('#listView').children('.media');
 
   let books: Book[] = [];
@@ -165,5 +165,5 @@ function _getBookInfo(id = '') {
 
   return fetch(url, options)
     .then(response => response.json())
-    .then(info => info[0]);
+    .then((info) => (info as any[])[0]);
 }

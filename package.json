@@ -2,7 +2,8 @@
   "name": "ebook-api",
   "version": "0.1.7",
   "description": "API",
-  "main": "src/index.ts",
+  "main": "dist/index.ts",
+  "type": "module",
   "scripts": {
     "start": "node ./dist/index",
     "tsc": "tsc",
@@ -11,45 +12,42 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/passerbyid/ebook-api.git"
+    "url": "git+https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API.git"
   },
   "author": "Yuer Lee <passerbyid@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/node-fetch": "^2.5.7",
-    "body-parser": "^1.19.0",
-    "cheerio": "1.0.0-rc.9",
+    "cheerio": "1.0.0-rc.12",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "date-fns": "^2.21.3",
+    "date-fns": "^3.6.0",
     "dotenv": "^9.0.2",
-    "express": "^4.17.1",
-    "firebase-admin": "^9.8.0",
-    "https-proxy-agent": "^5.0.0",
-    "mongodb": "^3.6.6",
-    "node-fetch": "^2.6.0",
-    "node-telegram-bot-api": "^0.53.0",
-    "timeout-signal": "^1.1.0",
-    "ua-parser-js": "^0.7.28"
+    "express": "^4.19.2",
+    "firebase-admin": "^12.0.0",
+    "https-proxy-agent": "^7.0.4",
+    "mongodb": "^4.17.2",
+    "node-fetch": "^3.3.2",
+    "node-telegram-bot-api": "~0.65.1",
+    "timeout-signal": "^2.0.0",
+    "ua-parser-js": "^0.7.37"
   },
   "bugs": {
-    "url": "https://github.com/passerbyid/ebook-api/issues"
+    "url": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API/issues"
   },
-  "homepage": "https://github.com/passerbyid/ebook-api#readme",
+  "homepage": "https://github.com/Taiwan-Ebook-Lover/TaiwanEbookSearch-API",
   "devDependencies": {
-    "@types/body-parser": "^1.19.0",
-    "@types/compression": "^1.7.0",
-    "@types/cors": "^2.8.10",
-    "@types/date-fns": "^2.6.0",
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.11",
-    "@types/mongodb": "^3.6.12",
-    "@types/morgan": "^1.9.2",
-    "@types/node": "^12.12.54",
-    "@types/node-telegram-bot-api": "^0.51.1",
-    "@types/ua-parser-js": "^0.7.36",
-    "nodemon": "^2.0.7",
-    "prettier": "2.3.0",
-    "typescript": "~4.2.4"
+    "@types/express": "^4.17.21",
+    "@types/mongodb": "^4.0.7",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.12.7",
+    "@types/node-fetch": "^2.6.11",
+    "@types/node-telegram-bot-api": "~0.64.6",
+    "@types/ua-parser-js": "^0.7.37",
+    "nodemon": "^3.1.0",
+    "prettier": "3.2.5",
+    "typescript": "~5.4.5"
   }
 }

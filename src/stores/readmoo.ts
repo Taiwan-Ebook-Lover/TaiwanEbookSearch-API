@@ -1,11 +1,11 @@
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 
-import { Book } from '../interfaces/book';
-import { getProcessTime } from '../interfaces/general';
-import { FirestoreBookstore } from '../interfaces/firestoreBookstore';
+import { Book } from '../interfaces/book.js';
+import { getProcessTime } from '../interfaces/general.js';
+import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
 const title = 'readmoo' as const;
 
@@ -93,7 +93,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     });
 };
 
-function _getBooks($: CheerioAPI) {
+function _getBooks($: cheerio.CheerioAPI) {
   const $list = $('#main_items li');
 
   let books: Book[] = [];
@@ -151,7 +151,7 @@ function _getBooks($: CheerioAPI) {
           .children('img')
           .data('lazy-original') as string) || '',
       title: $(elem).children('.caption').children('h4').children('a').text(),
-      link: $(elem).children('.caption').children('h4').children('a').prop('href'),
+      link: $(elem).children('.caption').children('h4').children('a').prop('href') ?? '',
       priceCurrency: $(elem)
         .children('.caption')
         .children('.price-info')
