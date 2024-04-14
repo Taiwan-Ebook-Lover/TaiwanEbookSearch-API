@@ -1,4 +1,4 @@
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -120,7 +120,7 @@ function _getBooksInfo(books: Book[] = []) {
 }
 
 // parse 找書
-function _getBooks($: CheerioAPI) {
+function _getBooks($: cheerio.CheerioAPI) {
   const $list = $('#listView').children('.media');
 
   let books: Book[] = [];

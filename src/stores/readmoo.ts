@@ -1,4 +1,4 @@
-import cheerio, { CheerioAPI } from 'cheerio';
+import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -91,7 +91,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
 };
 
 // parse 找書
-function _getBooks($: CheerioAPI) {
+function _getBooks($: cheerio.CheerioAPI) {
   const $list = $('#main_items li');
 
   let books: Book[] = [];
@@ -110,7 +110,7 @@ function _getBooks($: CheerioAPI) {
       .children('meta[itemprop=identifier]')
       .prop('content');
 
-    const apCode = new Buffer(`https://readmoo.com/book/${id}`)
+    const apCode = Buffer.from(`https://readmoo.com/book/${id}`)
       .toString('base64')
       .replace(/\=*/g, '');
     const apId = process.env.READMOO_AP_ID;
