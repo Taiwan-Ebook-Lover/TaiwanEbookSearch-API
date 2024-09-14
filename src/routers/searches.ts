@@ -88,9 +88,9 @@ searchesRouter.post('/', async (req, res, next) => {
 
   // 等全部查詢完成
   Promise.all(
-    selectedBookstores.map((bookstore: Bookstore) =>
-      bookstoreModel[bookstore.id](bookstore, keywords),
-    ),
+    selectedBookstores
+      .filter((bookstore: Bookstore) => !!bookstoreModel[bookstore.id])
+      .map((bookstore: Bookstore) => bookstoreModel[bookstore.id](bookstore, keywords)),
   )
     .then(async (searchResults) => {
       // 整理結果並紀錄
@@ -98,7 +98,7 @@ searchesRouter.post('/', async (req, res, next) => {
       let totalQuantity: number = 0;
 
       for (const searchResult of searchResults) {
-        totalQuantity += searchResult.quantity;
+        totalQuantity += searchResult?.quantity ?? 0;
         results.push({ ...searchResult });
       }
 
