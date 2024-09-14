@@ -9,7 +9,16 @@ export const botInit = (token: string, group: string) => {
       return reject('bot is already inited.');
     }
 
-    bot = new TelegramBot(token, { polling: false });
+    bot = new TelegramBot(token, {
+      polling: false,
+      request: {
+        url: 'https://api.telegram.org',
+        agentOptions: {
+          keepAlive: true,
+          family: 4,
+        },
+      },
+    });
     groupId = group;
 
     resolve();
