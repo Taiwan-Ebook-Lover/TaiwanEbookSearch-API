@@ -1,4 +1,3 @@
-import cheerio, { CheerioAPI } from 'cheerio';
 import fetch from 'node-fetch';
 import timeoutSignal from 'timeout-signal';
 
@@ -62,7 +61,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
           thumbnail: imageUrl,
           title: name,
           link: url,
-          priceCurrency: 'usd',
+          priceCurrency: 'USD',
           price: minPrice,
           about: description,
           authors: [ownerName],
