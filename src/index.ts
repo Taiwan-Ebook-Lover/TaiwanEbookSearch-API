@@ -8,7 +8,10 @@ import { botInit } from './bot.js';
 import { connect } from './firestore.js';
 import { searchRouter } from './routers/search.js';
 import { ServiceAccount } from 'firebase-admin';
-import serviceAccount from './auth/serviceAccount.json' assert { type: 'json' };
+import { readFileSync } from 'fs';
+const serviceAccount = JSON.parse(
+  readFileSync(new URL('./auth/serviceAccount.json', import.meta.url), 'utf-8')
+);
 
 const app: express.Application = express();
 
