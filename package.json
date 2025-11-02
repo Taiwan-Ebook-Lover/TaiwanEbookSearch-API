@@ -1,6 +1,6 @@
 {
   "name": "ebook-api",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "API",
   "main": "dist/index.ts",
   "type": "module",
