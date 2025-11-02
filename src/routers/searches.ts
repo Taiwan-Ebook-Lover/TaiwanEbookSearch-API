@@ -65,6 +65,7 @@ searchesRouter.post('/', async (req, res, next) => {
 
   // parse user agent
   const ua = new UAParser(req.headers['user-agent']);
+  const userAgent = ua.getResult()?.ua || `Taiwan-Ebook-Search/${process.env.npm_package_version}`;
 
   if (bombMessage) {
     return res.status(503).send({
@@ -92,7 +93,7 @@ searchesRouter.post('/', async (req, res, next) => {
   Promise.all(
     selectedBookstores
       .filter((bookstore: Bookstore) => !!bookstoreModel[bookstore.id])
-      .map((bookstore: Bookstore) => bookstoreModel[bookstore.id](bookstore, keywords)),
+      .map((bookstore: Bookstore) => bookstoreModel[bookstore.id](bookstore, keywords, userAgent)),
   )
     .then(async (searchResults) => {
       // 整理結果並紀錄
@@ -112,7 +113,7 @@ searchesRouter.post('/', async (req, res, next) => {
         keywords,
         searchDateTime: format(searchDateTime, `yyyy/LL/dd HH:mm:ss`),
         processTime,
-        userAgent: ua.getResult(),
+        userAgent,
         totalQuantity,
         results,
         apiVersion: process.env.npm_package_version,

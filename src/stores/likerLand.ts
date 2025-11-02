@@ -9,7 +9,11 @@ import { Result } from '../interfaces/result.js';
 import { getProcessTime } from '../interfaces/general.js';
 import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
-export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') => {
+export default (
+  { proxyUrl, ...bookstore }: FirestoreBookstore,
+  keywords = '',
+  userAgent: string,
+) => {
   // start calc process time
   const hrStart = process.hrtime();
 
@@ -38,7 +42,7 @@ export default ({ proxyUrl, ...bookstore }: FirestoreBookstore, keywords = '') =
     signal: timeoutSignal(10000),
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
     headers: {
-      'User-Agent': `Taiwan-Ebook-Search/${process.env.npm_package_version}`,
+      'User-Agent': `${userAgent}`,
     },
   };
 
