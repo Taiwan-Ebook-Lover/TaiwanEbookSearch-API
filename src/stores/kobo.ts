@@ -10,10 +10,13 @@ import { Result } from '../interfaces/result.js';
 import { getProcessTime } from '../interfaces/general.js';
 import { FirestoreBookstore } from '../interfaces/firestoreBookstore.js';
 
+// 使用 Googlebot UA 繞過 Kobo 的 Cloudflare 保護，僅存取公開的搜尋結果。
+const GOOGLEBOT_UA = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
+
 export default (
   { proxyUrl, ...bookstore }: FirestoreBookstore,
   keywords = '',
-  userAgent: string,
+  _userAgent: string,
 ) => {
   // start calc process time
   const hrStart = process.hrtime();
@@ -43,7 +46,8 @@ export default (
     signal: timeoutSignal(10000),
     agent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
     headers: {
-      'User-Agent': `${userAgent}`,
+      'User-Agent': GOOGLEBOT_UA,
+      'Accept-Language': 'zh-TW,zh;q=0.9,en;q=0.8',
     },
   };
 
@@ -96,78 +100,69 @@ export default (
 
 // parse 找書
 function _getBooks($: cheerio.CheerioAPI, base: string) {
-  const $list = $('ul[class=result-items] li');
+  const books: Book[] = [];
 
-  let books: Book[] = [];
+  // 僅針對 Desktop 版的卡片容器 — Next.js 會同時渲染隱藏的 Mobile 版卡片，這會導致資料重複。
+  $('[data-testid="book-card-desktop"]').each((_i, card) => {
+    const $card = $(card);
 
-  // 找不到就是沒這書
-  if ($list.length === 0) {
-    // console.log('Not found in kobo!');
+    // ── 標題與連結 ─────────────────────────────────────────────────────────
+    const $anchor = $card.find('a[data-testid="title"]').first();
+    const title = $anchor.text().trim();
+    if (!title) return;
 
-    return books;
-  }
+    const href = $anchor.attr('href') ?? '';
+    const link = href.startsWith('http') ? href : new URL(href, base).toString();
 
-  $list.each((i, elem) => {
-    // 從 script elem 拉 JSON data
-    const info = JSON.parse(
-      $(elem).children('.item-detail').children('script').html() || '{ data: null }',
-    ).data;
-
-    // 若有副標題，併入主標題
-    let title = info.name;
-    if (info.alternativeHeadline) {
-      title += ` - ${info.alternativeHeadline}`;
+    // ── 封面圖片 ──────────────────────────────────────────────────────────
+    const $cover = $card.find('img[data-testid="cover"]');
+    let thumbnail =
+      $cover.attr('src') ??
+      $cover.closest('picture').find('source').first().attr('srcset') ??
+      undefined;
+    if (thumbnail && !thumbnail.startsWith('http')) {
+      thumbnail = new URL(thumbnail, base).toString();
     }
 
-    const authors = (
-      eval(
-        $(elem)
-          .children('.item-detail')
-          .children('.item-info')
-          .children('.contributors')
-          .children('.synopsis-contributors')
-          .children('.synopsis-text')
-          .children('.contributor-name')
-          .data('track-info') as string,
-      )?.author ?? ''
-    ).split('、');
+    // ── 作者 ──────────────────────────────────────────────────────────────
+    const authors: string[] = [];
+    $card.find('[data-testid="authors"] a[data-testid="book-attribute-link"]').each((_j, el) => {
+      const name = $(el).text().trim();
+      if (name) authors.push(name);
+    });
 
-    // 價格要先檢查是否為免費
-    const $priceField = $(elem).children('.item-detail').children('.item-info').children('.price');
+    // ── 價格 ──────────────────────────────────────────────────────────────
+    // Kobo 將價格渲染在 data-testid 以 "-pricing-price-value" 結尾的元素中。文字格式為：「Sale Price: NT$350.00 TWD」。
+    // 解析前需移除前綴與貨幣後綴。
+    let price: number | undefined;
+    $card
+      .find('[data-testid$="-pricing-price-value"]')
+      .first()
+      .each((_j, el) => {
+        const raw = $(el).text().trim();
+        if (raw === '免費' || raw.toLowerCase().includes('free')) {
+          price = 0;
+        } else {
+          // 移除 "Sale Price:"、"NT$"、逗號、空格以及結尾的 " TWD"
+          const cleaned = raw.replace(/Sale Price:|NT\$|TWD|,/gi, '').trim();
+          const numeric = parseFloat(cleaned);
+          if (!isNaN(numeric)) price = numeric;
+        }
+      });
 
-    let price = 0;
-    if (!$priceField.hasClass('free')) {
-      price =
-        parseFloat(
-          $priceField
-            .children('span')
-            .children('span')
-            .first()
-            .text()
-            .replace(/NT\$|,|\s/g, ''),
-        ) || -1;
-    }
-
-    books[i] = {
-      id: info.isbn,
-      thumbnail: new URL(info.thumbnailUrl, base).toString(),
+    const book: Book = {
       title,
-      link: info.url,
-      priceCurrency: $(elem)
-        .children('.item-detail')
-        .children('.item-info')
-        .children('.price')
-        .children('span')
-        .children('.currency')
-        .text(),
+      link,
+      thumbnail,
+      priceCurrency: 'TWD',
       price,
-      about: info.description ? `${info.description} ...` : undefined,
-      // publisher
     };
 
-    if (authors?.length > 0) {
-      books[i].authors = authors;
+    if (authors.length > 0) {
+      book.authors = authors;
     }
+
+    books.push(book);
   });
 
   return books;
