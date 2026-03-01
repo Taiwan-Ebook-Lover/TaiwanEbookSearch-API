@@ -23,7 +23,7 @@
     ],
     "license": "MIT",
     "dependencies": {
-        "cheerio": "1.1.2",
+        "cheerio": "^1.2.0",
         "compression": "^1.8.1",
         "cors": "^2.8.6",
         "date-fns": "^4.1.0",
