@@ -119,7 +119,7 @@ function _getBooks($: cheerio.CheerioAPI, base: string) {
     let thumbnail =
       $coverContainer.find('img').attr('src') ??
       $coverContainer.find('picture source').first().attr('srcset') ??
-      undefined;
+      '';
     if (thumbnail) {
       thumbnail = new URL(thumbnail, base).toString();
     }
