@@ -134,7 +134,7 @@ function _getBooks($: cheerio.CheerioAPI, base: string) {
     // ── 價格 ──────────────────────────────────────────────────────────────
     // Kobo 將價格渲染在 data-testid 以 "-pricing-price-value" 結尾的元素中。文字格式為：「Sale Price: NT$350.00 TWD」。
     // 解析前需移除前綴與貨幣後綴。
-    let price: number | undefined;
+    let price: number = -1;
     const raw = $card.find('[data-testid$="-pricing-price-value"]').first().text().trim();
     if (raw === '免費' || raw.toLowerCase().includes('free')) {
       price = 0;
