@@ -112,7 +112,7 @@ function _getBooks($: cheerio.CheerioAPI, base: string) {
     if (!title) return;
 
     const href = $anchor.attr('href') ?? '';
-    const link = href.startsWith('http') ? href : new URL(href, base).toString();
+    const link = new URL(href, base).toString();
 
     // ── 封面圖片 ──────────────────────────────────────────────────────────
     const $coverContainer = $card.find('[data-testid="book-cover-container"]');
@@ -120,7 +120,7 @@ function _getBooks($: cheerio.CheerioAPI, base: string) {
       $coverContainer.find('img').attr('src') ??
       $coverContainer.find('picture source').first().attr('srcset') ??
       undefined;
-    if (thumbnail && !thumbnail.startsWith('http')) {
+    if (thumbnail) {
       thumbnail = new URL(thumbnail, base).toString();
     }
 
