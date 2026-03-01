@@ -63,7 +63,7 @@ app.use('/bookstores', bookstoresRouter);
  * Error Handler
  */
 
-app.get('*', (req, res) => {
+app.use((_req, res) => {
   return res.status(405).send({
     message: 'Method Not Allowed!',
   });

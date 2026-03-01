@@ -28,7 +28,7 @@
         "cors": "^2.8.6",
         "date-fns": "^4.1.0",
         "dotenv": "^17.3.1",
-        "express": "^4.22.1",
+        "express": "^5.2.1",
         "firebase-admin": "^13.7.0",
         "https-proxy-agent": "^7.0.6",
         "node-fetch": "^3.3.2",
@@ -43,7 +43,7 @@
     "devDependencies": {
         "@types/compression": "^1.8.1",
         "@types/cors": "^2.8.19",
-        "@types/express": "^4.17.25",
+        "@types/express": "^5.0.6",
         "@types/morgan": "^1.9.10",
         "@types/node": "^24.11.0",
         "@types/node-fetch": "^3.0.3",
