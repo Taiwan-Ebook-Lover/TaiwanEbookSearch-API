@@ -135,20 +135,15 @@ function _getBooks($: cheerio.CheerioAPI, base: string) {
     // Kobo 將價格渲染在 data-testid 以 "-pricing-price-value" 結尾的元素中。文字格式為：「Sale Price: NT$350.00 TWD」。
     // 解析前需移除前綴與貨幣後綴。
     let price: number | undefined;
-    $card
-      .find('[data-testid$="-pricing-price-value"]')
-      .first()
-      .each((_j, el) => {
-        const raw = $(el).text().trim();
-        if (raw === '免費' || raw.toLowerCase().includes('free')) {
-          price = 0;
-        } else {
-          // 移除 "Sale Price:"、"NT$"、逗號、空格以及結尾的 " TWD"
-          const cleaned = raw.replace(/Sale Price:|NT\$|TWD|,/gi, '').trim();
-          const numeric = parseFloat(cleaned);
-          if (!isNaN(numeric)) price = numeric;
-        }
-      });
+    const raw = $card.find('[data-testid$="-pricing-price-value"]').first().text().trim();
+    if (raw === '免費' || raw.toLowerCase().includes('free')) {
+      price = 0;
+    } else {
+      // 移除 "Sale Price:"、"NT$"、逗號、空格以及結尾的 " TWD"
+      const cleaned = raw.replace(/Sale Price:|NT\$|TWD|,/gi, '').trim();
+      const numeric = parseFloat(cleaned);
+      if (!isNaN(numeric)) price = numeric;
+    }
 
     const book: Book = {
       title,
