@@ -167,3 +167,12 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+# AI Tools
+ai-knowledge
+ai-knowlegde/
+.windsurf
+.windsurf/
+.cursor
+.cursor/
+.agent
+.agent/
