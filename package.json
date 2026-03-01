@@ -19,7 +19,8 @@
     },
     "author": "Yuer Lee <passerbyid@gmail.com>",
     "contributors": [
-        "Safefly Tsai <ast850328@gmail.com> (https://safefly.tw)"
+        "Safefly Tsai <ast850328@gmail.com> (https://safefly.tw)",
+        "Jui Yuan Liu <louis383@gmail.com> (https://rayuan.tw)"
     ],
     "license": "MIT",
     "dependencies": {
