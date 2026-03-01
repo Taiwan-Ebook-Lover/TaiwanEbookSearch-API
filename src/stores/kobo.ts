@@ -139,8 +139,8 @@ function _getBooks($: cheerio.CheerioAPI, base: string) {
     if (raw === '免費' || raw.toLowerCase().includes('free')) {
       price = 0;
     } else {
-      // 移除 "Sale Price:"、"NT$"、逗號、空格以及結尾的 " TWD"
-      const cleaned = raw.replace(/Sale Price:|NT\$|TWD|,/gi, '').trim();
+      // 只保留數字和小數點，不管幣別是 TWD、USD 或其他格式，都能正確提取價格數字。
+      const cleaned = raw.replace(/[^\d.]/g, '').trim();
       const numeric = parseFloat(cleaned);
       if (!isNaN(numeric)) price = numeric;
     }
