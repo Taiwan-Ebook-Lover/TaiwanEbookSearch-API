@@ -112,7 +112,7 @@ function _getBooks($: cheerio.CheerioAPI, rootURL: string, base: string) {
 
     // 透過語意化連結取得書籍頁面 URL
     const $link = $bookElem.find('a[href*="/store/books/details"]');
-    const href = $link.attr('href') ?? $bookElem.find('a').attr('href') ?? '';
+    const href = $link.attr('href') ?? '';
 
     if (!href) return;
 
