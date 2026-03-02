@@ -134,10 +134,12 @@ function _getBooks($: cheerio.CheerioAPI, rootURL: string, base: string) {
 
     if ($priceSpan.length > 0) {
       const ariaLabel = $priceSpan.attr('aria-label') ?? '';
+      // 同時支援 $399 與 $1,299，逗號可有可無
       const priceMatches = ariaLabel.match(/\$[\d,.]+/g);
 
       if (priceMatches) {
         price = priceMatches
+          // 僅做字串清洗與轉數字，不是第二次千分號判斷
           .map((match) => parseFloat(match.replace(/[^\d.]/g, '')))
           .sort((a, b) => a - b)[0];
       } else {
@@ -148,7 +150,7 @@ function _getBooks($: cheerio.CheerioAPI, rootURL: string, base: string) {
         price = parseFloat(cleaned) || -1;
       }
     } else {
-      // 備用方案：遍歷 span 尋找含有 $ 符號的文字
+      // 備用方案：aria-label 抓不到價格時，才遍歷 span 文字
       $bookElem.find('span').each((_j, span) => {
         const text = $(span).text();
         const priceMatch = text.match(/\$[\d,.]+/);
