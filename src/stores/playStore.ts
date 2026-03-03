@@ -152,11 +152,16 @@ function _getBooks($: cheerio.CheerioAPI, rootURL: string, base: string) {
     } else {
       // 備用方案：aria-label 抓不到價格時，才遍歷 span 文字
       $bookElem.find('span').each((_j, span) => {
-        const text = $(span).text();
+        const text = $(span).text().trim();
         const priceMatch = text.match(/\$[\d,.]+/);
         if (priceMatch) {
           price = parseFloat(priceMatch[0].replace(/[^\d.]/g, ''));
           return false; // 中斷 each 迴圈
+        }
+
+        if (text === '免費' || text.toLowerCase() === 'free') {
+          price = 0;
+          return false;
         }
       });
     }
