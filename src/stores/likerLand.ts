@@ -59,16 +59,16 @@ export default (
       const hrEnd = process.hrtime(hrStart);
       const processTime = getProcessTime(hrEnd);
       const books: Book[] = (data as any).list.map((item: any) => {
-        const { iscnId, imageUrl, name, url, minPrice, description, ownerName } = item;
+        const { id, imageUrl, name, url, minPrice, description, author, ownerName } = item;
         return {
-          id: iscnId,
+          id,
           thumbnail: imageUrl,
           title: name,
           link: url,
           priceCurrency: 'USD',
           price: minPrice,
           about: description,
-          authors: [ownerName],
+          authors: [author || ownerName],
         };
       });
       const result: Result = {
